@@ -1,43 +1,45 @@
-const eventObj = [{
-    "textFrame": "off",
-    "bg": "00266",
-    "bgm": "037"
-},
-{
-    "textFrame": "off",
-    "waitType": "time",
-    "waitTime": 3000
-},
-{
-    "textFrame": "off",
-    "bg": "00484",
-    "bgEffect": "fade",
-    "waitType": "time",
-    "waitTime": 2500
-}
+const eventObj = [
+    {
+        "textFrame": "off",
+        "bg": "00266",
+        "bgm": "037"
+    },
+    {
+        "textFrame": "off",
+        "waitType": "time",
+        "bg": "444",
+        "waitTime": 3000
+    },
+    {
+        "textFrame": "off",
+        "bg": "00484",
+        "bgEffect": "fade",
+        "waitType": "time",
+        "waitTime": 2500
+    }
 ];
 
+let test = [
+    {name: "k4567", url: "https://i.imgur.com/qHSY3Pi.jpg"},
+    {name: "k4568", url: "https://i.imgur.com/hoNafbQ.jpg"},
+    {name: "k4569", url: "https://i.imgur.com/liTuL3U.jpg"},
+]
 const backgroundPath = "T:/files/assets/images/event/bg/";
 let currentSection = 0;
 let ratio = 1.775;
-//let renderer = PIXI.Application({ width: window.innerWidth, height: window.innerHeight });
 let app, cw, ch;
 let container, assetLoader;
 
 function Init() {
-    //container = new PIXI.Container();
     app = new PIXI.Application({
-        width: window.innerWidth, 
+        width: window.innerWidth,
         height: window.innerHeight
     });
 
-    //container.x = app.screen.width / 2;
-    //container.y = app.screen.height / 2;
-    //app.stage.addChild(container);   
     document.body.appendChild(app.view);
     cw = window.innerWidth;
     ch = window.innerHeight;
-
+    console.log(cw, ch);
     window.onresize = function (e) {
         cw = window.innerWidth;
         ch = window.innerHeight;
@@ -48,60 +50,71 @@ function Init() {
         app.stage.y = app.renderer.height * 0.5;
     };
     //setTimeout(drawCanvas, 0);
-    //drawCanvas();
-    drawCanvas2();
+    app.loader.onComplete.add(() => {
+        setTimeout(() => {
+            for (let k = app.stage.children.length - 1; k >= 0; k--) {
+                app.stage.removeChild(app.stage.children[k])
+            }
+
+            currentSection++;
+
+            app.loader.reset();
+            if (eventObj[currentSection]?.waitTime) {
+                setTimeout(drawCanvas, eventObj[currentSection].waitTime);
+            } else {
+                setTimeout(drawCanvas, 1000);
+            }
+            
+        }, 1000);
+    });
+    drawCanvas();
+    //drawCanvas2();
 }
 
 function drawCanvas2() {
     let ebj = eventObj[0];
-    //let loader = PIXI.Loader.shared;
-    //loader.onComplete.add(draw);
-    app.loader.add("mumi", "https://i.imgur.com/etjtA3w.png",{ crossOrigin: true }).load(draw);
-    
+    app.loader.add("mumi", "https://i.imgur.com/etjtA3w.png", { crossOrigin: true }).load(draw);
 }
 
 function drawCanvas() {
+    console.log(currentSection);
+
     let ebj = eventObj[currentSection];
 
     if (currentSection < eventObj.length) {
         if (ebj?.bg) {
-            /*
-            PIXI.loader
-                .add("mumi", "https://pbs.twimg.com/media/E9Nv9U5UUAMrJif?format=jpg&name=4096x4096")
-                .load(draw);
-            */
-            //let sprite = PIXI.Sprite.from("https://i.imgur.com/etjtA3w.png");
-            app.loader.add("mumi", "https://i.imgur.com/etjtA3w.png",{ crossOrigin: true }).load(draw);
+            app.loader.add(test[currentSection].name, test[currentSection].url, { crossOrigin: true });
+        }
 
-            console.log(sprite, sprite.width, cw);
-            sprite.anchor.set(0.5);
-            //sprite.scale.x = sprite.width / cw;
-            //sprite.scale.y = sprite.height / ch;
-            //console.log(sprite.scale.x);
-            app.stage.addChild(sprite);
-        }
-        //return;
-        if (ebj?.waitTime) {
-            //setTimeout(drawCanvas, ebj.waitTime);
-        } else {
-            //setTimeout(drawCanvas, 1);
-        }
-        currentSection++;
+        app.loader.load(draw);
+        
     } else {
         return;
     }
 }
 
 function draw(loader, resources) {
-    //console.log(loader, resources);
-
-    console.log(resources['mumi']);
-    let spr = new PIXI.Sprite(resources['mumi'].texture);
+    let spr = new PIXI.Sprite(resources[test[currentSection].name].texture);
     spr.x = cw / 2;
     spr.y = ch / 2;
 
-    // Rotate around the center
+    resizeByRatio(spr);
+
     spr.anchor.x = 0.5;
     spr.anchor.y = 0.5;
     app.stage.addChild(spr);
+
+}
+
+function resizeByRatio(spr) {
+    let ratioW = cw / spr.width, ratioH = ch / spr.height;
+    //console.log(ratioW, ratioH);
+    if (ratioW > ratioH) {
+        spr.scale.x = ratioH;
+        spr.scale.y = ratioH;
+    }
+    else {
+        spr.scale.x = ratioW;
+        spr.scale.y = ratioW;
+    }
 }
