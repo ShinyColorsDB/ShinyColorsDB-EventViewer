@@ -68,12 +68,6 @@ function Init() {
         }, 1000);
     });
     drawCanvas();
-    //drawCanvas2();
-}
-
-function drawCanvas2() {
-    let ebj = eventObj[0];
-    app.loader.add("mumi", "https://i.imgur.com/etjtA3w.png", { crossOrigin: true }).load(draw);
 }
 
 function drawCanvas() {
