@@ -77,9 +77,10 @@ function drawCanvas() {
     if (currentSection < eventObj.length) {
         if (ebj?.bg) {
             app.loader.add(eventObj[currentSection].bg, backgroundPath + eventObj[currentSection].bg + ".jpg", { crossOrigin: true });
+            app.loader.load(draw);
+
         }
 
-        app.loader.load(draw);
         
     } else {
         return;
