@@ -18,11 +18,6 @@ const eventObj = [
     }
 ];
 
-let test = [
-    {name: "k4567", url: "https://i.imgur.com/qHSY3Pi.jpg"},
-    {name: "k4568", url: "https://i.imgur.com/hoNafbQ.jpg"},
-    {name: "k4569", url: "https://i.imgur.com/liTuL3U.jpg"},
-]
 const backgroundPath = "https://viewer.shinycolors.moe/images/event/bg/";
 let currentSection = 0;
 let ratio = 1.775;
@@ -63,7 +58,7 @@ function Init() {
             } else {
                 setTimeout(drawCanvas, 1000);
             }
-            
+
         }, 1000);
     });
     drawCanvas();
@@ -77,14 +72,22 @@ function drawCanvas() {
     if (currentSection < eventObj.length) {
         if (ebj?.bg) {
             app.loader.add(eventObj[currentSection].bg, backgroundPath + eventObj[currentSection].bg + ".jpg", { crossOrigin: true });
-            app.loader.load(draw);
 
         }
 
-        
+        app.loader.load(draw);
+
     } else {
         return;
     }
+}
+
+function renderTrack(track) {
+    const { speaker, text, textCtrl, textWait, textFrame,
+        bg, bgEffect, fg, fgEffect, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
+        charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
+        effectLabel, effectTarget, effectValue, waitType, waitTime } = track;
 }
 
 function draw(loader, resources) {
@@ -110,5 +113,66 @@ function resizeByRatio(spr) {
     else {
         spr.scale.x = ratioW;
         spr.scale.y = ratioW;
+    }
+}
+
+class TrackManager {
+    constructor(tracks) {
+        this._tracks = tracks;
+        this._current = 0;
+        this._nextLabel = null;
+        this._stopTrackIndex = -1;
+    }
+
+    get currentTrack() {
+        return this._tracks[this._current];
+    }
+
+    get nextTrack() {
+        return this._tracks[this._current + 1];
+    }
+
+    get reachesStopTrack() {
+        return this._stopTrackIndex !== -1 && this._current === this._stopTrackIndex;
+    }
+
+    set nextLabel(v) {
+        this._nextLabel = v;
+    }
+
+    destroy() {
+        this._tracks = [];
+        this._current = 0;
+        this._nextLabel = null;
+        this._stopTrackIndex = -1;
+    }
+
+    forward() {
+        if (this._nextLabel) {
+            this._jumpTo(this._nextLabel);
+        } else {
+            this._current++;
+        }
+        return this.currentTrack;
+    }
+
+    setBeforeSelectTrackToStopTrack() {
+        const index = this._tracks.findIndex(track => track.select);
+        this._stopTrackIndex = (index !== -1 && index !== 0) ? index - 1 : index;
+    }
+
+    resetStopTrack() {
+        this._stopTrackIndex = -1;
+    }
+
+    _jumpTo(nextLabel) {
+        const length = this._tracks.length;
+        for (let i = 0; i < length; i++) {
+            if (this._tracks[i].label !== nextLabel) { continue; }
+            this._current = i;
+            this._nextLabel = null;
+            return;
+        }
+        throw new Error(`label ${nextLabel} is not found.`);
     }
 }
