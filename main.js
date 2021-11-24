@@ -7,7 +7,6 @@ const eventObj = [
     {
         "textFrame": "off",
         "waitType": "time",
-        "bg": "444",
         "waitTime": 3000
     },
     {
@@ -24,7 +23,7 @@ let test = [
     {name: "k4568", url: "https://i.imgur.com/hoNafbQ.jpg"},
     {name: "k4569", url: "https://i.imgur.com/liTuL3U.jpg"},
 ]
-const backgroundPath = "T:/files/assets/images/event/bg/";
+const backgroundPath = "https://viewer.shinycolors.moe/images/event/bg/";
 let currentSection = 0;
 let ratio = 1.775;
 let app, cw, ch;
@@ -77,7 +76,7 @@ function drawCanvas() {
 
     if (currentSection < eventObj.length) {
         if (ebj?.bg) {
-            app.loader.add(test[currentSection].name, test[currentSection].url, { crossOrigin: true });
+            app.loader.add(eventObj[currentSection].bg, backgroundPath + eventObj[currentSection].bg + ".jpg", { crossOrigin: true });
         }
 
         app.loader.load(draw);
@@ -88,7 +87,7 @@ function drawCanvas() {
 }
 
 function draw(loader, resources) {
-    let spr = new PIXI.Sprite(resources[test[currentSection].name].texture);
+    let spr = new PIXI.Sprite(resources[eventObj[currentSection].bg].texture);
     spr.x = cw / 2;
     spr.y = ch / 2;
 
