@@ -83,15 +83,15 @@ class TrackManager {
         if (movie && !this._loader.resources[movie]) {
             this._loader.add(movie, `${assetUrlPath}/movies/idols/card/${movie}.mp4`);
         }
-        if (charId ) {
-            this._loader.add(charLabel, `${assetUrlPath}/spine/${charType}/${charId}/data.json`);
+        if (charLabel && !this._loader.resources[charLabel]) {
+            this._loader.add(charLabel, `${assetUrlPath}/spine/${charType}/stand/${charId}/data.json`);
         }
         this._loader.load(() => {
-            this.renderTrack();
+            this._renderTrack();
         });
     }
 
-    renderTrack() {
+    _renderTrack() {
         const { speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, fg, fgEffect, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
             charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
@@ -100,6 +100,8 @@ class TrackManager {
 
         this._bgManager.processBgByInput(bg, bgEffect);
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
+        this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+			charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
 
         this.forward();
 
@@ -109,7 +111,9 @@ class TrackManager {
     }
 
     endOfEvent() {
-
+		this._bgManager.reset();
+        this._spineManager.reset();
+        this._textManager.reset();
     }
 
     _jumpTo(nextLabel) {

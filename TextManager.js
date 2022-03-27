@@ -10,6 +10,11 @@ class TextManager {
         return this._container;
     }
 
+    reset() {
+        this._container.removeChildren(0, this._container.children.length);
+        this._txtFrameMap.clear();
+    }
+
     processTextFrameByInput(textFrame, speaker, text) {
         if (this._container.children.length) {
             this._container.removeChildren(0, this._container.children.length);
