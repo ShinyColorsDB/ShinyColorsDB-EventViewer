@@ -15,7 +15,7 @@ class TextManager {
             this._container.removeChildren(0, this._container.children.length);
         }
 
-        if (textFrame == "off") { return; }
+        if (textFrame == "off" || !textFrame) { return; }
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[textFrame].texture));

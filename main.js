@@ -56,6 +56,10 @@ class TrackManager {
 
     loadCurrentTrackAssets() {
         console.log(this._current);
+        if (this.currentTrack.label == "end") {
+        	this.endOfEvent();
+            return;
+        }
         const { textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel } = this.currentTrack;
 
         if (textFrame && textFrame != "off" && !this._loader.resources[textFrame]) {
@@ -101,7 +105,11 @@ class TrackManager {
 
         setTimeout(() => {
             this.loadCurrentTrackAssets();
-        } , 3000);
+        } , waitType == "time" ? waitTime : 3000);
+    }
+
+    endOfEvent() {
+
     }
 
     _jumpTo(nextLabel) {
