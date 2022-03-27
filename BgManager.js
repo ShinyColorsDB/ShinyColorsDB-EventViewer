@@ -8,6 +8,11 @@ class BgManager {
 
     get stageObj() { return this._container; }
 
+    reset() {
+        this._container.removeChildren(0, this._container.children.length);
+        this._bgMap.clear();
+    }
+
     processBgByInput(bg, bgEffect) {
         if (bg && bgEffect) {
             this._changeBgByEffect(bg, bgEffect);
