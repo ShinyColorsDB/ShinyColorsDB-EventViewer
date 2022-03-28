@@ -35,7 +35,6 @@ class SpineManager {
             thisSpine.position.x = charPosition.x;
             thisSpine.position.y = charPosition.y;
             this._container.addChildAt(thisSpine, charPosition.order);
-
         }
 
         if (charAnim1 || charAnim2 || charAnim3 || charAnim4 || charAnim5 || charLipAnim) {
@@ -50,7 +49,6 @@ class SpineManager {
         thisSpine.skeleton.setToSetupPose();
         thisSpine.update(0);
         thisSpine.autoUpdate = true;
-
 
     }
 

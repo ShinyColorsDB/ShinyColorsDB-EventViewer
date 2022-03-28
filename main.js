@@ -1,7 +1,7 @@
 'use strict';
 
 class TrackManager {
-    constructor(tracks, app, bgM, spnM, txtM) {
+    constructor(tracks, app, bgM, fgM, spnM, txtM) {
         this._tracks = tracks;
         this._current = 0;
         this._nextLabel = null;
@@ -9,6 +9,7 @@ class TrackManager {
         this._app = app;
         this._loader = PIXI.Loader.shared;
         this._bgManager = bgM;
+        this._fgManager = fgM;
         this._spineManager = spnM;
         this._textManager = txtM;
     }
@@ -69,7 +70,7 @@ class TrackManager {
             this._loader.add(bg, `${assetUrlPath}/images/event/bg/${bg}.jpg`);
         }
         if (fg && !this._loader.resources[fg]) {
-            this._loader.add(fg, `${assetUrlPath}/images/event/fg/${fg}.jpg`);
+            this._loader.add(fg, `${assetUrlPath}/images/event/fg/${fg}.png`);
         }
         if (se && !this._loader.resources[se]) {
             this._loader.add(se, `${assetUrlPath}/sounds/se/event/${se}.m4a`);
@@ -99,6 +100,7 @@ class TrackManager {
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
         this._bgManager.processBgByInput(bg, bgEffect);
+        this._fgManager.processFgByInput(fg, fgEffect);
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
 			charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
@@ -139,14 +141,15 @@ function init() {
     document.body.appendChild(app.view);
 
     let bgManager = new BgManager(app.loader); // used for background
+    let fgManager = new FgManager(app.loader); // used for foreground
     let spineManager = new SpineManager(app.loader); // used for spine rendering
     let textManager = new TextManager(app.loader); // used for text frame
 
-    app.stage.addChild(bgManager.stageObj, spineManager.stageObj, textManager.stageObj);
+    app.stage.addChild(bgManager.stageObj, fgManager.stageObj, spineManager.stageObj, textManager.stageObj);
     
     app.loader.add("eventJson", `${assetUrlPath}/json/produce_events/100100202.json`).load(
         (loader, resources) => {
-            const tm = new TrackManager(resources.eventJson.data, app, bgManager, spineManager, textManager);
+            const tm = new TrackManager(resources.eventJson.data, app, bgManager, fgManager, spineManager, textManager);
             console.log(tm);
             tm.loadCurrentTrackAssets();
         }
@@ -154,52 +157,8 @@ function init() {
 
 }
 
-function drawCanvas() {
 
-}
-
-function renderTrack(track) {
-    const { speaker, text, textCtrl, textWait, textFrame,
-        bg, bgEffect, fg, fgEffect, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
-        charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
-        effectLabel, effectTarget, effectValue, waitType, waitTime } = track;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
 
 function draw(loader, resources) {
     let spr = new PIXI.Sprite(resources[eventObj[currentSection].bg].texture);
