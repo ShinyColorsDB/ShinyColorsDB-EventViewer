@@ -22,7 +22,7 @@ class BgManager {
         }
     }
 
-    _changeBg(bgName, bgData = null) {
+    _changeBg(bgName) {
         if (!this._bgMap.has(bgName)) {
             this._bgMap.set(bgName, new PIXI.Sprite(this._loader.resources[bgName].texture));
         }
