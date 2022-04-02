@@ -2,6 +2,8 @@ class SoundManager {
     constructor() {
         this._loader = PIXI.Loader.shared;
         this._currentBgm = null;
+        this._currentVoice = null;
+        this._onVoiceEnd = null;
     }
 	
 
@@ -21,6 +23,7 @@ class SoundManager {
 
     _playBgm(bgmName) {        
         if (this._currentBgm) { this._currentBgm.stop(); }
+
         this._currentBgm = this._loader.resources[bgmName].sound;
         this._currentBgm.autoPlay = true;
         this._currentBgm.play({
@@ -36,12 +39,19 @@ class SoundManager {
     }
 
     _playVoice(voiceName, charLabel, onVoiceEnd) {
-        let currentVoice = this._loader.resources[voiceName].sound.play({
+        if (this._currentVoice) { 
+            this._currentVoice.stop(); 
+            this._onVoiceEnd();
+        }
+
+        this._currentVoice = this._loader.resources[voiceName].sound.play({
             loop: false
         });
-
-        currentVoice.on('end', function() {
+        this._onVoiceEnd = () => {
             onVoiceEnd(charLabel);
+        };
+        this._currentVoice.on('end', () => {
+            this._onVoiceEnd();
         });
     }
 }
