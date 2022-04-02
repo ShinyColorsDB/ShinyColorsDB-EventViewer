@@ -1,4 +1,3 @@
-'use strict';
 class TextManager {
     constructor() {
         this._container = new PIXI.Container();
@@ -16,11 +15,11 @@ class TextManager {
     }
 
     processTextFrameByInput(textFrame, speaker, text) {
-        if (this._container.children.length) {
+        if (this._container.children.length || (textFrame == "off" && this._container.children.length)) {
             this._container.removeChildren(0, this._container.children.length);
         }
 
-        if (textFrame == "off" || !textFrame) { return; }
+        if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[textFrame].texture));

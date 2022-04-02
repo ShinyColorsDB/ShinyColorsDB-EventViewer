@@ -1,4 +1,3 @@
-'use strict';
 class FgManager {
     constructor() {
         this._container = new PIXI.Container();
