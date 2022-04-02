@@ -1,135 +1,4 @@
 'use strict';
-
-class TrackManager {
-    constructor(tracks, app, bgM, fgM, spnM, txtM) {
-        this._tracks = tracks;
-        this._current = 0;
-        this._nextLabel = null;
-        this._stopTrackIndex = -1;
-        this._app = app;
-        this._loader = PIXI.Loader.shared;
-        this._bgManager = bgM;
-        this._fgManager = fgM;
-        this._spineManager = spnM;
-        this._textManager = txtM;
-    }
-
-    get currentTrack() {
-        return this._tracks[this._current];
-    }
-
-    get nextTrack() {
-        return this._tracks[this._current + 1];
-    }
-
-    get reachesStopTrack() {
-        return this._stopTrackIndex !== -1 && this._current === this._stopTrackIndex;
-    }
-
-    set nextLabel(v) {
-        this._nextLabel = v;
-    }
-
-    destroy() {
-        this._tracks = [];
-        this._current = 0;
-        this._nextLabel = null;
-        this._stopTrackIndex = -1;
-    }
-
-    forward() {
-        if (this._nextLabel) {
-            this._jumpTo(this._nextLabel);
-        } else {
-            this._current++;
-        }
-        return this.currentTrack;
-    }
-
-    setBeforeSelectTrackToStopTrack() {
-        const index = this._tracks.findIndex(track => track.select);
-        this._stopTrackIndex = (index !== -1 && index !== 0) ? index - 1 : index;
-    }
-
-    resetStopTrack() {
-        this._stopTrackIndex = -1;
-    }
-
-    loadCurrentTrackAssets() {
-        console.log(this._current);
-        if (this.currentTrack.label == "end") {
-        	this.endOfEvent();
-            return;
-        }
-        const { textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel } = this.currentTrack;
-
-        if (textFrame && textFrame != "off" && !this._loader.resources[textFrame]) {
-            this._loader.add(textFrame, `${assetUrlPath}/images/event/text_frame/${textFrame}.png`);
-        }
-        if (bg && !this._loader.resources[bg]) {
-            this._loader.add(bg, `${assetUrlPath}/images/event/bg/${bg}.jpg`);
-        }
-        if (fg && !this._loader.resources[fg]) {
-            this._loader.add(fg, `${assetUrlPath}/images/event/fg/${fg}.png`);
-        }
-        if (se && !this._loader.resources[se]) {
-            this._loader.add(se, `${assetUrlPath}/sounds/se/event/${se}.m4a`);
-        }
-        if (voice && !this._loader.resources[voice]) {
-            this._loader.add(voice, `${assetUrlPath}/sounds/voice/events/${voice}.m4a`);
-        }
-        if (bgm && !this._loader.resources[bgm]) {
-            this._loader.add(bgm, `${assetUrlPath}/sounds/bgm/${bgm}.m4a`);
-        }
-        if (movie && !this._loader.resources[movie]) {
-            this._loader.add(movie, `${assetUrlPath}/movies/idols/card/${movie}.mp4`);
-        }
-        if (charLabel && !this._loader.resources[charLabel]) {
-            this._loader.add(charLabel, `${assetUrlPath}/spine/${charType}/stand/${charId}/data.json`);
-        }
-        this._loader.load(() => {
-            this._renderTrack();
-        });
-    }
-
-    _renderTrack() {
-        const { speaker, text, textCtrl, textWait, textFrame,
-            bg, bgEffect, fg, fgEffect, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
-            charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
-            effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
-
-        this._bgManager.processBgByInput(bg, bgEffect);
-        this._fgManager.processFgByInput(fg, fgEffect);
-        this._textManager.processTextFrameByInput(textFrame, speaker, text);
-        this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-			charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
-
-        this.forward();
-
-        setTimeout(() => {
-            this.loadCurrentTrackAssets();
-        } , waitType == "time" ? waitTime : 3000);
-    }
-
-    endOfEvent() {
-		this._bgManager.reset();
-        this._spineManager.reset();
-        this._textManager.reset();
-    }
-
-    _jumpTo(nextLabel) {
-        const length = this._tracks.length;
-        for (let i = 0; i < length; i++) {
-            if (this._tracks[i].label !== nextLabel) { continue; }
-            this._current = i;
-            this._nextLabel = null;
-            return;
-        }
-        throw new Error(`label ${nextLabel} is not found.`);
-    }
-}
-
 let ratio = 1.775;
 
 function init() {
@@ -140,26 +9,33 @@ function init() {
 
     document.body.appendChild(app.view);
 
-    let bgManager = new BgManager(app.loader); // used for background
-    let fgManager = new FgManager(app.loader); // used for foreground
-    let spineManager = new SpineManager(app.loader); // used for spine rendering
-    let textManager = new TextManager(app.loader); // used for text frame
+    const tm = new TrackManager(app);
+    tm.addToStage();
 
-    app.stage.addChild(bgManager.stageObj, fgManager.stageObj, spineManager.stageObj, textManager.stageObj);
-    
-    app.loader.add("eventJson", `${assetUrlPath}/json/produce_events/100100202.json`).load(
+    app.loader.add("eventJson", `${assetUrlPath}/json/produce_events/201800901.json`).load(
         (loader, resources) => {
-            const tm = new TrackManager(resources.eventJson.data, app, bgManager, fgManager, spineManager, textManager);
-            console.log(tm);
-            tm.loadCurrentTrackAssets();
+            document.body.addEventListener('pointerdown', (e) => {
+                tm.loadCurrentTrackAssets();
+
+                app.stage.interactive = true;
+                app.stage.on('pointerdown', (ev) => {
+                    if (tm._timeoutToClear) {
+                        clearTimeout(tm._timeoutToClear);
+                    }
+            
+                    tm.loadCurrentTrackAssets();
+                });
+                
+            }, {once: true});
+
+            tm.setTrack = resources.eventJson.data;
         }
     );
-
 }
-
+// fuck google chrome no music before user click,
 
 //
-
+/*
 function draw(loader, resources) {
     let spr = new PIXI.Sprite(resources[eventObj[currentSection].bg].texture);
     spr.x = cw / 2;
@@ -185,5 +61,5 @@ function resizeByRatio(spr) {
         spr.scale.y = ratioW;
     }
 }
-
+*/
 
