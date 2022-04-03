@@ -42,6 +42,10 @@ class SpineManager {
             this._container.addChildAt(thisSpine, charPosition.order);
         }
 
+        if (charScale) {
+            thisSpine.scale = charScale;
+        }
+
         if (charEffect) {
             switch (charEffect.type) {
                 case "from":
@@ -93,7 +97,7 @@ class SpineManager {
         let eventTimeline = animation.timelines.find(function (timeline) {
             return timeline.events;
         });
-        
+
         let loopStartTime = null;
         if (eventTimeline) {
             eventTimeline.events.forEach((event) => {
