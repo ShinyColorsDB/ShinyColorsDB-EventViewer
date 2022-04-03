@@ -68,7 +68,7 @@ class TrackManager {
     }
 
     loadCurrentTrackAssets() {
-        console.log(this.currentTrack);
+        console.log(this._current, this.currentTrack);
         if (this.currentTrack.label == "end") {
         	this.endOfEvent();
             return;
@@ -114,18 +114,24 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
+        if (nextLabel == "end"){ this._jumpTo(nextLabel); return; }
+
         this._bgManager.processBgByInput(bg, bgEffect);
         this._fgManager.processFgByInput(fg, fgEffect);
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
 			charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
-		this._selectManager.processSelectByInput(select, nextLabel);
+		this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
 
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
 
         this.forward();
 
-        if (select && textCtrl) {
+        if (select && !textCtrl) {
+            this._app.stage.interactive = false;
+            this.loadCurrentTrackAssets();
+        }
+        else if (select && textCtrl) {
 
         }
         else if (text) {
@@ -143,6 +149,7 @@ class TrackManager {
     }
 
     endOfEvent() {
+        this._soundManager.reset();
 		this._bgManager.reset();
         this._spineManager.reset();
         this._textManager.reset();
@@ -157,5 +164,10 @@ class TrackManager {
             return;
         }
         throw new Error(`label ${nextLabel} is not found.`);
+    }
+
+    _afterSelection() {
+        this._app.stage.interactive = true;
+        this.loadCurrentTrackAssets();
     }
 }

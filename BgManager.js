@@ -27,6 +27,9 @@ class BgManager {
         }
         this._bgMap.get(bgName).alpha = alphaValue;
 
+        if (this._container.children.length != 0 && order == 0) {
+            this._container.removeChildAt(order);
+        }
         this._container.addChildAt(this._bgMap.get(bgName), order);
     }
 
@@ -45,6 +48,7 @@ class BgManager {
                     newBg.alpha = 1;
                 }, 1000);
                 this._container.removeChildAt(0);
+                console.log(this._container);
                 break;
         }
     }

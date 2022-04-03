@@ -6,6 +6,11 @@ class SoundManager {
         this._onVoiceEnd = null;
     }
 	
+    reset() {
+        if (this._currentVoice) { 
+            this._currentVoice.stop(); 
+        }
+    }
 
     processSoundByInput(bgm, se, voice, charLabel, onVoiceEnd) {
         if (bgm) {

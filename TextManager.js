@@ -15,11 +15,12 @@ class TextManager {
     }
 
     processTextFrameByInput(textFrame, speaker, text) {
+        if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
+
         if (this._container.children.length || (textFrame == "off" && this._container.children.length)) {
             this._container.removeChildren(0, this._container.children.length);
+            if (textFrame == "off") { return; }
         }
-
-        if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[textFrame].texture));
@@ -35,7 +36,13 @@ class TextManager {
         speakerObj.position.x = 260;
         speakerObj.position.y = 465;
 
-        let textObj = new PIXI.Text(text, {fontFamily: 'primula-HummingStd-E', fontSize: 24, fill: 0x000000, align: 'center'});
+
+        const textStyle = new PIXI.TextStyle({
+            align: "left", 
+            fontFamily: "primula-HummingStd-E",
+            fontSize: 24
+        });
+        let textObj = new PIXI.Text(text, textStyle);
         this._container.addChildAt(textObj, 2);
         textObj.position.x = 240;
         textObj.position.y = 505;

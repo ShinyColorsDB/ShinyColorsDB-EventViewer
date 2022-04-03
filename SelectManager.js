@@ -11,27 +11,51 @@ class SelectManager {
         this._stMap.clear();
     }
 
-    processSelectByInput(selectDesc, nextLabel, onClick) {
+    processSelectByInput(selectDesc, nextLabel, onClick, afterSelection) {
         if (!selectDesc) { return; }
         
         if (!this._stMap.has(`selectFrame${nextLabel}`)) {
-            this._stMap.set(`selectFrame${nextLabel}`, new PIXI.Sprite(this._loader.resources[`selectFrame${nextLabel}`].texture));
+            let thisSelectContainer = new PIXI.Container();
+            thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${nextLabel}`].texture))
+            this._stMap.set(`selectFrame${nextLabel}`, thisSelectContainer);
         }
 
-        let thisSelectFrame = this._stMap.get(`selectFrame${nextLabel}`);
-        thisSelectFrame.interactive = true;
+        let thisSelectContainer = this._stMap.get(`selectFrame${nextLabel}`);
+        thisSelectContainer.interactive = true;
 
-        thisSelectFrame.on('pointerdown', function() {
+        thisSelectContainer.on('pointerdown', () => {
 			onClick(nextLabel);
-            if (this._container.children.length) {
-                this._container.removeChildren(0, this._container.children.length);
-            }
+            afterSelection();
+            this._stMap.forEach(st => {
+                if (st.children.length) {
+                    st.removeChildren(0, st.children.length);
+                }
+            });
+            this._container.removeChildren(0, this._container.children.length);
         });
 
         let textObj = new PIXI.Text(selectDesc, {fontFamily: 'primula-HummingStd-E', fontSize: 24, fill: 0x000000, align: 'center'});
-        this._container.addChildAt(textObj, 2);
-        textObj.position.x = 240;
-        textObj.position.y = 505;
+        thisSelectContainer.addChild(textObj);
+        textObj.anchor.set(0.5, 0.5);
+        //console.log(textObj.position);
+        //textObj.position.x = textObj.position.x - textObj.getLocalBounds().width / 2;
+        //textObj.position.y = textObj.position.y - textObj.getLocalBounds().height / 2;
+        this._container.addChild(thisSelectContainer);
+
+        switch (nextLabel) {
+            case "1":
+                thisSelectContainer.position.x = 400;
+                thisSelectContainer.position.y = 40;
+                break;
+            case "2":
+                thisSelectContainer.position.x = 60;
+                thisSelectContainer.position.y = 150;
+                break;
+            case "3":
+                thisSelectContainer.position.x = 750;
+                thisSelectContainer.position.y = 150;
+                break;
+        }
 
     }
 }
