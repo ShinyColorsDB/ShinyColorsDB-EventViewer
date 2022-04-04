@@ -12,6 +12,7 @@ class TrackManager {
         this._textManager = new TextManager();
         this._selectManager = new SelectManager();
         this._soundManager = new SoundManager();
+        this._effectManager = new EffectManager();
         this._timeoutToClear = null;
 
         PIXI.sound.volumeAll = 0.1;
@@ -64,7 +65,7 @@ class TrackManager {
     }
 
     addToStage() {
-        this._app.stage.addChild(this._bgManager.stageObj, this._fgManager.stageObj, this._spineManager.stageObj, this._textManager.stageObj, this._selectManager.stageObj);
+        this._app.stage.addChild(this._bgManager.stageObj, this._fgManager.stageObj, this._spineManager.stageObj, this._effectManager.stageObj, this._textManager.stageObj, this._selectManager.stageObj);
     }
 
     loadCurrentTrackAssets() {
@@ -81,7 +82,7 @@ class TrackManager {
         if (bg && !this._loader.resources[bg]) {
             this._loader.add(bg, `${assetUrlPath}/images/event/bg/${bg}.jpg`);
         }
-        if (fg && !this._loader.resources[fg]) {
+        if (fg && !this._loader.resources[fg] && fg != "off") {
             this._loader.add(fg, `${assetUrlPath}/images/event/fg/${fg}.png`);
         }
         if (se && !this._loader.resources[se]) {
@@ -90,7 +91,7 @@ class TrackManager {
         if (voice && !this._loader.resources[voice]) {
             this._loader.add(voice, `${assetUrlPath}/sounds/voice/events/${voice}.m4a`);
         }
-        if (bgm && !this._loader.resources[bgm]) {
+        if (bgm && !this._loader.resources[bgm] && bgm != "fade_out") {
             this._loader.add(bgm, `${assetUrlPath}/sounds/bgm/${bgm}.m4a`);
         }
         if (movie && !this._loader.resources[movie]) {
@@ -109,21 +110,22 @@ class TrackManager {
 
     _renderTrack() {
         const { speaker, text, textCtrl, textWait, textFrame,
-            bg, bgEffect, fg, fgEffect, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
+            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
             charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
         if (nextLabel == "end"){ this._jumpTo(nextLabel); return; }
 
-        this._bgManager.processBgByInput(bg, bgEffect);
-        this._fgManager.processFgByInput(fg, fgEffect);
+        this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
+        this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
 			charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
 		this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
 
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
+        this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
         this.forward();
 

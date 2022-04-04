@@ -12,13 +12,14 @@ function init() {
     const tm = new TrackManager(app);
     tm.addToStage();
 
-    app.loader.add("eventJson", `${assetUrlPath}/json/produce_events/201800901.json`).load(
+    app.loader.add("eventJson", `${assetUrlPath}/json/produce_events/300101101.json`).load(
         (loader, resources) => {
-            document.body.addEventListener('pointerdown', (e) => {
+            document.body.addEventListener('click', (e) => {
                 tm.loadCurrentTrackAssets();
 
                 app.stage.interactive = true;
-                app.stage.on('pointerdown', (ev) => {
+                app.stage.on('click', (ev) => {
+                    console.log(ev);
                     if (tm._timeoutToClear) {
                         clearTimeout(tm._timeoutToClear);
                     }

@@ -12,9 +12,9 @@ class BgManager {
         this._bgMap.clear();
     }
 
-    processBgByInput(bg, bgEffect) {
+    processBgByInput(bg, bgEffect, bgEffectTime) {
         if (bg && bgEffect) {
-            this._changeBgByEffect(bg, bgEffect);
+            this._changeBgByEffect(bg, bgEffect, bgEffectTime);
         }
         else if (bg && !bgEffect) {
             this._changeBg(bg, 0, 1);
@@ -33,7 +33,7 @@ class BgManager {
         this._container.addChildAt(this._bgMap.get(bgName), order);
     }
 
-    _changeBgByEffect(bgName, effectName) {
+    _changeBgByEffect(bgName, effectName, bgEffectTime) {
         switch (effectName) {
             case "fade":
                 this._changeBg(bgName, 1, 0);
@@ -46,9 +46,11 @@ class BgManager {
                     clearInterval(k);
                     origBg.alpha = 0;
                     newBg.alpha = 1;
-                }, 1000);
+                }, bgEffectTime ? bgEffectTime : 1000);
                 this._container.removeChildAt(0);
                 console.log(this._container);
+                break;
+            case "mask":
                 break;
         }
     }

@@ -5,7 +5,9 @@ class SelectManager {
         this._stMap = new Map();
     }
 
-    get stageObj() { return this._container; }
+    get stageObj() { 
+        return this._container; 
+    }
 
     reset() {
         this._stMap.clear();
@@ -23,7 +25,7 @@ class SelectManager {
         let thisSelectContainer = this._stMap.get(`selectFrame${nextLabel}`);
         thisSelectContainer.interactive = true;
 
-        thisSelectContainer.on('pointerdown', () => {
+        thisSelectContainer.on('click', () => {
 			onClick(nextLabel);
             afterSelection();
             this._stMap.forEach(st => {
@@ -34,26 +36,28 @@ class SelectManager {
             this._container.removeChildren(0, this._container.children.length);
         });
 
-        let textObj = new PIXI.Text(selectDesc, {fontFamily: 'primula-HummingStd-E', fontSize: 24, fill: 0x000000, align: 'center'});
+        let textObj = new PIXI.Text(selectDesc, {
+            fontFamily: 'Meiryo', 
+            fontSize: 24, 
+            fill: 0x000000, 
+            align: 'center'
+        });
         thisSelectContainer.addChild(textObj);
-        textObj.anchor.set(0.5, 0.5);
-        //console.log(textObj.position);
-        //textObj.position.x = textObj.position.x - textObj.getLocalBounds().width / 2;
-        //textObj.position.y = textObj.position.y - textObj.getLocalBounds().height / 2;
         this._container.addChild(thisSelectContainer);
+
+        // for selectFrame size is 318x172
+        textObj.anchor.set(0.5);
+        textObj.position.set(159, 86);
 
         switch (nextLabel) {
             case "1":
-                thisSelectContainer.position.x = 400;
-                thisSelectContainer.position.y = 40;
+                thisSelectContainer.position.set(400, 40);
                 break;
             case "2":
-                thisSelectContainer.position.x = 60;
-                thisSelectContainer.position.y = 150;
+                thisSelectContainer.position.set(60, 150);
                 break;
             case "3":
-                thisSelectContainer.position.x = 750;
-                thisSelectContainer.position.y = 150;
+                thisSelectContainer.position.set(750, 150);
                 break;
         }
 
