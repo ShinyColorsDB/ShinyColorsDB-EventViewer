@@ -5,16 +5,23 @@ class FgManager {
         this._loader = PIXI.Loader.shared;
     }
 
-    get stageObj() { return this._container; }
+    get stageObj() { 
+        return this._container; 
+    }
 
     reset() {
         this._container.removeChildren(0, this._container.children.length);
         this._fgMap.clear();
     }
 
-    processFgByInput(fg, fgEffect) {
-        if (fg && fgEffect) {
-            this._changeFgByEffect(fg, fgEffect);
+    processFgByInput(fg, fgEffect, fgEffectTime) {
+        if (fg == "off") {
+            if (this._container.children.length) {
+                this._container.removeChildren(0, this._container.children.length);
+            }
+        }
+        else if (fg && fgEffect) {
+            this._changeFgByEffect(fg, fgEffect, fgEffectTime);
         }
         else if (fg && !fgEffect) {
             this._changeFg(fg);
@@ -29,7 +36,7 @@ class FgManager {
         this._container.addChildAt(this._fgMap.get(fgName), 0);
     }
 
-    _changeFgByEffect(fgName, fgEffect) {
+    _changeFgByEffect(fgName, fgEffect, fgEffectTime) {
 
     }
 }

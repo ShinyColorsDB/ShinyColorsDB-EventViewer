@@ -26,7 +26,8 @@ class SoundManager {
         }
     }
 
-    _playBgm(bgmName) {        
+    _playBgm(bgmName) {
+        if (bgmName == "fade_out"){ return; }
         if (this._currentBgm) { this._currentBgm.stop(); }
 
         this._currentBgm = this._loader.resources[bgmName].sound;

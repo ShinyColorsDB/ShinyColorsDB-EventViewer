@@ -85,6 +85,7 @@ class SpineManager {
     }
 
     stopLipAnimation(charLabel) {
+        if (!this._spineMap.has(charLabel)) { return; }
         this._spineMap.get(charLabel).state.tracks[5].loop = false;
     }
 
