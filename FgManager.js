@@ -5,8 +5,8 @@ class FgManager {
         this._loader = PIXI.Loader.shared;
     }
 
-    get stageObj() { 
-        return this._container; 
+    get stageObj() {
+        return this._container;
     }
 
     reset() {

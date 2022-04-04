@@ -32,9 +32,9 @@ class TextManager {
         this._container.addChildAt(thisTextFrame, 0);
 
         let speakerObj = new PIXI.Text(speaker, {
-            fontFamily: 'Meiryo', 
-            fontSize: 24, 
-            fill: 0x000000, 
+            fontFamily: 'Meiryo',
+            fontSize: 24,
+            fill: 0x000000,
             align: 'center'
         });
         this._container.addChildAt(speakerObj, 1);
@@ -43,7 +43,7 @@ class TextManager {
 
 
         const textStyle = new PIXI.TextStyle({
-            align: "left", 
+            align: "left",
             fontFamily: "Meiryo",
             fontSize: 24
         });

@@ -5,8 +5,8 @@ class EffectManager {
         this._loader = PIXI.Loader.shared;
     }
 
-    get stageObj() { 
-        return this._container; 
+    get stageObj() {
+        return this._container;
     }
 
     reset() {
@@ -25,7 +25,7 @@ class EffectManager {
                     thisEffect.drawRect(0, 0, effectTarget.width, effectTarget.height);
                     thisEffect.endFill();
                     break;
-                
+
             }
             this._effectMap.set(effectLabel, thisEffect);
         }

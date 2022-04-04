@@ -5,10 +5,10 @@ class SoundManager {
         this._currentVoice = null;
         this._onVoiceEnd = null;
     }
-	
+
     reset() {
-        if (this._currentVoice) { 
-            this._currentVoice.stop(); 
+        if (this._currentVoice) {
+            this._currentVoice.stop();
         }
     }
 
@@ -27,7 +27,7 @@ class SoundManager {
     }
 
     _playBgm(bgmName) {
-        if (bgmName == "fade_out"){ return; }
+        if (bgmName == "fade_out") { return; }
         if (this._currentBgm) { this._currentBgm.stop(); }
 
         this._currentBgm = this._loader.resources[bgmName].sound;
@@ -45,8 +45,8 @@ class SoundManager {
     }
 
     _playVoice(voiceName, charLabel, onVoiceEnd) {
-        if (this._currentVoice) { 
-            this._currentVoice.stop(); 
+        if (this._currentVoice) {
+            this._currentVoice.stop();
             this._onVoiceEnd();
         }
 
