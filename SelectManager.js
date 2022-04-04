@@ -5,8 +5,8 @@ class SelectManager {
         this._stMap = new Map();
     }
 
-    get stageObj() { 
-        return this._container; 
+    get stageObj() {
+        return this._container;
     }
 
     reset() {
@@ -15,7 +15,7 @@ class SelectManager {
 
     processSelectByInput(selectDesc, nextLabel, onClick, afterSelection) {
         if (!selectDesc) { return; }
-        
+
         if (!this._stMap.has(`selectFrame${nextLabel}`)) {
             let thisSelectContainer = new PIXI.Container();
             thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${nextLabel}`].texture))
@@ -26,7 +26,7 @@ class SelectManager {
         thisSelectContainer.interactive = true;
 
         thisSelectContainer.on('click', () => {
-			onClick(nextLabel);
+            onClick(nextLabel);
             afterSelection();
             this._stMap.forEach(st => {
                 if (st.children.length) {
@@ -37,9 +37,9 @@ class SelectManager {
         });
 
         let textObj = new PIXI.Text(selectDesc, {
-            fontFamily: 'Meiryo', 
-            fontSize: 24, 
-            fill: 0x000000, 
+            fontFamily: 'Meiryo',
+            fontSize: 24,
+            fill: 0x000000,
             align: 'center'
         });
         thisSelectContainer.addChild(textObj);

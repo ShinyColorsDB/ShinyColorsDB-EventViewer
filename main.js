@@ -23,11 +23,11 @@ function init() {
                     if (tm._timeoutToClear) {
                         clearTimeout(tm._timeoutToClear);
                     }
-            
+
                     tm.loadCurrentTrackAssets();
                 });
-                
-            }, {once: true});
+
+            }, { once: true });
 
             tm.setTrack = resources.eventJson.data;
         }

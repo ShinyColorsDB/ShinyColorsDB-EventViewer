@@ -71,7 +71,7 @@ class TrackManager {
     loadCurrentTrackAssets() {
         console.log(this._current, this.currentTrack);
         if (this.currentTrack.label == "end") {
-        	this.endOfEvent();
+            this.endOfEvent();
             return;
         }
         const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel } = this.currentTrack;
@@ -115,14 +115,14 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
-        if (nextLabel == "end"){ this._jumpTo(nextLabel); return; }
+        if (nextLabel == "end") { this._jumpTo(nextLabel); return; }
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-			charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
-		this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
+            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
+        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
 
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
@@ -140,19 +140,19 @@ class TrackManager {
 
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
-			this._timeoutToClear = setTimeout(() => {
+            this._timeoutToClear = setTimeout(() => {
                 this.loadCurrentTrackAssets();
-            } , waitTime);
+            }, waitTime);
         }
         else {
             this.loadCurrentTrackAssets();
         }
-   
+
     }
 
     endOfEvent() {
         this._soundManager.reset();
-		this._bgManager.reset();
+        this._bgManager.reset();
         this._spineManager.reset();
         this._textManager.reset();
     }
