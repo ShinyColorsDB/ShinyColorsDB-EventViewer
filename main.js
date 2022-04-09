@@ -11,8 +11,16 @@ function init() {
     const tm = new TrackManager(app);
     tm.addToStage();
 
-    app.loader.add("eventJson", `${assetUrl}/json/produce_events/300101101.json`).load(
+    const eventId = window.location.search.match(/eventId\=(.*)/)?.length > 1 ? window.location.search.match(/eventId\=(.*)/)[1] : null;
+
+    if (!eventId || !eventId.match(/\d{9}/)) {
+        alert('Url pattern is not correct.');
+        return;
+    }
+
+    app.loader.add("eventJson", `${assetUrl}/json/produce_events/${eventId}.json`).load(
         (loader, resources) => {
+            if (resources.eventJson.error) { alert("No such event."); return; }
             document.body.addEventListener('click', (e) => {
                 tm.loadCurrentTrackAssets();
 
