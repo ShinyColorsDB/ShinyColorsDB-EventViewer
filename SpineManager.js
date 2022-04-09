@@ -50,21 +50,20 @@ class SpineManager {
                 case "from":
                     thisSpine.alpha = charEffect.alpha;
                     let fromInterval = setInterval(() => {
-                        thisSpine.alpha += 1 / (1000 / charEffect.time);
+                        thisSpine.alpha = ((thisSpine.alpha * 100) + ((1 / (charEffect.time / 10)) * 100)) / 100;
                     }, 10);
-                    thisSpine.alpha = 1;
                     setTimeout(() => {
                         clearInterval(fromInterval);
+                        thisSpine.alpha = 1;
                     }, charEffect.time);
                     break;
                 case "to":
-                    let delta = charEffect.alpha - thisSpine.alpha;
                     let toInterval = setInterval(() => {
-                        thisSpine.alpha += delta / charEffect.time;
+                        thisSpine.alpha = ((thisSpine.alpha * 100) - ((1 / (charEffect.time / 10)) * 100)) / 100;
                     }, 10);
-                    thisSpine.alpha = charEffect.alpha;
                     setTimeout(() => {
                         clearInterval(toInterval);
+                        thisSpine.alpha = charEffect.alpha;
                     }, charEffect.time);
                     break;
             }
@@ -179,5 +178,4 @@ class SpineManager {
 
         return animation;
     }
-
 }

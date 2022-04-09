@@ -24,6 +24,8 @@ class EffectManager {
                     thisEffect.beginFill(Number(`0x${effectTarget.color}`));
                     thisEffect.drawRect(0, 0, effectTarget.width, effectTarget.height);
                     thisEffect.endFill();
+                    thisEffect.alpha = 0;
+                    this._container.addChild(thisEffect);
                     break;
 
             }
@@ -31,6 +33,42 @@ class EffectManager {
         }
 
         let thisEffect = this._effectMap.get(effectLabel);
-        this._container.addChild(thisEffect);
+        let passedTime = 0;
+
+        switch (effectValue.type) {
+            case "from":
+                thisEffect.alpha = effectValue.alpha;
+                let thisFromInterval = setInterval(() => {
+                    passedTime += 10;
+                    thisEffect.alpha = this._effectEasing(effectValue.easing, passedTime / effectValue.time);
+                }, 10);
+                setTimeout(() => {
+                    clearInterval(thisFromInterval);
+                    thisEffect.alpha = 1;
+                }, effectValue.time);
+                break;
+            case "to":
+                thisEffect.alpha = 1;
+                let thisToInterval = setInterval(() => {
+                    passedTime += 10;
+                    thisEffect.alpha = 1 - this._effectEasing(effectValue.easing, passedTime / effectValue.time);
+                }, 10);
+                setTimeout(() => {
+                    clearInterval(thisToInterval);
+                    thisEffect.alpha = effectValue.alpha;
+                }, effectValue.time);
+                break;
+        }
+    }
+
+    _effectEasing(easing, passedTime) {
+        switch (easing) {
+            case "easeOutQuart":
+                return 1 - Math.pow(1 - passedTime, 4);
+
+            case "easeInQuart":
+                return Math.pow(passedTime, 4);
+                
+        }
     }
 }
