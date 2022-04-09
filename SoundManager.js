@@ -3,12 +3,16 @@ class SoundManager {
         this._loader = PIXI.Loader.shared;
         this._currentBgm = null;
         this._currentVoice = null;
+        this._currentSe = null;
         this._onVoiceEnd = null;
     }
 
     reset() {
         if (this._currentVoice) {
             this._currentVoice.stop();
+        }
+        if (this._currentBgm) {
+            this._currentBgm.stop();
         }
     }
 
@@ -39,7 +43,7 @@ class SoundManager {
     }
 
     _playSe(seName) {
-        this._loader.resources[seName].sound.play({
+        this._currentSe = this._loader.resources[seName].sound.play({
             loop: false
         });
     }

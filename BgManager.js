@@ -5,7 +5,9 @@ class BgManager {
         this._loader = PIXI.Loader.shared;
     }
 
-    get stageObj() { return this._container; }
+    get stageObj() {
+        return this._container;
+    }
 
     reset() {
         this._container.removeChildren(0, this._container.children.length);

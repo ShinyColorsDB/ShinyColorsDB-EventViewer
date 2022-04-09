@@ -1,2 +1,1 @@
-'use strict';
-const assetUrlPath = "https://viewer.shinycolors.moe";
+const assetUrl = "https://viewer.shinycolors.moe";

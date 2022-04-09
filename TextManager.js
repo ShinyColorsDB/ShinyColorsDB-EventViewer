@@ -17,7 +17,7 @@ class TextManager {
     processTextFrameByInput(textFrame, speaker, text) {
         if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
 
-        if (this._container.children.length || (textFrame == "off" && this._container.children.length)) {
+        if (this._container.children.length) {
             this._container.removeChildren(0, this._container.children.length);
             if (textFrame == "off") { return; }
         }
@@ -27,8 +27,7 @@ class TextManager {
         }
 
         let thisTextFrame = this._txtFrameMap.get(textFrame);
-        thisTextFrame.position.x = 100;
-        thisTextFrame.position.y = 450;
+        thisTextFrame.position.set(100, 450);
         this._container.addChildAt(thisTextFrame, 0);
 
         let speakerObj = new PIXI.Text(speaker, {
@@ -38,9 +37,7 @@ class TextManager {
             align: 'center'
         });
         this._container.addChildAt(speakerObj, 1);
-        speakerObj.position.x = 260;
-        speakerObj.position.y = 465;
-
+        speakerObj.position.set(260, 465);
 
         const textStyle = new PIXI.TextStyle({
             align: "left",
@@ -49,7 +46,6 @@ class TextManager {
         });
         let textObj = new PIXI.Text(text, textStyle);
         this._container.addChildAt(textObj, 2);
-        textObj.position.x = 240;
-        textObj.position.y = 505;
+        textObj.position.set(240, 505);
     }
 }

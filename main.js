@@ -1,5 +1,4 @@
 'use strict';
-let ratio = 1.775;
 
 function init() {
     let app = new PIXI.Application({
@@ -12,7 +11,7 @@ function init() {
     const tm = new TrackManager(app);
     tm.addToStage();
 
-    app.loader.add("eventJson", `${assetUrlPath}/json/produce_events/300101101.json`).load(
+    app.loader.add("eventJson", `${assetUrl}/json/produce_events/300101101.json`).load(
         (loader, resources) => {
             document.body.addEventListener('click', (e) => {
                 tm.loadCurrentTrackAssets();
@@ -34,33 +33,3 @@ function init() {
     );
 }
 // fuck google chrome no music before user click,
-
-//
-/*
-function draw(loader, resources) {
-    let spr = new PIXI.Sprite(resources[eventObj[currentSection].bg].texture);
-    spr.x = cw / 2;
-    spr.y = ch / 2;
-
-    resizeByRatio(spr);
-
-    spr.anchor.x = 0.5;
-    spr.anchor.y = 0.5;
-    app.stage.addChild(spr);
-
-}
-
-function resizeByRatio(spr) {
-    let ratioW = cw / spr.width, ratioH = ch / spr.height;
-    //console.log(ratioW, ratioH);
-    if (ratioW > ratioH) {
-        spr.scale.x = ratioH;
-        spr.scale.y = ratioH;
-    }
-    else {
-        spr.scale.x = ratioW;
-        spr.scale.y = ratioW;
-    }
-}
-*/
-
