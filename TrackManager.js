@@ -77,31 +77,31 @@ class TrackManager {
         const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel } = this.currentTrack;
 
         if (textFrame && textFrame != "off" && !this._loader.resources[textFrame]) {
-            this._loader.add(textFrame, `${assetUrlPath}/images/event/text_frame/${textFrame}.png`);
+            this._loader.add(textFrame, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
         }
         if (bg && !this._loader.resources[bg]) {
-            this._loader.add(bg, `${assetUrlPath}/images/event/bg/${bg}.jpg`);
+            this._loader.add(bg, `${assetUrl}/images/event/bg/${bg}.jpg`);
         }
         if (fg && !this._loader.resources[fg] && fg != "off") {
-            this._loader.add(fg, `${assetUrlPath}/images/event/fg/${fg}.png`);
+            this._loader.add(fg, `${assetUrl}/images/event/fg/${fg}.png`);
         }
         if (se && !this._loader.resources[se]) {
-            this._loader.add(se, `${assetUrlPath}/sounds/se/event/${se}.m4a`);
+            this._loader.add(se, `${assetUrl}/sounds/se/event/${se}.m4a`);
         }
         if (voice && !this._loader.resources[voice]) {
-            this._loader.add(voice, `${assetUrlPath}/sounds/voice/events/${voice}.m4a`);
+            this._loader.add(voice, `${assetUrl}/sounds/voice/events/${voice}.m4a`);
         }
         if (bgm && !this._loader.resources[bgm] && bgm != "fade_out") {
-            this._loader.add(bgm, `${assetUrlPath}/sounds/bgm/${bgm}.m4a`);
+            this._loader.add(bgm, `${assetUrl}/sounds/bgm/${bgm}.m4a`);
         }
         if (movie && !this._loader.resources[movie]) {
-            this._loader.add(movie, `${assetUrlPath}/movies/idols/card/${movie}.mp4`);
+            this._loader.add(movie, `${assetUrl}/movies/idols/card/${movie}.mp4`);
         }
         if (charLabel && !this._loader.resources[charLabel]) {
-            this._loader.add(charLabel, `${assetUrlPath}/spine/${charType}/stand/${charId}/data.json`);
+            this._loader.add(charLabel, `${assetUrl}/spine/${charType}/stand/${charId}/data.json`);
         }
         if (select && !this._loader.resources[select]) {
-            this._loader.add(`selectFrame${nextLabel}`, `${assetUrlPath}/images/event/select_frame/00${nextLabel}.png`);
+            this._loader.add(`selectFrame${nextLabel}`, `${assetUrl}/images/event/select_frame/00${nextLabel}.png`);
         }
         this._loader.load(() => {
             this._renderTrack();
