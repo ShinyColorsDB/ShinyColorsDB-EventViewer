@@ -23,7 +23,7 @@ class TextManager {
         }
 
         if (!this._txtFrameMap.has(textFrame)) {
-            this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[textFrame].texture));
+            this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[`textFrame${textFrame}`].texture));
         }
 
         let thisTextFrame = this._txtFrameMap.get(textFrame);

@@ -6,6 +6,8 @@ function init() {
         height: 640
     });
 
+    alert("click any place to start event.\n點擊頁面任何地方開始播放\nページをクリックしてイベントを開始してください。");
+
     document.body.appendChild(app.view);
 
     const tm = new TrackManager(app);

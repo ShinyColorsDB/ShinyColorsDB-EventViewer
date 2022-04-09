@@ -25,7 +25,7 @@ class BgManager {
 
     _changeBg(bgName, order, alphaValue) {
         if (!this._bgMap.has(bgName)) {
-            this._bgMap.set(bgName, new PIXI.Sprite(this._loader.resources[bgName].texture));
+            this._bgMap.set(bgName, new PIXI.Sprite(this._loader.resources[`bg${bgName}`].texture));
         }
         this._bgMap.get(bgName).alpha = alphaValue;
 
