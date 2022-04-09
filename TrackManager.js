@@ -16,6 +16,13 @@ class TrackManager {
         this._timeoutToClear = null;
 
         PIXI.sound.volumeAll = 0.1;
+        this._spineAlias = {
+            stand_fix: 'stand',
+            stand_costume_fix: 'stand_costume',
+
+            stand_flex: 'stand',
+            stand_costume_flex: 'stand_costume'
+        };
         //console.log(`trackManager is ready.`);
     }
 
@@ -74,7 +81,7 @@ class TrackManager {
             this.endOfEvent();
             return;
         }
-        const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel } = this.currentTrack;
+        const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel, charCategory } = this.currentTrack;
 
         if (textFrame && textFrame != "off" && !this._loader.resources[textFrame]) {
             this._loader.add(textFrame, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
@@ -98,7 +105,8 @@ class TrackManager {
             this._loader.add(movie, `${assetUrl}/movies/idols/card/${movie}.mp4`);
         }
         if (charLabel && !this._loader.resources[charLabel]) {
-            this._loader.add(charLabel, `${assetUrl}/spine/${charType}/stand/${charId}/data.json`);
+            const thisCharCategory = charCategory ? this._spineAlias[charCategory] : "stand";
+            this._loader.add(charLabel, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
         }
         if (select && !this._loader.resources[select]) {
             this._loader.add(`selectFrame${nextLabel}`, `${assetUrl}/images/event/select_frame/00${nextLabel}.png`);
@@ -135,12 +143,17 @@ class TrackManager {
             return;
         }
         else if (text) { // do nothing, waiting for user click
-
+            return;
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
             this._timeoutToClear = setTimeout(() => {
                 this.loadCurrentTrackAssets();
             }, waitTime);
+        }
+        else if (waitType == "effect") {
+            this._timeoutToClear = setTimeout(() => {
+                this.loadCurrentTrackAssets();
+            }, effectValue.time);
         }
         else {
             this.loadCurrentTrackAssets();
