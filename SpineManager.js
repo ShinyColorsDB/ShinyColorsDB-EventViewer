@@ -7,6 +7,14 @@ class SpineManager {
         this.LOOP_EVENT_NAME = "loop_start";
         this.RELAY_EVENT_NAME = 'relay';
         this.ANIMATION_MIX = 0.3;
+
+        this.spineAlias = {
+            stand_fix: 'stand',
+            stand_costume_fix: 'stand_costume',
+
+            stand_flex: 'stand',
+            stand_costume_flex: 'stand_costume'
+        };
     }
 
     get stageObj() {

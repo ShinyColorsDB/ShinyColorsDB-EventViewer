@@ -15,14 +15,6 @@ class TrackManager {
         this._effectManager = new EffectManager();
         this._timeoutToClear = null;
 
-        PIXI.sound.volumeAll = 0.1;
-        this._spineAlias = {
-            stand_fix: 'stand',
-            stand_costume_fix: 'stand_costume',
-
-            stand_flex: 'stand',
-            stand_costume_flex: 'stand_costume'
-        };
         //console.log(`trackManager is ready.`);
     }
 
@@ -105,7 +97,7 @@ class TrackManager {
             this._loader.add(movie, `${assetUrl}/movies/idols/card/${movie}.mp4`);
         }
         if (charLabel && !this._loader.resources[charLabel]) {
-            const thisCharCategory = charCategory ? this._spineAlias[charCategory] : "stand";
+            const thisCharCategory = charCategory ? this._spineManager.spineAlias[charCategory] : "stand";
             this._loader.add(charLabel, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
         }
         if (select && !this._loader.resources[select]) {
