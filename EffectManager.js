@@ -31,5 +31,6 @@ class EffectManager {
         }
 
         let thisEffect = this._effectMap.get(effectLabel);
+        this._container.addChild(thisEffect);
     }
 }

@@ -37,8 +37,7 @@ class SpineManager {
         }
 
         if (charPosition) {
-            thisSpine.position.x = charPosition.x;
-            thisSpine.position.y = charPosition.y;
+            thisSpine.position.set(charPosition.x, charPosition.y);
             this._container.addChildAt(thisSpine, charPosition.order);
         }
 
@@ -52,7 +51,7 @@ class SpineManager {
                     thisSpine.alpha = charEffect.alpha;
                     let fromInterval = setInterval(() => {
                         thisSpine.alpha += 1 / (1000 / charEffect.time);
-                    }, 1);
+                    }, 10);
                     thisSpine.alpha = 1;
                     setTimeout(() => {
                         clearInterval(fromInterval);
@@ -62,7 +61,7 @@ class SpineManager {
                     let delta = charEffect.alpha - thisSpine.alpha;
                     let toInterval = setInterval(() => {
                         thisSpine.alpha += delta / charEffect.time;
-                    }, 1);
+                    }, 10);
                     thisSpine.alpha = charEffect.alpha;
                     setTimeout(() => {
                         clearInterval(toInterval);

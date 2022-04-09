@@ -115,8 +115,6 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
-        if (nextLabel == "end") { this._jumpTo(nextLabel); return; }
-
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
@@ -129,14 +127,14 @@ class TrackManager {
 
         this.forward();
 
-        if (select && !textCtrl) {
+        if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
             this._app.stage.interactive = false;
             this.loadCurrentTrackAssets();
         }
-        else if (select && textCtrl) {
-
+        else if (select && textCtrl) { // do nothing, waiting for selection
+            return;
         }
-        else if (text) {
+        else if (text) { // do nothing, waiting for user click
 
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
@@ -155,6 +153,7 @@ class TrackManager {
         this._bgManager.reset();
         this._spineManager.reset();
         this._textManager.reset();
+        this._fgManager.reset();
     }
 
     _jumpTo(nextLabel) {
