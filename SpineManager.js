@@ -47,7 +47,7 @@ class SpineManager {
         if (charPosition) {
             thisSpine.position.set(charPosition.x, charPosition.y);
             this._container.addChild(thisSpine);
-            this._container.setChildIndex(thisSpine, charPosition.order);
+            this._container.setChildIndex(thisSpine, this._container.children.length < charPosition.order ? charPosition.order : this._container.children.length - 1);
         }
 
         if (charScale) {
