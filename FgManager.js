@@ -34,7 +34,7 @@ class FgManager {
 
     _changeFg(fgName) {
         if (!this._fgMap.has(fgName)) {
-            this._fgMap.set(fgName, new PIXI.Sprite(this._loader.resources[fgName].texture));
+            this._fgMap.set(fgName, new PIXI.Sprite(this._loader.resources[`fg${fgName}`].texture));
         }
 
         this._container.addChildAt(this._fgMap.get(fgName), 0);

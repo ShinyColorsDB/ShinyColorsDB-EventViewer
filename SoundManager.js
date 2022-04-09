@@ -46,17 +46,18 @@ class SoundManager {
         }
         if (this._currentBgm) { this._currentBgm.stop(); }
 
-        this._currentBgm = this._loader.resources[bgmName].sound;
-        this._currentBgm.volume = 0.3;
+        this._currentBgm = this._loader.resources[`bgm${bgmName}`].sound;
         this._currentBgm.autoPlay = true;
         this._currentBgm.play({
             loop: true,
             singleInstance: true
         });
+        this._currentBgm.volume = 0.3;
+
     }
 
     _playSe(seName) {
-        this._currentSe = this._loader.resources[seName].sound.play({
+        this._currentSe = this._loader.resources[`se${seName}`].sound.play({
             loop: false
         });
     }
@@ -67,7 +68,7 @@ class SoundManager {
             this._onVoiceEnd();
         }
 
-        this._currentVoice = this._loader.resources[voiceName].sound.play({
+        this._currentVoice = this._loader.resources[`voice${voiceName}`].sound.play({
             loop: false
         });
         this._onVoiceEnd = () => {

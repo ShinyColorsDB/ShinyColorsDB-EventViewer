@@ -75,32 +75,32 @@ class TrackManager {
         }
         const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel, charCategory } = this.currentTrack;
 
-        if (textFrame && textFrame != "off" && !this._loader.resources[textFrame]) {
-            this._loader.add(textFrame, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
+        if (textFrame && textFrame != "off" && !this._loader.resources[`textFrame${textFrame}`]) {
+            this._loader.add(`textFrame${textFrame}`, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
         }
-        if (bg && !this._loader.resources[bg]) {
-            this._loader.add(bg, `${assetUrl}/images/event/bg/${bg}.jpg`);
+        if (bg && !this._loader.resources[`bg${bg}`]) {
+            this._loader.add(`bg${bg}`, `${assetUrl}/images/event/bg/${bg}.jpg`);
         }
-        if (fg && !this._loader.resources[fg] && fg != "off") {
-            this._loader.add(fg, `${assetUrl}/images/event/fg/${fg}.png`);
+        if (fg && !this._loader.resources[`fg${fg}`] && fg != "off") {
+            this._loader.add(`fg${fg}`, `${assetUrl}/images/event/fg/${fg}.png`);
         }
-        if (se && !this._loader.resources[se]) {
-            this._loader.add(se, `${assetUrl}/sounds/se/event/${se}.m4a`);
+        if (se && !this._loader.resources[`se${se}`]) {
+            this._loader.add(`se${se}`, `${assetUrl}/sounds/se/event/${se}.m4a`);
         }
-        if (voice && !this._loader.resources[voice]) {
-            this._loader.add(voice, `${assetUrl}/sounds/voice/events/${voice}.m4a`);
+        if (voice && !this._loader.resources[`voice${voice}`]) {
+            this._loader.add(`voice${voice}`, `${assetUrl}/sounds/voice/events/${voice}.m4a`);
         }
-        if (bgm && !this._loader.resources[bgm] && bgm != "fade_out") {
-            this._loader.add(bgm, `${assetUrl}/sounds/bgm/${bgm}.m4a`);
+        if (bgm && !this._loader.resources[`bgm${bgm}`] && bgm != "fade_out") {
+            this._loader.add(`bgm${bgm}`, `${assetUrl}/sounds/bgm/${bgm}.m4a`);
         }
-        if (movie && !this._loader.resources[movie]) {
-            this._loader.add(movie, `${assetUrl}/movies/idols/card/${movie}.mp4`);
+        if (movie && !this._loader.resources[`movie${movie}`]) {
+            this._loader.add(`movie${movie}`, `${assetUrl}/movies/idols/card/${movie}.mp4`);
         }
         if (charLabel && !this._loader.resources[charLabel]) {
             const thisCharCategory = charCategory ? this._spineManager.spineAlias[charCategory] : "stand";
             this._loader.add(charLabel, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
         }
-        if (select && !this._loader.resources[select]) {
+        if (select && !this._loader.resources[`selectFrame${nextLabel}`]) {
             this._loader.add(`selectFrame${nextLabel}`, `${assetUrl}/images/event/select_frame/00${nextLabel}.png`);
         }
         this._loader.load(() => {
