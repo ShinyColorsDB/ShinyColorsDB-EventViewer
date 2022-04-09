@@ -3,6 +3,7 @@ class FgManager {
         this._container = new PIXI.Container();
         this._fgMap = new Map();
         this._loader = PIXI.Loader.shared;
+        this._currentFg = null;
     }
 
     get stageObj() {
@@ -19,6 +20,9 @@ class FgManager {
             if (this._container.children.length) {
                 this._container.removeChildren(0, this._container.children.length);
             }
+        }
+        else if (fg == "fade_out") {
+            this._fadeOutFg();
         }
         else if (fg && fgEffect) {
             this._changeFgByEffect(fg, fgEffect, fgEffectTime);
@@ -38,5 +42,15 @@ class FgManager {
 
     _changeFgByEffect(fgName, fgEffect, fgEffectTime) {
 
+    }
+
+    _fadeOutFg() {
+        let k = setInterval(() => {
+            this._currentFg.alpha -= 0.01;
+        }, 10);
+        setTimeout(() => {
+            clearInterval(k);
+            this._currentFg.alpha = 0;
+        }, 1000);
     }
 }
