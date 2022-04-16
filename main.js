@@ -32,13 +32,14 @@ function init() {
                 touchToStart.position.set(568, 400);
 
                 const afterTouch = function () {
+                    app.stage.interactive = true;
                     app.stage.removeChild(touchToStart);
                     tm.loadCurrentTrackAssets();
 
                     app.stage.removeAllListeners();
 
                     app.stage.on('click', nextTrack);
-                    app.stage.on('tap', nextTrack);
+                    //app.stage.on('tap', nextTrack);
 
                 }
 
@@ -51,10 +52,9 @@ function init() {
                     tm.loadCurrentTrackAssets();
                 }
 
-                app.stage.interactive = true;
-
-                app.stage.on('click', afterTouch);
-                app.stage.on('tap', afterTouch);
+                app.view.addEventListener('click', afterTouch);
+                //app.stage.on('click', afterTouch);
+                //app.stage.on('tap', afterTouch);
                 /*/
                 document.body.addEventListener('click', (e) => {
                     tm.loadCurrentTrackAssets();
