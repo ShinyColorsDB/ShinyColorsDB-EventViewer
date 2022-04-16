@@ -12,9 +12,11 @@ class SoundManager {
     reset() {
         if (this._currentVoice) {
             this._currentVoice.stop();
+            this._currentVoice = null;
         }
         if (this._currentBgm) {
             this._currentBgm.stop();
+            this._currentBgm = null;
         }
     }
 
