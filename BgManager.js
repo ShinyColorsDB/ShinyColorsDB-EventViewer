@@ -50,7 +50,7 @@ class BgManager {
                     newBg.alpha = 1;
                 }, bgEffectTime ? bgEffectTime : 1000);
                 this._container.removeChildAt(0);
-                console.log(this._container);
+
                 break;
             case "mask":
                 break;

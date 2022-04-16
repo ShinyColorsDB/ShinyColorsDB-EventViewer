@@ -13,6 +13,8 @@ class TrackManager {
         this._selectManager = new SelectManager();
         this._soundManager = new SoundManager();
         this._effectManager = new EffectManager();
+        this._movieManager = new MovieManager();
+        this._stillManager = new StillManager();
         this._timeoutToClear = null;
 
         //console.log(`trackManager is ready.`);
@@ -64,7 +66,16 @@ class TrackManager {
     }
 
     addToStage() {
-        this._app.stage.addChild(this._bgManager.stageObj, this._fgManager.stageObj, this._spineManager.stageObj, this._effectManager.stageObj, this._textManager.stageObj, this._selectManager.stageObj);
+        this._app.stage.addChild(
+            this._bgManager.stageObj,
+            this._spineManager.stageObj,
+            this._fgManager.stageObj,
+            this._stillManager.stageObj,
+            this._textManager.stageObj,
+            this._selectManager.stageObj,
+            this._effectManager.stageObj,
+            this._movieManager.stageObj
+        );
     }
 
     loadCurrentTrackAssets() {
@@ -73,15 +84,18 @@ class TrackManager {
             this.endOfEvent();
             return;
         }
-        const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie, charId, charType, charLabel, charCategory } = this.currentTrack;
+        const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie,
+            charId, charType, charLabel, charCategory,
+            stillType, stillId, stillCtrl, still
+        } = this.currentTrack;
 
         if (textFrame && textFrame != "off" && !this._loader.resources[`textFrame${textFrame}`]) {
             this._loader.add(`textFrame${textFrame}`, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
         }
-        if (bg && !this._loader.resources[`bg${bg}`]) {
+        if (bg && !this._loader.resources[`bg${bg}`] && bg != "fade_out") {
             this._loader.add(`bg${bg}`, `${assetUrl}/images/event/bg/${bg}.jpg`);
         }
-        if (fg && !this._loader.resources[`fg${fg}`] && fg != "off") {
+        if (fg && !this._loader.resources[`fg${fg}`] && fg != "off" && fg != "fade_out") {
             this._loader.add(`fg${fg}`, `${assetUrl}/images/event/fg/${fg}.png`);
         }
         if (se && !this._loader.resources[`se${se}`]) {
@@ -103,6 +117,12 @@ class TrackManager {
         if (select && !this._loader.resources[`selectFrame${nextLabel}`]) {
             this._loader.add(`selectFrame${nextLabel}`, `${assetUrl}/images/event/select_frame/00${nextLabel}.png`);
         }
+        if (still && !this._loader.resources[`still${still}`] && still != "off") {
+            this._loader.add(`still${still}`, `${assetUrl}/images/event/still/${still}.jpg`);
+        }
+        if (stillType && stillId && !this._loader.resources[`still${stillType}${stillId}`]) {
+            this._loader.add(`still${stillType}${stillId}`, `${assetUrl}/images/content/${stillType}/card/${stillId}.jpg`);
+        }
         this._loader.load(() => {
             this._renderTrack();
         });
@@ -110,18 +130,20 @@ class TrackManager {
 
     _renderTrack() {
         const { speaker, text, textCtrl, textWait, textFrame,
-            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, charStill, stillCtrl, still, movie,
+            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
             charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
+        this._movieManager.processMovieByInput(movie, this.loadCurrentTrackAssets.bind(this));
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
 
+        this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
@@ -135,6 +157,9 @@ class TrackManager {
             return;
         }
         else if (text) { // do nothing, waiting for user click
+            return;
+        }
+        else if (movie) {
             return;
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
