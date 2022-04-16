@@ -6,8 +6,6 @@ function init() {
         height: 640
     });
 
-    alert("click any place to start event.\n點擊頁面任何地方開始播放\nページをクリックしてイベントを開始してください。");
-
     document.body.appendChild(app.view);
 
     const tm = new TrackManager(app);
@@ -29,17 +27,19 @@ function init() {
                 const touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
                 app.stage.addChild(touchToStart);
                 touchToStart.anchor.set(0.5);
-                touchToStart.position.set(568, 400);
+                touchToStart.position.set(568, 500);
 
                 const afterTouch = function () {
                     app.stage.interactive = true;
                     app.stage.removeChild(touchToStart);
+
                     tm.loadCurrentTrackAssets();
 
-                    app.stage.removeAllListeners();
+                    app.view.removeEventListener('click', afterTouch);
+                    app.view.removeEventListener('tap', afterTouch);
 
                     app.stage.on('click', nextTrack);
-                    //app.stage.on('tap', nextTrack);
+                    app.stage.on('tap', nextTrack);
 
                 }
 
@@ -53,23 +53,8 @@ function init() {
                 }
 
                 app.view.addEventListener('click', afterTouch);
-                //app.stage.on('click', afterTouch);
-                //app.stage.on('tap', afterTouch);
-                /*/
-                document.body.addEventListener('click', (e) => {
-                    tm.loadCurrentTrackAssets();
-
-                    app.stage.interactive = true;
-                    app.stage.on('click', (ev) => {
-                        console.log(ev);
-                        if (tm._timeoutToClear) {
-                            clearTimeout(tm._timeoutToClear);
-                        }
-                        tm.loadCurrentTrackAssets();
-                    });
-
-                }, { once: true });
-                */
+                app.view.addEventListener('tap', afterTouch);
+                
                 tm.setTrack = resources.eventJson.data;
             }
         );
