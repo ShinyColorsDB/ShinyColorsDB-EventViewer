@@ -36,10 +36,10 @@ function init() {
                     tm.loadCurrentTrackAssets();
 
                     app.view.removeEventListener('click', afterTouch);
-                    app.view.removeEventListener('tap', afterTouch);
+                    app.view.removeEventListener('touchstart', afterTouch);
 
                     app.stage.on('click', nextTrack);
-                    app.stage.on('tap', nextTrack);
+                    app.stage.on('touchstart', nextTrack);
 
                 }
 
@@ -53,7 +53,7 @@ function init() {
                 }
 
                 app.view.addEventListener('click', afterTouch);
-                app.view.addEventListener('tap', afterTouch);
+                app.view.addEventListener('touchstart', afterTouch);
                 
                 tm.setTrack = resources.eventJson.data;
             }
