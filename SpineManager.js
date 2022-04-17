@@ -31,7 +31,7 @@ class SpineManager {
         if (!charLabel) { return; }
         if (!this._spineMap.has(charLabel)) {
             this._spineMap.set(charLabel, new PIXI.spine.Spine(this._loader.resources[charLabel].spineData));
-            this._spineMap.get(charLabel).alpha = 0;
+            this._spineMap.get(charLabel).alpha = 1;
         }
 
         let thisSpine = this._spineMap.get(charLabel);
