@@ -24,9 +24,11 @@ class MovieManager {
         const controller = movieSprite.texture.baseTexture.resource.source;
 
         controller.addEventListener("ended", () => {
-            this._container.removeChild(movieSprite);
+            setTimeout(() => {
+                this._container.removeChild(movieSprite);
 
-            this._onMovieEnded();
+                this._onMovieEnded();
+            }, 1500);
         });
     }
 }
