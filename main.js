@@ -1,7 +1,7 @@
 'use strict';
 
 function init() {
-    let app = new PIXI.Application({
+    const app = new PIXI.Application({
         width: 1136,
         height: 640
     });
@@ -13,8 +13,8 @@ function init() {
 
     const eventId = window.location.search.match(/eventId\=(.*)/)?.length > 1 ? window.location.search.match(/eventId\=(.*)/)[1] : null;
 
-    if (!eventId || !eventId.match(/\d{9}/)) {
-        alert('Url pattern is not correct.');
+    if (!eventId) {
+        alert('Please specify EventId.');
         return;
     }
 
