@@ -44,8 +44,6 @@ function init() {
                 }
 
                 const nextTrack = function (e) {
-                    console.log(e);
-
                     if (tm._timeoutToClear) {
                         clearTimeout(tm._timeoutToClear);
                     }
