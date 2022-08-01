@@ -33,7 +33,7 @@ function init() {
                     app.stage.interactive = true;
                     app.stage.removeChild(touchToStart);
 
-                    tm.loadCurrentTrackAssets();
+                    tm.loadAssetsByTrack();
 
                     app.view.removeEventListener('click', afterTouch);
                     app.view.removeEventListener('touchstart', afterTouch);
@@ -47,12 +47,12 @@ function init() {
                     if (tm._timeoutToClear) {
                         clearTimeout(tm._timeoutToClear);
                     }
-                    tm.loadCurrentTrackAssets();
+                    tm._renderTrack();
                 }
 
                 app.view.addEventListener('click', afterTouch);
                 app.view.addEventListener('touchstart', afterTouch);
-                
+
                 tm.setTrack = resources.eventJson.data;
             }
         );

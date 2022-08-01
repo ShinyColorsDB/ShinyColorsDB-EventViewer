@@ -100,11 +100,9 @@ class SpineManager {
         if (!charAnim) { return; }
         let trackEntry = undefined, relayAnim = undefined;
 
-        let animation = this._getAnimation(charAnim, thisSpine);
+        const animation = this._getAnimation(charAnim, thisSpine);
 
-        let eventTimeline = animation.timelines.find(function (timeline) {
-            return timeline.events;
-        });
+        const eventTimeline = animation.timelines.find(timeline => timeline.events);
 
         let loopStartTime = null;
         if (eventTimeline) {
@@ -126,17 +124,13 @@ class SpineManager {
             charAnimLoop = false;
         }
 
-        let before = thisSpine.state.getCurrent(trackNo);
-        let beforeAnim = before ? before.animation.name : null;
+        const before = thisSpine.state.getCurrent(trackNo);
+        const beforeAnim = before ? before.animation.name : null;
 
         if (beforeAnim) {
-            let beforeEventTimeline = this._getAnimation(beforeAnim, thisSpine).timelines.find(function (timeline) {
-                return timeline.events;
-            });
+            const beforeEventTimeline = this._getAnimation(beforeAnim, thisSpine).timelines.find(timeline => timeline.events);
             if (beforeEventTimeline) {
-                let relayAnimEvent = beforeEventTimeline.events.find((event) => {
-                    return event.data.name === this.RELAY_EVENT_NAME;
-                });
+                const relayAnimEvent = beforeEventTimeline.events.find((event) => event.data.name === this.RELAY_EVENT_NAME);
                 if (relayAnimEvent) {
                     relayAnim = relayAnimEvent.stringValue;
                 }
@@ -157,10 +151,10 @@ class SpineManager {
             trackEntry = thisSpine.state.setAnimation(trackNo, charAnim, charAnimLoop);
         }
 
-        let listener = {
-            complete: function () {
-                let currentAnim = thisSpine.state.getCurrent(trackNo);
-                let currentAnimName = currentAnim ? currentAnim.animation.name : null;
+        const listener = {
+            complete: () => {
+                const currentAnim = thisSpine.state.getCurrent(trackNo);
+                const currentAnimName = currentAnim ? currentAnim.animation.name : null;
                 if (!loopStartTime || charAnim !== currentAnimName) {
                     return;
                 }
@@ -177,9 +171,7 @@ class SpineManager {
     }
 
     _getAnimation(charAnim, thisSpine) {
-        let animation = thisSpine.spineData.animations.find((a) => {
-            return a.name === charAnim;
-        });
+        const animation = thisSpine.spineData.animations.find((a) => a.name === charAnim);
 
         if (!animation) {
             throw new Error(`${charAnim} is not found in spineData`);

@@ -78,10 +78,12 @@ class TrackManager {
         );
     }
 
-    loadCurrentTrackAssets() {
-        console.log(this._current, this.currentTrack);
-        if (this.currentTrack.label == "end") {
-            this.endOfEvent();
+    loadAssetsByTrack() {
+        if (this.currentTrack?.label == "end") {
+            this._current = 0;
+            this._loader.load(() => {
+                this._renderTrack();
+            });
             return;
         }
         const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie,
@@ -123,12 +125,16 @@ class TrackManager {
         if (stillType && stillId && !this._loader.resources[`still${stillType}${stillId}`]) {
             this._loader.add(`still${stillType}${stillId}`, `${assetUrl}/images/content/${stillType}/card/${stillId}.jpg`);
         }
-        this._loader.load(() => {
-            this._renderTrack();
-        });
+
+        this.forward();
+        this.loadAssetsByTrack();
     }
 
     _renderTrack() {
+        console.log(this._current, this.currentTrack);
+
+        if (this.currentTrack.label == "end") { return; }
+
         const { speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
             charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
@@ -137,7 +143,7 @@ class TrackManager {
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
-        this._movieManager.processMovieByInput(movie, this.loadCurrentTrackAssets.bind(this));
+        this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
@@ -151,7 +157,7 @@ class TrackManager {
 
         if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
             this._app.stage.interactive = false;
-            this.loadCurrentTrackAssets();
+            this._renderTrack();
         }
         else if (select && textCtrl) { // do nothing, waiting for selection
             return;
@@ -164,16 +170,16 @@ class TrackManager {
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
             this._timeoutToClear = setTimeout(() => {
-                this.loadCurrentTrackAssets();
+                this._renderTrack();
             }, waitTime);
         }
         else if (waitType == "effect") {
             this._timeoutToClear = setTimeout(() => {
-                this.loadCurrentTrackAssets();
+                this._renderTrack();
             }, effectValue.time);
         }
         else {
-            this.loadCurrentTrackAssets();
+            this._renderTrack();
         }
 
     }
@@ -199,6 +205,6 @@ class TrackManager {
 
     _afterSelection() {
         this._app.stage.interactive = true;
-        this.loadCurrentTrackAssets();
+        this._renderTrack();
     }
 }
