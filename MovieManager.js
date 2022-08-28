@@ -24,10 +24,14 @@ class MovieManager {
         const controller = movieSprite.texture.baseTexture.resource.source;
 
         controller.addEventListener("ended", () => {
+            Utlities.fadingEffect(movieSprite, {
+                type: "to", alpha: 0, time: 1000, ease: "easeOutQuart"
+            });
+
             setTimeout(() => {
                 this._container.removeChild(movieSprite);
-
                 this._onMovieEnded();
+
             }, 1500);
         });
     }
