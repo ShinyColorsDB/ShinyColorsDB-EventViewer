@@ -30,14 +30,16 @@ class TextManager {
         thisTextFrame.position.set(100, 450);
         this._container.addChildAt(thisTextFrame, 0);
 
-        let speakerObj = new PIXI.Text(speaker, {
-            fontFamily: 'Meiryo',
-            fontSize: 24,
-            fill: 0x000000,
-            align: 'center'
-        });
-        this._container.addChildAt(speakerObj, 1);
-        speakerObj.position.set(260, 465);
+        if (speaker !== "off") {
+            let speakerObj = new PIXI.Text(speaker, {
+                fontFamily: 'Meiryo',
+                fontSize: 24,
+                fill: 0x000000,
+                align: 'center'
+            });
+            this._container.addChildAt(speakerObj, 1);
+            speakerObj.position.set(260, 465);
+        }
 
         const textStyle = new PIXI.TextStyle({
             align: "left",
