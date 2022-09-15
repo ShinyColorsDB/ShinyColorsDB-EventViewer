@@ -6,6 +6,7 @@ class SpineManager {
         this._lastUsedSpine = null;
         this.LOOP_EVENT_NAME = "loop_start";
         this.RELAY_EVENT_NAME = 'relay';
+        this.LIP_EVENT_NAME = 'lip';
         this.ANIMATION_MIX = 0.3;
 
         this.spineAlias = {
@@ -63,7 +64,7 @@ class SpineManager {
         this._setCharacterAnimation(charAnim3, charAnim3Loop, 2, thisSpine);
         this._setCharacterAnimation(charAnim4, charAnim4Loop, 3, thisSpine);
         this._setCharacterAnimation(charAnim5, charAnim5Loop, 4, thisSpine);
-        this._setCharacterAnimation(charLipAnim, true, 5, thisSpine);
+        this._setCharacterAnimation(charLipAnim, true, 5, thisSpine, true);
 
         thisSpine.skeleton.setToSetupPose();
         thisSpine.update(0);
@@ -73,10 +74,11 @@ class SpineManager {
 
     stopLipAnimation(charLabel) {
         if (!this._spineMap.has(charLabel)) { return; }
-        this._spineMap.get(charLabel).state.tracks[5].loop = false;
+        //this._spineMap.get(charLabel).state.tracks[5].time = 0;
+        this._spineMap.get(charLabel).state.clearTrack(5);
     }
 
-    _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine) {
+    _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine, lipDebug = false) {
         if (!charAnim) { return; }
         let trackEntry = undefined, relayAnim = undefined;
 
@@ -135,12 +137,23 @@ class SpineManager {
             complete: () => {
                 const currentAnim = thisSpine.state.getCurrent(trackNo);
                 const currentAnimName = currentAnim ? currentAnim.animation.name : null;
-                if (!loopStartTime || charAnim !== currentAnimName) {
+                if ((!loopStartTime || charAnim !== currentAnimName) && !lipDebug) {
                     return;
                 }
                 let trackEntry = thisSpine.state.setAnimation(trackNo, charAnim);
                 trackEntry.listener = listener;
                 trackEntry.time = loopStartTime;
+                /*
+                if (!lipDebug) {
+                    let trackEntry = thisSpine.state.setAnimation(trackNo, charAnim);
+                    trackEntry.listener = listener;
+                    trackEntry.time = loopStartTime;
+                }
+                else {
+                    console.log(thisSpine);
+                    thisSpine.state.setAnimation(trackNo, charAnim, true);
+                }
+                */
             }
         };
 
@@ -152,11 +165,9 @@ class SpineManager {
 
     _getAnimation(charAnim, thisSpine) {
         const animation = thisSpine.spineData.animations.find((a) => a.name === charAnim);
-
         if (!animation) {
             throw new Error(`${charAnim} is not found in spineData`);
         }
-
         return animation;
     }
 }
