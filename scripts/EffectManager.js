@@ -36,15 +36,4 @@ class EffectManager {
 
         Utilities.fadingEffect(thisEffect, effectValue);
     }
-
-    _effectEasing(easing, passedTime) {
-        switch (easing) {
-            case "easeOutQuart":
-                return 1 - Math.pow(1 - passedTime, 4);
-
-            case "easeInQuart":
-                return Math.pow(passedTime, 4);
-
-        }
-    }
 }

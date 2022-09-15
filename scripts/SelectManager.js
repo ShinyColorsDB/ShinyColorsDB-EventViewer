@@ -86,6 +86,6 @@ class SelectManager {
         });
         setTimeout(() => {
             this._container.removeChildren(0, this._container.children.length);
-        });
+        }, 1000);
     }
 }
