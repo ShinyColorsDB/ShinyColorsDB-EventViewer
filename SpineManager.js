@@ -55,27 +55,7 @@ class SpineManager {
         }
 
         if (charEffect) {
-            switch (charEffect.type) {
-                case "from":
-                    thisSpine.alpha = charEffect.alpha;
-                    let fromInterval = setInterval(() => {
-                        thisSpine.alpha = ((thisSpine.alpha * 100) + ((1 / (charEffect.time / 10)) * 100)) / 100;
-                    }, 10);
-                    setTimeout(() => {
-                        clearInterval(fromInterval);
-                        thisSpine.alpha = 1;
-                    }, charEffect.time);
-                    break;
-                case "to":
-                    let toInterval = setInterval(() => {
-                        thisSpine.alpha = ((thisSpine.alpha * 100) - ((1 / (charEffect.time / 10)) * 100)) / 100;
-                    }, 10);
-                    setTimeout(() => {
-                        clearInterval(toInterval);
-                        thisSpine.alpha = charEffect.alpha;
-                    }, charEffect.time);
-                    break;
-            }
+            Utlities.fadingEffect(thisSpine, charEffect);
         }
 
         this._setCharacterAnimation(charAnim1, charAnim1Loop, 0, thisSpine);

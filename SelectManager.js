@@ -82,7 +82,7 @@ class SelectManager {
 
     _fadeOutOption() {
         this._stMap.forEach(st => {
-            TweenMax.to(st, 1, { pixi: { alpha: 0 }, ease: Power1.easeInOut });
+            TweenMax.to(st, 1, { alpha: 0 , ease: Power1.easeInOut });
         });
         setTimeout(() => {
             this._container.removeChildren(0, this._container.children.length);
