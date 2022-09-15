@@ -34,7 +34,7 @@ class EffectManager {
 
         let thisEffect = this._effectMap.get(effectLabel);
 
-        Utlities.fadingEffect(thisEffect, effectValue);
+        Utilities.fadingEffect(thisEffect, effectValue);
     }
 
     _effectEasing(easing, passedTime) {

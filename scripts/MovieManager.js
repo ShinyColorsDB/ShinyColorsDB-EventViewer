@@ -24,7 +24,7 @@ class MovieManager {
         const controller = movieSprite.texture.baseTexture.resource.source;
 
         controller.addEventListener("ended", () => {
-            Utlities.fadingEffect(movieSprite, {
+            Utilities.fadingEffect(movieSprite, {
                 type: "to", alpha: 0, time: 1000, ease: "easeOutQuart"
             });
 

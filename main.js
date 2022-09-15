@@ -26,7 +26,9 @@ function init() {
 
     app.loader
         .add("eventJson", `${assetUrl}/json/produce_events/${eventId}.json`)
-        .add("touchToStart", "./touchToStart.png")
+        .add("touchToStart", "./assets/touchToStart.png")
+        .add("autoOn", "./assets/autoOn.png")
+        .add("autoOff", "./assets/autoOff.png")
         .load(
             (loader, resources) => {
                 if (resources.eventJson.error) { alert("No such event."); return; }
@@ -46,7 +48,6 @@ function init() {
 
                     app.stage.on('click', nextTrack);
                     app.stage.on('touchstart', nextTrack);
-
                 }
 
                 const nextTrack = function (e) {
