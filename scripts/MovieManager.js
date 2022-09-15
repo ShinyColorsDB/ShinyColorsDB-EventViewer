@@ -22,17 +22,18 @@ class MovieManager {
         this._container.addChild(movieSprite);
 
         const controller = movieSprite.texture.baseTexture.resource.source;
-
         controller.addEventListener("ended", () => {
-            Utilities.fadingEffect(movieSprite, {
-                type: "to", alpha: 0, time: 1000, ease: "easeOutQuart"
-            });
+            setTimeout(() => {
+                Utilities.fadingEffect(movieSprite, {
+                    type: "to", alpha: 0, time: 1000, ease: "easeOutQuart"
+                });
+            }, 1500);
 
             setTimeout(() => {
                 this._container.removeChild(movieSprite);
                 this._onMovieEnded();
 
-            }, 1500);
+            }, 2500);
         });
     }
 }
