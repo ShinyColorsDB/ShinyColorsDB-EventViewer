@@ -74,12 +74,6 @@ class FgManager {
     }
 
     _fadeOutFg() {
-        let k = setInterval(() => {
-            this._currentFg.alpha -= 0.01;
-        }, 10);
-        setTimeout(() => {
-            clearInterval(k);
-            this._currentFg.alpha = 0;
-        }, 1000);
+        Utilities.fadingEffect(this._currentFg, { alpha: 0, time: 1000, type: 'to' });
     }
 }

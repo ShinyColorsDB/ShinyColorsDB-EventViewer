@@ -55,7 +55,6 @@ class SoundManager {
             singleInstance: true
         });
         this._currentBgm.volume = 0.3;
-
     }
 
     _playSe(seName) {

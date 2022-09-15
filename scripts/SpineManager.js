@@ -55,7 +55,7 @@ class SpineManager {
         }
 
         if (charEffect) {
-            Utlities.fadingEffect(thisSpine, charEffect);
+            Utilities.fadingEffect(thisSpine, charEffect);
         }
 
         this._setCharacterAnimation(charAnim1, charAnim1Loop, 0, thisSpine);

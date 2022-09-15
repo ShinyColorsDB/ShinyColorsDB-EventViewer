@@ -40,16 +40,13 @@ class BgManager {
             case "fade":
                 this._changeBg(bgName, 1, 0);
                 let origBg = this._container.getChildAt(0), newBg = this._container.getChildAt(1);
-                let k = setInterval(() => {
-                    origBg.alpha -= 0.01;
-                    newBg.alpha += 0.01;
-                }, 10);
+
+                Utilities.fadingEffect(origBg, { alpha: 0, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
+                Utilities.fadingEffect(newBg, { alpha: 1, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
+
                 setTimeout(() => {
-                    clearInterval(k);
-                    origBg.alpha = 0;
-                    newBg.alpha = 1;
+                    this._container.removeChildAt(0);
                 }, bgEffectTime ? bgEffectTime : 1000);
-                this._container.removeChildAt(0);
 
                 break;
             case "mask":
