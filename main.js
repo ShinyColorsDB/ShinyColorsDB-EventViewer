@@ -9,7 +9,6 @@ function init() {
     document.body.appendChild(app.view);
 
     resize(app);
-
     window.onresize = () => {
         resize(app);
     }
@@ -18,7 +17,6 @@ function init() {
     tm.addToStage();
 
     const eventId = window.location.search.match(/eventId\=(.*)/)?.length > 1 ? window.location.search.match(/eventId\=(.*)/)[1] : null;
-
     if (!eventId) {
         alert('Please specify EventId.');
         return;
@@ -33,9 +31,18 @@ function init() {
             (loader, resources) => {
                 if (resources.eventJson.error) { alert("No such event."); return; }
                 const touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
+                const autoOn = new PIXI.Sprite(resources.autoOn.texture),
+                    autoOff = new PIXI.Sprite(resources.autoOff.texture);
                 app.stage.addChild(touchToStart);
                 touchToStart.anchor.set(0.5);
                 touchToStart.position.set(568, 500);
+
+                const nextTrack = function (e) {
+                    if (tm._timeoutToClear) {
+                        clearTimeout(tm._timeoutToClear);
+                    }
+                    tm._renderTrack();
+                }
 
                 const afterTouch = function () {
                     app.stage.interactive = true;
@@ -48,13 +55,6 @@ function init() {
 
                     app.stage.on('click', nextTrack);
                     app.stage.on('touchstart', nextTrack);
-                }
-
-                const nextTrack = function (e) {
-                    if (tm._timeoutToClear) {
-                        clearTimeout(tm._timeoutToClear);
-                    }
-                    tm._renderTrack();
                 }
 
                 app.view.addEventListener('click', afterTouch);
