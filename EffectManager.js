@@ -33,32 +33,8 @@ class EffectManager {
         }
 
         let thisEffect = this._effectMap.get(effectLabel);
-        let passedTime = 0;
 
-        switch (effectValue.type) {
-            case "from":
-                thisEffect.alpha = effectValue.alpha;
-                let thisFromInterval = setInterval(() => {
-                    passedTime += 10;
-                    thisEffect.alpha = this._effectEasing(effectValue.easing, passedTime / effectValue.time);
-                }, 10);
-                setTimeout(() => {
-                    clearInterval(thisFromInterval);
-                    thisEffect.alpha = 1;
-                }, effectValue.time);
-                break;
-            case "to":
-                thisEffect.alpha = 1;
-                let thisToInterval = setInterval(() => {
-                    passedTime += 10;
-                    thisEffect.alpha = 1 - this._effectEasing(effectValue.easing, passedTime / effectValue.time);
-                }, 10);
-                setTimeout(() => {
-                    clearInterval(thisToInterval);
-                    thisEffect.alpha = effectValue.alpha;
-                }, effectValue.time);
-                break;
-        }
+        Utlities.fadingEffect(thisEffect, effectValue);
     }
 
     _effectEasing(easing, passedTime) {
@@ -68,7 +44,7 @@ class EffectManager {
 
             case "easeInQuart":
                 return Math.pow(passedTime, 4);
-                
+
         }
     }
 }

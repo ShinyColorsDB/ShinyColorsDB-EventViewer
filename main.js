@@ -8,6 +8,12 @@ function init() {
 
     document.body.appendChild(app.view);
 
+    resize(app);
+
+    window.onresize = () => {
+        resize(app);
+    }
+
     const tm = new TrackManager(app);
     tm.addToStage();
 
@@ -56,5 +62,29 @@ function init() {
                 tm.setTrack = resources.eventJson.data;
             }
         );
+}
+
+function resize(theApp) {
+    const height = document.documentElement.clientHeight,
+        width = document.documentElement.clientWidth;
+
+    const ratioX = width / 1136,
+        ratioY = height / 640;
+
+    let resizedX, resizedY;
+
+    if (ratioX > ratioY) {
+        resizedX = 1136 * ratioY;
+        resizedY = 640 * ratioY;
+    } else {
+        resizedX = 1136 * ratioX;
+        resizedY = 640 * ratioX;
+    }
+
+    theApp.view.style.width = resizedX + 'px';
+    theApp.view.style.height = resizedY + 'px';
+
+    console.log(ratioX, ratioY);
+
 }
 // fuck google chrome no music before user click,
