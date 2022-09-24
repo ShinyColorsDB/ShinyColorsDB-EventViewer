@@ -159,8 +159,6 @@ class SpineManager {
 
         trackEntry.listener = listener;
         return trackEntry;
-
-        //thisSpine.state.setAnimation(trackNo, charAnim, charAnimLoop === false ? charAnimLoop : true);
     }
 
     _getAnimation(charAnim, thisSpine) {
