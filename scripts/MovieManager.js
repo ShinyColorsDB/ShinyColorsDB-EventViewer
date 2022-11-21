@@ -8,6 +8,10 @@ class MovieManager {
         return this._container;
     }
 
+    reset() {
+        this._container.removeChildren(0, this._container.children.length);
+    }
+
     processMovieByInput(movie, onMovieEnded) {
         if (!movie) { return; }
 

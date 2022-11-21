@@ -133,7 +133,10 @@ class TrackManager {
     _renderTrack() {
         console.log(this._current, this.currentTrack);
 
-        if (this.currentTrack.label == "end") { return; }
+        if (this.currentTrack.label == "end") {
+            this.endOfEvent();
+            return;
+        }
 
         const { speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
@@ -185,11 +188,16 @@ class TrackManager {
     }
 
     endOfEvent() {
-        this._soundManager.reset();
         this._bgManager.reset();
+        this._fgManager.reset();
         this._spineManager.reset();
         this._textManager.reset();
-        this._fgManager.reset();
+        this._selectManager.reset();
+        this._soundManager.reset();
+        this._effectManager.reset();
+        this._movieManager.reset();
+        this._stillManager.reset();
+        this._textManager.endNotification();
     }
 
     _jumpTo(nextLabel) {
