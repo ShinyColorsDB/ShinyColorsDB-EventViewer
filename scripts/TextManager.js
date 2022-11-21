@@ -38,7 +38,7 @@ class TextManager {
                 align: 'center'
             });
             this._container.addChildAt(speakerObj, 1);
-            speakerObj.position.set(260, 465);
+            speakerObj.position.set(260, 470);
         }
 
         const textStyle = new PIXI.TextStyle({
@@ -48,6 +48,18 @@ class TextManager {
         });
         let textObj = new PIXI.Text(text, textStyle);
         this._container.addChildAt(textObj, 2);
-        textObj.position.set(240, 505);
+        textObj.position.set(240, 510);
+    }
+
+    endNotification() {
+        let owariObj = new PIXI.Text("End", {
+            fontFamily: 'Meiryo',
+            fontSize: 40,
+            fill: 0xffffff,
+            align: 'left'
+        });
+        this._container.addChildAt(owariObj, 0);
+        owariObj.anchor.set(0.5);
+        owariObj.position.set(568, 320);
     }
 }

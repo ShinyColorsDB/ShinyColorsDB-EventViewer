@@ -18,6 +18,10 @@ class SoundManager {
             this._currentBgm.stop();
             this._currentBgm = null;
         }
+        if (this._currentSe) {
+            this._currentSe.stop();
+            this._currentSe = null;
+        }
     }
 
     processSoundByInput(bgm, se, voice, charLabel, onVoiceEnd) {

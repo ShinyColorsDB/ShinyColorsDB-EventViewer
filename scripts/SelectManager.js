@@ -10,6 +10,7 @@ class SelectManager {
     }
 
     reset() {
+        this._container.removeChildren(0, this._container.children.length);
         this._stMap.clear();
     }
 
@@ -82,10 +83,10 @@ class SelectManager {
 
     _fadeOutOption() {
         this._stMap.forEach(st => {
-            TweenMax.to(st, 1, { alpha: 0 , ease: Power1.easeInOut });
+            TweenMax.to(st, 1, { alpha: 0 , ease: Power3.easeOut });
         });
         setTimeout(() => {
             this._container.removeChildren(0, this._container.children.length);
-        }, 1000);
+        }, 500);
     }
 }

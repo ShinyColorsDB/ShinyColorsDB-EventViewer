@@ -19,34 +19,44 @@ class BgManager {
             this._changeBgByEffect(bg, bgEffect, bgEffectTime);
         }
         else if (bg && !bgEffect) {
-            this._changeBg(bg, 0, 1);
+            this._insertNewBg(bg, 1, true);
         }
     }
 
-    _changeBg(bgName, order, alphaValue) {
+    _insertNewBg(bgName, alphaValue, removeOld = false) {
         if (!this._bgMap.has(bgName)) {
             this._bgMap.set(bgName, new PIXI.Sprite(this._loader.resources[`bg${bgName}`].texture));
         }
         this._bgMap.get(bgName).alpha = alphaValue;
 
-        if (this._container.children.length != 0 && order == 0) {
-            this._container.removeChildAt(order);
+        if (removeOld) {
+            this._container.removeChildAt(0);
         }
+
+        let order = this._container.children.length;
         this._container.addChildAt(this._bgMap.get(bgName), order);
     }
 
     _changeBgByEffect(bgName, effectName, bgEffectTime) {
         switch (effectName) {
             case "fade":
-                this._changeBg(bgName, 1, 0);
-                let origBg = this._container.getChildAt(0), newBg = this._container.getChildAt(1);
+                this._insertNewBg(bgName, 0);
+                let origBg, newBg;
+                if (this._container.children.length == 1) {
+                    newBg = this._container.getChildAt(0);
+                }
+                else {
+                    origBg = this._container.getChildAt(0);
+                    newBg = this._container.getChildAt(1);
+                }
 
-                Utilities.fadingEffect(origBg, { alpha: 0, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
+                if (this._container.children.length != 1) {
+                    Utilities.fadingEffect(origBg, { alpha: 0, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
+                    setTimeout(() => {
+                        this._container.removeChildAt(0);
+                    }, bgEffectTime ? bgEffectTime : 1000);
+                }
                 Utilities.fadingEffect(newBg, { alpha: 1, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
-
-                setTimeout(() => {
-                    this._container.removeChildAt(0);
-                }, bgEffectTime ? bgEffectTime : 1000);
 
                 break;
             case "mask":
