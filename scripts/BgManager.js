@@ -29,7 +29,7 @@ class BgManager {
         }
         this._bgMap.get(bgName).alpha = alphaValue;
 
-        if (removeOld) {
+        if (removeOld && this._container.children.length != 0) {
             this._container.removeChildAt(0);
         }
 
