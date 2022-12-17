@@ -1,5 +1,15 @@
 'use strict';
 
+function getQueryVariable(name, defRet = null) {
+    const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    const result = window.location.search.substring(1).match(reg);
+    if (result != null) {
+        return decodeURI(result[2]);
+    } else {
+        return defRet;
+    }
+}
+
 function init() {
     const app = new PIXI.Application({
         width: 1136,
@@ -16,14 +26,21 @@ function init() {
     const tm = new TrackManager(app);
     tm.addToStage();
 
-    const eventId = window.location.search.match(/eventId\=(.*)/)?.length > 1 ? window.location.search.match(/eventId\=(.*)/)[1] : null;
-    if (!eventId) {
-        alert('Please specify EventId.');
-        return;
+    let eventId = getQueryVariable("eventId", null);
+    let eventType = getQueryVariable("eventType", "produce_events");
+
+    let jsonPath;
+    if (eventId) {
+        jsonPath = `${eventType}/${eventId}.json`;
+    } else {
+        jsonPath = prompt("input json path: ", "produce_events/202100711.json")
+        eventId = jsonPath.split("/")[1].split(".")[0]
+        eventType = jsonPath.split("/")[0]
+        window.location.search = `eventType=${eventType}&eventId=${eventId}`
     }
 
     app.loader
-        .add("eventJson", `${assetUrl}/json/produce_events/${eventId}.json`)
+        .add("eventJson", `${assetUrl}/json/${jsonPath}`)
         .add("touchToStart", "./assets/touchToStart.png")
         .add("autoOn", "./assets/autoOn.png")
         .add("autoOff", "./assets/autoOff.png")
