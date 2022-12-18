@@ -1,15 +1,9 @@
 'use strict';
 
-function loader() {
+async function init() {
     const font = new FontFaceObserver('TsunagiGothic');
-    font.load().then(() => {
-        init();
-    }).catch(() => {
+    await font.load();
 
-    });
-}
-
-function init() {
     const app = new PIXI.Application({
         width: 1136,
         height: 640
