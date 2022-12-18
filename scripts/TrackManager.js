@@ -106,7 +106,7 @@ class TrackManager {
         if (voice && !this._loader.resources[`voice${voice}`]) {
             this._loader.add(`voice${voice}`, `${assetUrl}/sounds/voice/events/${voice}.m4a`);
         }
-        if (bgm && !this._loader.resources[`bgm${bgm}`] && bgm != "fade_out") {
+        if (bgm && !this._loader.resources[`bgm${bgm}`] && bgm != "fade_out" && bgm != "off") {
             this._loader.add(`bgm${bgm}`, `${assetUrl}/sounds/bgm/${bgm}.m4a`);
         }
         if (movie && !this._loader.resources[`movie${movie}`]) {
@@ -148,12 +148,12 @@ class TrackManager {
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
-        this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect)
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
 
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
+        this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect);
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
         this.forward();

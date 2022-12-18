@@ -51,6 +51,7 @@ class SoundManager {
             return;
         }
         if (this._currentBgm) { this._currentBgm.stop(); }
+        if (bgmName == "off") { return; }
 
         this._currentBgm = this._loader.resources[`bgm${bgmName}`].sound;
         this._currentBgm.autoPlay = true;
