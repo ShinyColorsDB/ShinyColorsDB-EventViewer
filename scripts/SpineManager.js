@@ -28,12 +28,19 @@ class SpineManager {
     }
 
     processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect) {
+        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect, lipAnimDuration = 0) {
         if (!charLabel) { return; }
         if (!this._spineMap.has(charLabel)) {
             this._spineMap.set(charLabel, new PIXI.spine.Spine(this._loader.resources[charLabel].spineData));
             this._spineMap.get(charLabel).alpha = 1;
         }
+
+        charAnim1Loop = charAnim1Loop === undefined ? true : charAnim1Loop;
+        charAnim2Loop = charAnim2Loop === undefined ? true : charAnim2Loop;
+        charAnim3Loop = charAnim3Loop === undefined ? true : charAnim3Loop;
+        charAnim4Loop = charAnim4Loop === undefined ? true : charAnim4Loop;
+        charAnim5Loop = charAnim5Loop === undefined ? true : charAnim5Loop;
+        charLipAnim = charLipAnim === undefined ? false : charLipAnim;
 
         let thisSpine = this._spineMap.get(charLabel);
         this._lastUsedSpine = thisSpine;
@@ -64,37 +71,40 @@ class SpineManager {
         this._setCharacterAnimation(charAnim3, charAnim3Loop, 2, thisSpine);
         this._setCharacterAnimation(charAnim4, charAnim4Loop, 3, thisSpine);
         this._setCharacterAnimation(charAnim5, charAnim5Loop, 4, thisSpine);
-        this._setCharacterAnimation(charLipAnim, true, 5, thisSpine, true);
+        let theEntry = this._setCharacterAnimation(charLipAnim, true, 5, thisSpine, true);
 
         thisSpine.skeleton.setToSetupPose();
         thisSpine.update(0);
         thisSpine.autoUpdate = true;
-
     }
 
     stopLipAnimation(charLabel) {
-        if (!this._spineMap.has(charLabel)) { return; }
-        //this._spineMap.get(charLabel).state.tracks[5].time = 0;
+        if (!this._spineMap.has(charLabel) || !this._spineMap.get(charLabel).state.tracks[5]) { return; }
+        this._spineMap.get(charLabel).state.tracks[5].loop = false;
+        this._spineMap.get(charLabel).state.tracks[5].timeScale = 0;
+        this._spineMap.get(charLabel).state.tracks[5].time = 0;
         this._spineMap.get(charLabel).state.clearTrack(5);
     }
 
     _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine, lipDebug = false) {
-        if (!charAnim) { return; }
+        if (!charAnim) { return null; }
         let trackEntry = undefined, relayAnim = undefined;
 
         const animation = this._getAnimation(charAnim, thisSpine);
 
-        const eventTimeline = animation.timelines.find(timeline => timeline.events);
+        const eventTimeline = animation.timelines.find(function (timeline) {
+            return timeline.events;
+        });
 
-        let loopStartTime = null;
+        let loopStartTime = null, _this = this;
         if (eventTimeline) {
-            eventTimeline.events.forEach((event) => {
+            eventTimeline.events.forEach(function (event) {
                 switch (event.data.name) {
-                    case this.LOOP_EVENT_NAME:
+                    case _this.LOOP_EVENT_NAME:
                         loopStartTime = event.time;
                         break;
-                    case this.LIP_EVENT_NAME:
-                        this._lipAnim = event.stringValue;
+                    case _this.LIP_EVENT_NAME:
+                        _this._lipAnim = event.stringValue;
                         break;
                     default:
                         break;
@@ -110,9 +120,13 @@ class SpineManager {
         const beforeAnim = before ? before.animation.name : null;
 
         if (beforeAnim) {
-            const beforeEventTimeline = this._getAnimation(beforeAnim, thisSpine).timelines.find(timeline => timeline.events);
+            const beforeEventTimeline = this._getAnimation(beforeAnim, thisSpine).timelines.find(function (timeline) {
+                return timeline.events;
+            });
             if (beforeEventTimeline) {
-                const relayAnimEvent = beforeEventTimeline.events.find((event) => event.data.name === this.RELAY_EVENT_NAME);
+                const relayAnimEvent = beforeEventTimeline.events.find(function (event) {
+                    return event.data.name === _this.RELAY_EVENT_NAME;
+                });
                 if (relayAnimEvent) {
                     relayAnim = relayAnimEvent.stringValue;
                 }
@@ -134,26 +148,15 @@ class SpineManager {
         }
 
         const listener = {
-            complete: () => {
+            complete: function complete() {
                 const currentAnim = thisSpine.state.getCurrent(trackNo);
                 const currentAnimName = currentAnim ? currentAnim.animation.name : null;
-                if ((!loopStartTime || charAnim !== currentAnimName) && !lipDebug) {
+                if ((!loopStartTime || charAnim !== currentAnimName)) {
                     return;
                 }
                 let trackEntry = thisSpine.state.setAnimation(trackNo, charAnim);
                 trackEntry.listener = listener;
                 trackEntry.time = loopStartTime;
-                /*
-                if (!lipDebug) {
-                    let trackEntry = thisSpine.state.setAnimation(trackNo, charAnim);
-                    trackEntry.listener = listener;
-                    trackEntry.time = loopStartTime;
-                }
-                else {
-                    console.log(thisSpine);
-                    thisSpine.state.setAnimation(trackNo, charAnim, true);
-                }
-                */
             }
         };
 
