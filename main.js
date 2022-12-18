@@ -1,5 +1,14 @@
 'use strict';
 
+function loader() {
+    const font = new FontFaceObserver('TsunagiGothic');
+    font.load().then(() => {
+        init();
+    }).catch(() => {
+
+    });
+}
+
 function init() {
     const app = new PIXI.Application({
         width: 1136,
