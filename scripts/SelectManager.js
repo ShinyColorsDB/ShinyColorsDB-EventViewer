@@ -44,10 +44,11 @@ class SelectManager {
         }, { once: true });
 
         let textObj = new PIXI.Text(selectDesc, {
-            fontFamily: 'Meiryo',
+            fontFamily: 'TsunagiGothic',
             fontSize: 24,
             fill: 0x000000,
-            align: 'center'
+            align: 'center',
+            padding: 3
         });
         thisSelectContainer.addChild(textObj);
         this._container.addChild(thisSelectContainer);

@@ -32,19 +32,21 @@ class TextManager {
 
         if (speaker !== "off") {
             let speakerObj = new PIXI.Text(speaker, {
-                fontFamily: 'Meiryo',
+                fontFamily: 'TsunagiGothic',
                 fontSize: 24,
                 fill: 0x000000,
-                align: 'center'
+                align: 'center',
+                padding: 3
             });
             this._container.addChildAt(speakerObj, 1);
-            speakerObj.position.set(260, 470);
+            speakerObj.position.set(260, 468);
         }
 
         const textStyle = new PIXI.TextStyle({
             align: "left",
-            fontFamily: "Meiryo",
-            fontSize: 24
+            fontFamily: "TsunagiGothic",
+            fontSize: 24,
+            padding: 3
         });
         let textObj = new PIXI.Text(text, textStyle);
         this._container.addChildAt(textObj, 2);
@@ -53,7 +55,7 @@ class TextManager {
 
     endNotification() {
         let owariObj = new PIXI.Text("End", {
-            fontFamily: 'Meiryo',
+            fontFamily: 'TsunagiGothic',
             fontSize: 40,
             fill: 0xffffff,
             align: 'left'
