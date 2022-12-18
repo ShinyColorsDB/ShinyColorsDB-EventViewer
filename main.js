@@ -10,7 +10,10 @@ function getQueryVariable(name, defRet = null) {
     }
 }
 
-function init() {
+async function init() {
+    const font = new FontFaceObserver('TsunagiGothic');
+    await font.load();
+
     const app = new PIXI.Application({
         width: 1136,
         height: 640
