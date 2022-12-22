@@ -30,7 +30,9 @@ class TextManager {
         thisTextFrame.position.set(100, 450);
         this._container.addChildAt(thisTextFrame, 0);
 
+        let noSpeaker = false;
         if (speaker !== "off") {
+            noSpeaker = true;
             let speakerObj = new PIXI.Text(speaker, {
                 fontFamily: 'TsunagiGothic',
                 fontSize: 24,
@@ -49,7 +51,7 @@ class TextManager {
             padding: 3
         });
         let textObj = new PIXI.Text(text, textStyle);
-        this._container.addChildAt(textObj, 2);
+        this._container.addChildAt(textObj, noSpeaker ? 1 : 2);
         textObj.position.set(240, 510);
     }
 
