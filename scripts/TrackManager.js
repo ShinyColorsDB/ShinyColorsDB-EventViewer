@@ -131,7 +131,7 @@ class TrackManager {
     }
 
     _renderTrack() {
-        console.log(this._current, this.currentTrack);
+        console.log(`${this._current}/${this._tracks.length}`, this.currentTrack);
 
         if (this.currentTrack.label == "end") {
             this.endOfEvent();
@@ -156,13 +156,14 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect);
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
-        this.forward();
+        let nextTrack = this.forward();
 
         if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
             this._app.stage.interactive = false;
             this._renderTrack();
         }
         else if (select && textCtrl) { // do nothing, waiting for selection
+            this._app.stage.interactive = false;
             return;
         }
         else if (text) { // do nothing, waiting for user click

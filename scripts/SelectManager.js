@@ -31,7 +31,7 @@ class SelectManager {
         thisSelectContainer.on('click', () => {
             this._disableInteractive();
 
-            TweenMax.to(thisSelectContainer, 0.3, { pixi: { scaleX: 1.1, scaleY: 1.1 } });
+            TweenMax.to(thisSelectContainer, 0.1, { pixi: { scaleX: 1.1, scaleY: 1.1 } });
 
             setTimeout(() => {
 
