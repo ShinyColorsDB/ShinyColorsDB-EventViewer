@@ -33,5 +33,3 @@ class Utilities {
         }
     }
 }
-
-//tl.to(thisSelectContainer, 1, { pixi: { y: yLocation - 10 }, ease: Power1.easeInOut });

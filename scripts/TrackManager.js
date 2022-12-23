@@ -16,8 +16,6 @@ class TrackManager {
         this._movieManager = new MovieManager();
         this._stillManager = new StillManager();
         this._timeoutToClear = null;
-
-        //console.log(`trackManager is ready.`);
     }
 
     set setTrack(tracks) {
@@ -81,6 +79,7 @@ class TrackManager {
     loadAssetsByTrack() {
         if (this.currentTrack?.label == "end") {
             this._current = 0;
+            this._selectManager.frameReset();
             this._loader.load(() => {
                 this._renderTrack();
             });
@@ -116,8 +115,9 @@ class TrackManager {
             const thisCharCategory = charCategory ? this._spineManager.spineAlias[charCategory] : "stand";
             this._loader.add(charLabel, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
         }
-        if (select && !this._loader.resources[`selectFrame${nextLabel}`]) {
-            this._loader.add(`selectFrame${nextLabel}`, `${assetUrl}/images/event/select_frame/00${nextLabel}.png`);
+        if (select && !this._loader.resources[`selectFrame${this._selectManager.neededFrame}`]) {
+            this._loader.add(`selectFrame${this._selectManager.neededFrame}`, `${assetUrl}/images/event/select_frame/00${this._selectManager.neededFrame}.png`);
+            this._selectManager.frameForward();
         }
         if (still && !this._loader.resources[`still${still}`] && still != "off") {
             this._loader.add(`still${still}`, `${assetUrl}/images/event/still/${still}.jpg`);
@@ -131,7 +131,7 @@ class TrackManager {
     }
 
     _renderTrack() {
-        console.log(`${this._current}/${this._tracks.length}`, this.currentTrack);
+        console.log(`${this._current}/${this._tracks.length - 1}`, this.currentTrack);
 
         if (this.currentTrack.label == "end") {
             this.endOfEvent();
@@ -143,6 +143,8 @@ class TrackManager {
             charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
+
+
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
@@ -156,7 +158,11 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect);
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
-        let nextTrack = this.forward();
+        if (nextLabel == "end") {
+            this._nextLabel = "end";
+        }
+
+        this.forward();
 
         if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
             this._app.stage.interactive = false;
