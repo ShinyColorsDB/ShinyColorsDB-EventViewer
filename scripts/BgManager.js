@@ -53,7 +53,9 @@ class BgManager {
                 if (this._container.children.length != 1) {
                     Utilities.fadingEffect(origBg, { alpha: 0, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
                     setTimeout(() => {
-                        this._container.removeChildAt(0);
+                        if (this._container.children.length) {
+                            this._container.removeChildAt(0);
+                        }
                     }, bgEffectTime ? bgEffectTime : 1000);
                 }
                 Utilities.fadingEffect(newBg, { alpha: 1, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
