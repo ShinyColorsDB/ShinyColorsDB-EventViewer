@@ -105,7 +105,4 @@ function resize(theApp) {
     theApp.view.style.width = resizedX + 'px';
     theApp.view.style.height = resizedY + 'px';
 
-    console.log(ratioX, ratioY);
-
 }
-// fuck google chrome no music before user click,

@@ -3,10 +3,15 @@ class SelectManager {
         this._container = new PIXI.Container();
         this._loader = PIXI.Loader.shared;
         this._stMap = new Map();
+        this._neededFrame = 1;
     }
 
     get stageObj() {
         return this._container;
+    }
+
+    get neededFrame() {
+        return this._neededFrame;
     }
 
     reset() {
@@ -17,13 +22,13 @@ class SelectManager {
     processSelectByInput(selectDesc, nextLabel, onClick, afterSelection) {
         if (!selectDesc) { return; }
 
-        if (!this._stMap.has(`selectFrame${nextLabel}`)) {
+        if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
             let thisSelectContainer = new PIXI.Container();
-            thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${nextLabel}`].texture))
-            this._stMap.set(`selectFrame${nextLabel}`, thisSelectContainer);
+            thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${this.neededFrame}`].texture))
+            this._stMap.set(`selectFrame${this.neededFrame}`, thisSelectContainer);
         }
 
-        let thisSelectContainer = this._stMap.get(`selectFrame${nextLabel}`);
+        let thisSelectContainer = this._stMap.get(`selectFrame${this.neededFrame}`);
         thisSelectContainer.interactive = true;
         const localBound = thisSelectContainer.getLocalBounds();
         thisSelectContainer.pivot.set(localBound.width / 2, localBound.height / 2);
@@ -39,7 +44,7 @@ class SelectManager {
                 afterSelection();
 
                 this._fadeOutOption();
-            }, 1000);
+            }, 800);
 
         }, { once: true });
 
@@ -57,14 +62,14 @@ class SelectManager {
         textObj.anchor.set(0.5);
         textObj.position.set(159, 86);
 
-        switch (nextLabel) {
-            case "1":
+        switch (this.neededFrame) {
+            case 1:
                 thisSelectContainer.position.set(568, 125);
                 break;
-            case "2":
+            case 2:
                 thisSelectContainer.position.set(200, 240);
                 break;
-            case "3":
+            case 3:
                 thisSelectContainer.position.set(936, 240);
                 break;
         }
@@ -73,7 +78,15 @@ class SelectManager {
         const yLocation = thisSelectContainer.y;
         tl.to(thisSelectContainer, 1, { pixi: { y: yLocation - 10 }, ease: Power1.easeInOut });
         tl.to(thisSelectContainer, 1, { pixi: { y: yLocation }, ease: Power1.easeInOut });
+        this.frameForward();
+    }
 
+    frameForward() {
+        this._neededFrame++;
+    }
+
+    frameReset() {
+        this._neededFrame = 1;
     }
 
     _disableInteractive() {
