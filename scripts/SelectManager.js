@@ -39,7 +39,6 @@ class SelectManager {
             TweenMax.to(thisSelectContainer, 0.1, { pixi: { scaleX: 1.05, scaleY: 1.05 } });
 
             setTimeout(() => {
-
                 onClick(nextLabel);
                 afterSelection();
 

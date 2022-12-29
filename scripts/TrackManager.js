@@ -179,6 +179,7 @@ class TrackManager {
                 const voiceTimeout = this._soundManager.voiceDuration;
 
                 this._timeoutToClear = setTimeout(() => {
+                    if (!this.autoplay) { return; }
                     this._renderTrack();
                     this._timeoutToClear = null;
                 }, voiceTimeout);
@@ -187,6 +188,7 @@ class TrackManager {
                 const textTimeout = this._textManager.textWaitTime;
 
                 this._timeoutToClear = setTimeout(() => {
+                    if (!this.autoplay) { return; }
                     this._renderTrack();
                     this._timeoutToClear = null;
                 }, textTimeout);
@@ -200,12 +202,14 @@ class TrackManager {
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
             this._timeoutToClear = setTimeout(() => {
+                if (!this.autoplay) { return; }
                 this._renderTrack();
                 this._timeoutToClear = null;
             }, waitTime);
         }
         else if (waitType == "effect") {
             this._timeoutToClear = setTimeout(() => {
+                if (!this.autoplay) { return; }
                 this._renderTrack();
                 this._timeoutToClear = null;
             }, effectValue.time);
