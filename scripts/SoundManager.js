@@ -77,7 +77,7 @@ class SoundManager {
             loop: false
         });
 
-        this._voiceDuration = (this._currentVoice._duration) * 1000 + 300;
+        this._voiceDuration = (this._currentVoice._duration) * 1000 + 1000;
 
         this._onVoiceEnd = () => {
             onVoiceEnd(charLabel);
