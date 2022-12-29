@@ -176,18 +176,19 @@ class TrackManager {
         }
         else if (text && this.autoplay) {
             if (voice) {// here to add autoplay for both text and voice condition
-                const textTimeout = this._textManager.textWaitTime,
-                    voiceTimeout = this._soundManager.voiceDuration;
+                const voiceTimeout = this._soundManager.voiceDuration;
 
                 this._timeoutToClear = setTimeout(() => {
                     this._renderTrack();
-                }, textTimeout > voiceTimeout ? textTimeout : voiceTimeout);
+                    this._timeoutToClear = null;
+                }, voiceTimeout);
             }
             else {// here to add autoplay for only text condition
                 const textTimeout = this._textManager.textWaitTime;
 
                 this._timeoutToClear = setTimeout(() => {
                     this._renderTrack();
+                    this._timeoutToClear = null;
                 }, textTimeout);
             }
         }
@@ -200,11 +201,13 @@ class TrackManager {
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
             this._timeoutToClear = setTimeout(() => {
                 this._renderTrack();
+                this._timeoutToClear = null;
             }, waitTime);
         }
         else if (waitType == "effect") {
             this._timeoutToClear = setTimeout(() => {
                 this._renderTrack();
+                this._timeoutToClear = null;
             }, effectValue.time);
         }
         else {
