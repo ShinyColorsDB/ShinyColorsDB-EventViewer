@@ -3,24 +3,34 @@ class TextManager {
         this._container = new PIXI.Container();
         this._loader = PIXI.Loader.shared;
         this._txtFrameMap = new Map();
+        this._thisWaitTime = 0;
     }
 
     get stageObj() {
         return this._container;
     }
 
+    get textWaitTime() {
+        return this._thisWaitTime;
+    }
+
     reset() {
         this._container.removeChildren(0, this._container.children.length);
         this._txtFrameMap.clear();
+        this._endNotification();
     }
 
     processTextFrameByInput(textFrame, speaker, text) {
+        this._thisWaitTime = 0;
+
         if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
 
         if (this._container.children.length) {
             this._container.removeChildren(0, this._container.children.length);
             if (textFrame == "off") { return; }
         }
+
+        this._thisWaitTime = text.length * 2000;
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[`textFrame${textFrame}`].texture));
@@ -55,12 +65,12 @@ class TextManager {
         textObj.position.set(240, 510);
     }
 
-    endNotification() {
+    _endNotification() {
         let owariObj = new PIXI.Text("End", {
             fontFamily: 'TsunagiGothic',
             fontSize: 40,
             fill: 0xffffff,
-            align: 'left'
+            align: 'center'
         });
         this._container.addChildAt(owariObj, 0);
         owariObj.anchor.set(0.5);

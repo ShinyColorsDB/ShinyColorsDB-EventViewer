@@ -16,6 +16,7 @@ class TrackManager {
         this._movieManager = new MovieManager();
         this._stillManager = new StillManager();
         this._timeoutToClear = null;
+        this._autoPlayEnabled = false;
     }
 
     set setTrack(tracks) {
@@ -32,6 +33,10 @@ class TrackManager {
 
     get reachesStopTrack() {
         return this._stopTrackIndex !== -1 && this._current === this._stopTrackIndex;
+    }
+
+    get autoplay() {
+        return this._autoPlayEnabled;
     }
 
     set nextLabel(v) {
@@ -145,20 +150,18 @@ class TrackManager {
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
 
-
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
         this._textManager.processTextFrameByInput(textFrame, speaker, text);
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
-
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect);
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
-        if (nextLabel == "end") {
+        if (nextLabel == "end") { // will be handled at forward();
             this._nextLabel = "end";
         }
 
@@ -170,9 +173,25 @@ class TrackManager {
         }
         else if (select && textCtrl) { // do nothing, waiting for selection
             this._app.stage.interactive = false;
-            return;
         }
-        else if (text) { // do nothing, waiting for user click
+        else if (text && this.autoplay) {
+            if (voice) {// here to add autoplay for both text and voice condition
+                const textTimeout = this._textManager.textWaitTime,
+                    voiceTimeout = this._soundManager.voiceDuration;
+
+                this._timeoutToClear = setTimeout(() => {
+                    this._renderTrack();
+                }, textTimeout > voiceTimeout ? textTimeout : voiceTimeout);
+            }
+            else {// here to add autoplay for only text condition
+                const textTimeout = this._textManager.textWaitTime;
+
+                this._timeoutToClear = setTimeout(() => {
+                    this._renderTrack();
+                }, textTimeout);
+            }
+        }
+        else if (text && !this.autoplay) {
             return;
         }
         else if (movie) {
@@ -204,7 +223,10 @@ class TrackManager {
         this._effectManager.reset();
         this._movieManager.reset();
         this._stillManager.reset();
-        this._textManager.endNotification();
+    }
+
+    toggleAutoplay() {
+        this._autoPlayEnabled = !this._autoPlayEnabled;
     }
 
     _jumpTo(nextLabel) {
