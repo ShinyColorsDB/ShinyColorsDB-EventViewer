@@ -5,8 +5,13 @@ class SoundManager {
         this._currentVoice = null;
         this._currentSe = null;
         this._onVoiceEnd = null;
+        this._voiceDuration = 0;
 
         PIXI.sound.volumeAll = 0.1;
+    }
+
+    get voiceDuration() {
+        return this._voiceDuration;
     }
 
     reset() {
@@ -40,14 +45,7 @@ class SoundManager {
 
     _playBgm(bgmName) {
         if (bgmName == "fade_out") {
-            let fadeOutInterval = setInterval(() => {
-                if (this._currentBgm.volume > 0) {
-                    this._currentBgm.volume -= 0.1;
-                }
-                else {
-                    clearInterval(fadeOutInterval);
-                }
-            }, 100);
+            TweenMax.to(this._currentBgm, 0, { volume: 0 });
             return;
         }
         if (this._currentBgm) { this._currentBgm.stop(); }
@@ -69,6 +67,7 @@ class SoundManager {
     }
 
     _playVoice(voiceName, charLabel, onVoiceEnd) {
+        this._voiceDuration = 0;
         if (this._currentVoice) {
             this._currentVoice.stop();
             this._onVoiceEnd();
@@ -77,6 +76,9 @@ class SoundManager {
         this._currentVoice = this._loader.resources[`voice${voiceName}`].sound.play({
             loop: false
         });
+
+        this._voiceDuration = this._currentVoice.duration * 1000;
+
         this._onVoiceEnd = () => {
             onVoiceEnd(charLabel);
         };
