@@ -69,20 +69,22 @@ async function init() {
                     interestedEvents.forEach(e => { // autoplay is initialized to false
                         autoOn.on(e, () => {
                             tm.toggleAutoplay();
-                            toggleAutoplay(autoOn, autoOff, tm.autoplay);
+                            toggleAutoplay(autoOn, autoOff, tm.autoplay, tm, app);
                         });
                         autoOff.on(e, () => {
                             tm.toggleAutoplay();
-                            toggleAutoplay(autoOn, autoOff, tm.autoplay);
+                            toggleAutoplay(autoOn, autoOff, tm.autoplay, tm, app);
                         });
                     });
 
                     app.stage.addChild(autoOn);
                     app.stage.addChild(autoOff);
-                    autoOn.position.set(1000, 100);
-                    autoOff.position.set(1000, 100);
+                    autoOn.position.set(1075, 50);
+                    autoOff.position.set(1075, 50);
                     autoOn.alpha = 0;
                     autoOff.alpha = 1;
+                    autoOn.interactive = true;
+                    autoOff.interactive = true;
 
                     interestedEvents.forEach(e => {
                         app.view.removeEventListener(e, afterTouch);
@@ -133,17 +135,30 @@ function getQueryVariable(name, defRet = null) {
     }
 }
 
-function toggleAutoplay(on, off, status) {
-    if (status) {
+function toggleAutoplay(on, off, status, tm, app) {
+    if (status) { // toggle on
+        if (!tm._timeoutToClear) {
+            tm._renderTrack();
+        }
+
         on.alpha = 1;
         on.interactive = true;
         off.alpha = 0;
         off.interactive = false;
+
+        app.stage.interactive = false;
     }
-    else {
+    else { // toggle off
+        if (tm._timeoutToClear) {
+            clearTimeout(tm._timeoutToClear);
+            tm._timeoutToClear = null;
+        }
+
         on.alpha = 0;
         on.interactive = false;
         off.alpha = 1;
         off.interactive = true;
+
+        app.stage.interactive = true;
     }
 }
