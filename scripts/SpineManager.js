@@ -3,7 +3,6 @@ class SpineManager {
         this._container = new PIXI.Container();
         this._loader = PIXI.Loader.shared;
         this._spineMap = new Map();
-        this._lastUsedSpine = null;
         this.LOOP_EVENT_NAME = "loop_start";
         this.RELAY_EVENT_NAME = 'relay';
         this.LIP_EVENT_NAME = 'lip';
@@ -36,6 +35,7 @@ class SpineManager {
         if (!this._spineMap.has(charLabel)) {
             this._spineMap.set(charLabel, new PIXI.spine.Spine(this._loader.resources[charLabel].spineData));
             this._spineMap.get(charLabel).alpha = 1;
+            this._container.addChild(this._spineMap.get(charLabel));
         }
 
         charAnim1Loop = charAnim1Loop === undefined ? true : charAnim1Loop;
@@ -46,7 +46,6 @@ class SpineManager {
         charLipAnim = charLipAnim === undefined ? false : charLipAnim;
 
         let thisSpine = this._spineMap.get(charLabel);
-        this._lastUsedSpine = thisSpine;
 
         try {
             thisSpine.skeleton.setSkinByName('normal');
@@ -57,7 +56,6 @@ class SpineManager {
 
         if (charPosition) {
             thisSpine.position.set(charPosition.x, charPosition.y);
-            this._container.addChild(thisSpine);
             this._container.setChildIndex(thisSpine, this._container.children.length <= charPosition.order ? this._container.children.length - 1 : charPosition.order);
         }
 
@@ -66,6 +64,9 @@ class SpineManager {
         }
 
         if (charEffect) {
+            if (charEffect.type == "from") { thisSpine.alpha = 1; }
+            if (charEffect?.x) { charEffect.x += thisSpine.x; }
+            if (charEffect?.y) { charEffect.y += thisSpine.y; }
             Utilities.fadingEffect(thisSpine, charEffect);
         }
 
