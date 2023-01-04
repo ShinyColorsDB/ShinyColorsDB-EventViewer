@@ -1,11 +1,8 @@
 class Utilities {
-    constructor() { }
-
     /**
-     *
      * @param {PIXIObject} pixiObj
      * @param {{type: fromTo,alpha: targetValue, time: effectLastingTime, easing: easingType}} effectValue
-     */
+    **/
     static fadingEffect(pixiObj, effectValue) {
         const thisEffect = this._getFromTo(effectValue.type);
         thisEffect(pixiObj, effectValue.time / 1000, { alpha: effectValue.alpha, ease: this._getEasing(effectValue?.easing) });

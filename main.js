@@ -28,10 +28,10 @@ async function init() {
     if (eventId) {
         jsonPath = `${eventType}/${eventId}.json`;
     } else {
-        jsonPath = prompt("input json path: ", "produce_events/202100711.json")
-        eventId = jsonPath.split("/")[1].split(".")[0]
-        eventType = jsonPath.split("/")[0]
-        window.location.search = `eventType=${eventType}&eventId=${eventId}`
+        jsonPath = prompt("input json path: ", "produce_events/202100711.json");
+        eventId = jsonPath.split("/")[1].split(".")[0];
+        eventType = jsonPath.split("/")[0];
+        window.location.search = `eventType=${eventType}&eventId=${eventId}`;
     }
 
     app.loader
@@ -83,7 +83,7 @@ async function init() {
                     autoOff.position.set(1075, 50);
                     autoOn.alpha = 0;
                     autoOff.alpha = 1;
-                    autoOn.interactive = true;
+                    autoOn.interactive = false;
                     autoOff.interactive = true;
 
                     interestedEvents.forEach(e => {
