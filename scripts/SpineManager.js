@@ -89,7 +89,7 @@ class SpineManager {
         this._spineMap.get(charLabel).state.clearTrack(5);
     }
 
-    _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine, lipDebug = false) {
+    _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine) {
         if (!charAnim) { return null; }
         let trackEntry = undefined, relayAnim = undefined;
 
