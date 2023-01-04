@@ -174,7 +174,7 @@ class TrackManager {
         else if (select && textCtrl) { // do nothing, waiting for selection
             this._app.stage.interactive = false;
         }
-        else if (text && this.autoplay) {
+        else if (text && this.autoplay && !waitType) {
             if (voice) {// here to add autoplay for both text and voice condition
                 const voiceTimeout = this._soundManager.voiceDuration;
 
@@ -194,7 +194,7 @@ class TrackManager {
                 }, textTimeout);
             }
         }
-        else if (text && !this.autoplay) {
+        else if (text && !this.autoplay && !waitType) {
             return;
         }
         else if (movie) {
@@ -202,14 +202,12 @@ class TrackManager {
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
             this._timeoutToClear = setTimeout(() => {
-                if (!this.autoplay) { return; }
                 this._renderTrack();
                 this._timeoutToClear = null;
             }, waitTime);
         }
         else if (waitType == "effect") {
             this._timeoutToClear = setTimeout(() => {
-                if (!this.autoplay) { return; }
                 this._renderTrack();
                 this._timeoutToClear = null;
             }, effectValue.time);

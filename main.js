@@ -58,7 +58,7 @@ async function init() {
                 }
 
                 const afterTouch = function () {
-                    app.stage.interactive = true;
+                    app.stage.interactive = false;
                     app.stage.removeChild(touchToStart);
 
                     tm.loadAssetsByTrack();
