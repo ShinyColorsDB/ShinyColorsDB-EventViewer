@@ -16,7 +16,7 @@ class TrackManager {
         this._movieManager = new MovieManager();
         this._stillManager = new StillManager();
         this._timeoutToClear = null;
-        this._autoPlayEnabled = false;
+        this._autoPlayEnabled = true;
     }
 
     set setTrack(tracks) {

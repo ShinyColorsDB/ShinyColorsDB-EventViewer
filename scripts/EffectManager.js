@@ -21,11 +21,9 @@ class EffectManager {
             switch (effectTarget.type) {
                 case "rect":
                     thisEffect = new PIXI.Graphics();
-                    thisEffect.beginFill(Number(`0x${effectTarget.color}`));
+                    thisEffect.beginFill(`0x${effectTarget.color}`);
                     thisEffect.drawRect(0, 0, effectTarget.width, effectTarget.height);
                     thisEffect.endFill();
-                    thisEffect.alpha = 0;
-                    this._container.addChild(thisEffect);
                     break;
 
             }
@@ -33,6 +31,7 @@ class EffectManager {
         }
 
         let thisEffect = this._effectMap.get(effectLabel);
+        this._container.addChild(thisEffect);
 
         Utilities.fadingEffect(thisEffect, effectValue);
     }

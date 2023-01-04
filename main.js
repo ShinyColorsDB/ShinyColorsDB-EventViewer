@@ -81,10 +81,10 @@ async function init() {
                     app.stage.addChild(autoOff);
                     autoOn.position.set(1075, 50);
                     autoOff.position.set(1075, 50);
-                    autoOn.alpha = 0;
-                    autoOff.alpha = 1;
-                    autoOn.interactive = false;
-                    autoOff.interactive = true;
+                    autoOn.alpha = 1;
+                    autoOff.alpha = 0;
+                    autoOn.interactive = true;
+                    autoOff.interactive = false;
 
                     interestedEvents.forEach(e => {
                         app.view.removeEventListener(e, afterTouch);
