@@ -146,7 +146,7 @@ class TrackManager {
         const { speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
             charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect,
+            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
 
@@ -158,7 +158,7 @@ class TrackManager {
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
         this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect);
+            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect);
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
         if (nextLabel == "end") { // will be handled at forward();
