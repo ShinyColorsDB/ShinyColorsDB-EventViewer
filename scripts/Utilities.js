@@ -6,11 +6,6 @@ class Utilities {
     static fadingEffect(pixiObj, effectValue) {
 
         const thisEffect = this._getFromTo(effectValue.type);
-        /*
-        if (effectValue?.easing) {
-            effectValue.easing = this._getEasing(effectValue.easing);
-        }
-        */
         thisEffect(pixiObj, effectValue);
     }
 

@@ -3,6 +3,9 @@ class SpineManager {
         this._container = new PIXI.Container();
         this._loader = PIXI.Loader.shared;
         this._spineMap = new Map();
+        this._keepsLipAnimation = false;
+        this._replacingLipTrack = null;
+        this._timeoutToClear = null;
         this.LOOP_EVENT_NAME = "loop_start";
         this.RELAY_EVENT_NAME = 'relay';
         this.LIP_EVENT_NAME = 'lip';
@@ -30,7 +33,7 @@ class SpineManager {
     }
 
     processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, charEffect) {
+        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect) {
         if (!charLabel) { return; }
         if (!this._spineMap.has(charLabel)) {
             this._spineMap.set(charLabel, new PIXI.spine.Spine(this._loader.resources[charLabel].spineData));
@@ -70,12 +73,51 @@ class SpineManager {
             Utilities.fadingEffect(thisSpine, charEffect);
         }
 
-        this._setCharacterAnimation(charAnim1, charAnim1Loop, 0, thisSpine);
-        this._setCharacterAnimation(charAnim2, charAnim2Loop, 1, thisSpine);
-        this._setCharacterAnimation(charAnim3, charAnim3Loop, 2, thisSpine);
-        this._setCharacterAnimation(charAnim4, charAnim4Loop, 3, thisSpine);
-        this._setCharacterAnimation(charAnim5, charAnim5Loop, 4, thisSpine);
-        let theEntry = this._setCharacterAnimation(charLipAnim, true, 5, thisSpine, true);
+        if (charAnim1) {
+            this._setCharacterAnimation(charAnim1, charAnim1Loop, 0, thisSpine);
+        }
+
+        if (charAnim2) {
+            this._setCharacterAnimation(charAnim2, charAnim2Loop, 1, thisSpine);
+        }
+
+        if (charAnim3) {
+            this._setCharacterAnimation(charAnim3, charAnim3Loop, 2, thisSpine);
+        }
+
+        if (charAnim4) {
+            this._setCharacterAnimation(charAnim4, charAnim4Loop, 3, thisSpine);
+        }
+
+        if (charAnim5) {
+            this._setCharacterAnimation(charAnim5, charAnim5Loop, 4, thisSpine);
+        }
+
+        if (charLipAnim) {
+            const trackEntry = this._setCharacterAnimation(charLipAnim, true, 5, thisSpine);
+            if (lipAnimDuration) {
+                this._timeoutToClear = setTimeout(() => {
+                    if (trackEntry.trackIndex === 5) {
+                        trackEntry.time = 0;
+                        trackEntry.timeScale = 0;
+                    }
+                    if (this._replacingLipTrack && this._replacingLipTrack.trackIndex === TRACK_INDEXES.LIP_ANIM) {
+                        this._replacingLipTrack.time = 0;
+                        this._replacingLipTrack.timeScale = 0;
+                    }
+
+                    this._keepsLipAnimation = false;
+                }, lipAnimDuration * 1000);
+            }
+
+            const isReplacingLipAnimation = !lipAnimDuration && this._keepsLipAnimation;
+            if (isReplacingLipAnimation) {
+                this._replacingLipTrack = trackEntry;
+            }
+            else {
+                this._lipTrack = trackEntry;
+            }
+        }
 
         thisSpine.skeleton.setToSetupPose();
         thisSpine.update(0);
@@ -84,14 +126,19 @@ class SpineManager {
 
     stopLipAnimation(charLabel) {
         if (!this._spineMap.has(charLabel) || !this._spineMap.get(charLabel).state.tracks[5]) { return; }
-        this._spineMap.get(charLabel).state.tracks[5].loop = false;
-        this._spineMap.get(charLabel).state.tracks[5].timeScale = 0;
-        this._spineMap.get(charLabel).state.tracks[5].time = 0;
-        this._spineMap.get(charLabel).state.clearTrack(5);
+        if (this._lipTrack && this._lipTrack.trackIndex === 5) {
+            this._lipTrack.time = 0;
+            this._lipTrack.timeScale = 0;
+        }
+
+        if (this._replacingLipTrack && this._replacingLipTrack.trackIndex === 5) {
+            this._replacingLipTrack.time = 0;
+            this._replacingLipTrack.timeScale = 0;
+        }
     }
 
     _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine) {
-        if (!charAnim) { return null; }
+        if (!charAnim) { return; }
         let trackEntry = undefined, relayAnim = undefined;
 
         const animation = this._getAnimation(charAnim, thisSpine);
