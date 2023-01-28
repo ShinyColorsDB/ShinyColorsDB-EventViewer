@@ -12,6 +12,16 @@ canvas {
 }
 
 @font-face {
-    font-family: 'TsunagiGothic';
-    src: url(/assets/TsunagiGothic.ttf);
+    font-family: 'theFont';
+    src: url(/assets/primula-HummingStd-E-2.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: 'theFont';
+    src: url(/assets/primula-HummingStd-E-1.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: 'theFont';
+    src: url(/assets/primula-HummingStd-E.woff2) format("woff2");
 }
