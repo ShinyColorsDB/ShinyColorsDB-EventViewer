@@ -1,7 +1,7 @@
 'use strict';
 
 async function init() {
-    const font = new FontFaceObserver('TsunagiGothic');
+    const font = new FontFaceObserver(usedFont);
     await font.load();
 
     const app = new PIXI.Application({

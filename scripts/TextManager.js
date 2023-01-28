@@ -44,7 +44,7 @@ class TextManager {
         if (speaker !== "off") {
             noSpeaker = false;
             let speakerObj = new PIXI.Text(speaker, {
-                fontFamily: 'TsunagiGothic',
+                fontFamily: usedFont,
                 fontSize: 24,
                 fill: 0x000000,
                 align: 'center',
@@ -56,7 +56,7 @@ class TextManager {
 
         const textStyle = new PIXI.TextStyle({
             align: "left",
-            fontFamily: "TsunagiGothic",
+            fontFamily: usedFont,
             fontSize: 24,
             padding: 3
         });
@@ -67,7 +67,7 @@ class TextManager {
 
     _endNotification() {
         let owariObj = new PIXI.Text("End", {
-            fontFamily: 'TsunagiGothic',
+            fontFamily: usedFont,
             fontSize: 40,
             fill: 0xffffff,
             align: 'center'

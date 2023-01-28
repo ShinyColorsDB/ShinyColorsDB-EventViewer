@@ -1,3 +1,5 @@
 .gitattributes
 
 .note.txt
+
+assets/*.woff2

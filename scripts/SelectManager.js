@@ -48,7 +48,7 @@ class SelectManager {
         }, { once: true });
 
         let textObj = new PIXI.Text(selectDesc, {
-            fontFamily: 'TsunagiGothic',
+            fontFamily: usedFont,
             fontSize: 24,
             fill: 0x000000,
             align: 'center',
