@@ -4,28 +4,15 @@ async function init() {
     const font = new FontFaceObserver(usedFont);
     await font.load();
 
-    const app = new PIXI.Application({
-        width: 1136,
-        height: 640
-    });
-
-    const interestedEvents = ["click", "touchstart"];
-
-    document.body.appendChild(app.view);
-
-    resize(app);
-    window.onresize = () => {
-        resize(app);
-    }
-
-    const tm = new TrackManager(app);
-    tm.addToStage();
-
     let eventId = getQueryVariable("eventId", null);
     let eventType = getQueryVariable("eventType", "produce_events");
 
+    let isIframeMode = getQueryVariable("iframeMode", null) === "1";
     let jsonPath;
-    if (eventId) {
+    if (isIframeMode) {
+
+    }
+    else if (eventId) {
         jsonPath = `${eventType}/${eventId}.json`;
     } else {
         jsonPath = prompt("input json path: ", "produce_events/202100711.json");
@@ -34,14 +21,69 @@ async function init() {
         window.location.search = `eventType=${eventType}&eventId=${eventId}`;
     }
 
+    // if not iframe mode
+    if (!isIframeMode) {
+        prepareCanvas(jsonPath);
+    }
+    // if iframe mode
+    else {
+        const receiveJson = function (e) {
+            if (!e.origin || !e.data?.iframeJson) {
+                return;
+            }
+            prepareCanvas(null, e.data.iframeJson);
+        }
+        window.addEventListener('message', receiveJson, false);
+    }
+}
+
+async function prepareCanvas(jsonPath, injectedJson) {
+    if (document.getElementById("ShinyColors")) {
+        document.getElementById("ShinyColors").remove();
+    }
+
+    const interestedEvents = ["click", "touchstart"];
+    const app = new PIXI.Application({
+        width: 1136,
+        height: 640
+    });
+
+    app.view.setAttribute("id", "ShinyColors");
+
+    document.body.appendChild(app.view);
+
+    resize(app);
+    window.onresize = () => {
+        resize(app);
+    };
+
+    const tm = new TrackManager(app);
+    tm.addToStage();
+
+    if (jsonPath) {
+        await new Promise((resolve, reject) => {
+            app.loader
+                .add("eventJson", `${assetUrl}/json/${jsonPath}`)
+                .load(
+                    (_, resources) => {
+                        if (resources.eventJson.error && !injectedJson) { alert("No such event."); return; }
+                        tm.setTrack = resources.eventJson.data;
+                        resolve();
+                    }
+                )
+        });
+
+    }
+    else {
+        tm.setTrack = injectedJson;
+    }
+
     app.loader
-        .add("eventJson", `${assetUrl}/json/${jsonPath}`)
         .add("touchToStart", "./assets/touchToStart.png")
         .add("autoOn", "./assets/autoOn.png")
         .add("autoOff", "./assets/autoOff.png")
         .load(
             (_, resources) => {
-                if (resources.eventJson.error) { alert("No such event."); return; }
                 const touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
                 const autoOn = new PIXI.Sprite(resources.autoOn.texture),
                     autoOff = new PIXI.Sprite(resources.autoOff.texture);
@@ -55,7 +97,7 @@ async function init() {
                         clearTimeout(tm._timeoutToClear);
                     }
                     tm._renderTrack();
-                }
+                };
 
                 const afterTouch = function () {
                     app.stage.interactive = false;
@@ -93,13 +135,11 @@ async function init() {
                     interestedEvents.forEach(e => {
                         app.stage.on(e, nextTrack);
                     });
-                }
+                };
 
                 interestedEvents.forEach(e => {
                     app.view.addEventListener(e, afterTouch);
                 });
-
-                tm.setTrack = resources.eventJson.data;
             }
         );
 }
