@@ -17,6 +17,7 @@ class TrackManager {
         this._stillManager = new StillManager();
         this._timeoutToClear = null;
         this._autoPlayEnabled = true;
+        this._stopped = false;
     }
 
     set setTrack(tracks) {
@@ -136,6 +137,7 @@ class TrackManager {
     }
 
     _renderTrack() {
+        if (this._stopped) { return; }
         console.log(`${this._current}/${this._tracks.length - 1}`, this.currentTrack);
 
         if (this.currentTrack.label == "end") {
@@ -228,6 +230,7 @@ class TrackManager {
         this._effectManager.reset();
         this._movieManager.reset();
         this._stillManager.reset();
+        this._stopped = true;
     }
 
     toggleAutoplay() {
