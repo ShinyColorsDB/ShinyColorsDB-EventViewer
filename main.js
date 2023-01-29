@@ -43,7 +43,7 @@ async function prepareCanvas(jsonPath, injectedJson) {
     }
 
     const interestedEvents = ["click", "touchstart"];
-    const app = new PIXI.Application({
+    let app = new PIXI.Application({
         width: 1136,
         height: 640
     });
@@ -57,7 +57,7 @@ async function prepareCanvas(jsonPath, injectedJson) {
         resize(app);
     };
 
-    const tm = new TrackManager(app);
+    let tm = new TrackManager(app);
     tm.addToStage();
 
     if (jsonPath) {
@@ -84,6 +84,15 @@ async function prepareCanvas(jsonPath, injectedJson) {
         .add("autoOff", "./assets/autoOff.png")
         .load(
             (_, resources) => {
+                window.addEventListener("message", (e) => {
+                    if (!e.origin || !e.data?.iframeJson) {
+                        return;
+                    }
+                    tm.endOfEvent();
+                    tm = null;
+                    app.stage.destroy(true);
+                });
+
                 const touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
                 const autoOn = new PIXI.Sprite(resources.autoOn.texture),
                     autoOff = new PIXI.Sprite(resources.autoOff.texture);
