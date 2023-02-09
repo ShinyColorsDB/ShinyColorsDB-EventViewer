@@ -138,7 +138,7 @@ class SpineManager {
     }
 
     _setCharacterAnimation(charAnim, charAnimLoop, trackNo, thisSpine) {
-        if (!charAnim) { return; }
+        if (!charAnim || !this._getAnimation(charAnim, thisSpine)) { return; }
         let trackEntry = undefined, relayAnim = undefined;
 
         const animation = this._getAnimation(charAnim, thisSpine);
@@ -218,7 +218,7 @@ class SpineManager {
     _getAnimation(charAnim, thisSpine) {
         const animation = thisSpine.spineData.animations.find((a) => a.name === charAnim);
         if (!animation) {
-            throw new Error(`${charAnim} is not found in spineData`);
+            console.error(`${charAnim} is not found in spineData`);
         }
         return animation;
     }
