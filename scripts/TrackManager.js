@@ -117,9 +117,11 @@ class TrackManager {
         if (movie && !this._loader.resources[`movie${movie}`]) {
             this._loader.add(`movie${movie}`, `${assetUrl}/movies/idols/card/${movie}.mp4`);
         }
-        if (charLabel && !this._loader.resources[charLabel]) {
+        if (charLabel) {
             const thisCharCategory = charCategory ? this._spineManager.spineAlias[charCategory] : "stand";
-            this._loader.add(charLabel, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
+            if (!this._loader.resources[`${charLabel}_${thisCharCategory}`]) {
+                this._loader.add(`${charLabel}_${thisCharCategory}`, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
+            }
         }
         if (select && !this._loader.resources[`selectFrame${this._selectManager.neededFrame}`]) {
             this._loader.add(`selectFrame${this._selectManager.neededFrame}`, `${assetUrl}/images/event/select_frame/00${this._selectManager.neededFrame}.png`);

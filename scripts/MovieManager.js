@@ -36,7 +36,6 @@ class MovieManager {
             setTimeout(() => {
                 this._container.removeChild(movieSprite);
                 this._onMovieEnded();
-
             }, 2500);
         });
     }
