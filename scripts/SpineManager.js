@@ -21,6 +21,8 @@ class SpineManager {
             stand: 'stand',
             stand_costume: 'stand_costume'
         };
+
+        this._currSpine = {};
     }
 
     get stageObj() {
@@ -30,15 +32,20 @@ class SpineManager {
     reset() {
         this._container.removeChildren(0, this._container.children.length);
         this._spineMap.clear();
+        this._currSpine = {};
     }
 
-    processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+    processSpineByInput(charLabel, charId, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
         charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect) {
         if (!charLabel) { return; }
-        if (!this._spineMap.has(charLabel)) {
-            this._spineMap.set(charLabel, new PIXI.spine.Spine(this._loader.resources[charLabel].spineData));
-            this._spineMap.get(charLabel).alpha = 1;
-            this._container.addChild(this._spineMap.get(charLabel));
+        if (charId) {
+            this._currSpine[charLabel] = charId;
+        }
+        let currCharId = this._currSpine[charLabel];
+        if (!this._spineMap.has(`${charLabel}_${currCharId}`)) {
+            this._spineMap.set(`${charLabel}_${currCharId}`, new PIXI.spine.Spine(this._loader.resources[`${charLabel}_${currCharId}`].spineData));
+            this._spineMap.get(`${charLabel}_${currCharId}`).alpha = 1;
+            this._container.addChild(this._spineMap.get(`${charLabel}_${currCharId}`));
         }
 
         charAnim1Loop = charAnim1Loop === undefined ? true : charAnim1Loop;
@@ -48,7 +55,7 @@ class SpineManager {
         charAnim5Loop = charAnim5Loop === undefined ? true : charAnim5Loop;
         charLipAnim = charLipAnim === undefined ? false : charLipAnim;
 
-        let thisSpine = this._spineMap.get(charLabel);
+        let thisSpine = this._spineMap.get(`${charLabel}_${currCharId}`);
 
         try {
             thisSpine.skeleton.setSkinByName('normal');
@@ -125,7 +132,9 @@ class SpineManager {
     }
 
     stopLipAnimation(charLabel) {
-        if (!this._spineMap.has(charLabel) || !this._spineMap.get(charLabel).state.tracks[5]) { return; }
+        if (!this._currSpine[charLabel]) { return; }
+        let currCharId = this._currSpine[charLabel];
+        if (!this._spineMap.has(`${charLabel}_${currCharId}`) || !this._spineMap.get(`${charLabel}_${currCharId}`).state.tracks[5]) { return; }
         if (this._lipTrack && this._lipTrack.trackIndex === 5) {
             this._lipTrack.time = 0;
             this._lipTrack.timeScale = 0;

@@ -117,10 +117,15 @@ class TrackManager {
         if (movie && !this._loader.resources[`movie${movie}`]) {
             this._loader.add(`movie${movie}`, `${assetUrl}/movies/idols/card/${movie}.mp4`);
         }
-        if (charLabel) {
+
+        if (charLabel && charId) {
             const thisCharCategory = charCategory ? this._spineManager.spineAlias[charCategory] : "stand";
-            if (!this._loader.resources[`${charLabel}_${thisCharCategory}`]) {
-                this._loader.add(`${charLabel}_${thisCharCategory}`, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
+            // if (!this._loader.resources[`${charLabel}_${thisCharCategory}`]) {
+            //     this._loader.add(`${charLabel}_${thisCharCategory}`, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
+            // }
+            if (!this._loader.resources[`${charLabel}_${charId}`]) {
+                this._loader.add(`${charLabel}_${charId}`, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
+                //console.log(`${charLabel}_${charId}`);
             }
         }
         if (select && !this._loader.resources[`selectFrame${this._selectManager.neededFrame}`]) {
@@ -149,7 +154,7 @@ class TrackManager {
 
         const { speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
-            charSpine, charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+            charSpine, charLabel, charId, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
@@ -161,7 +166,7 @@ class TrackManager {
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
-        this._spineManager.processSpineByInput(charLabel, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+        this._spineManager.processSpineByInput(charLabel, charId, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect);
         this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
 
