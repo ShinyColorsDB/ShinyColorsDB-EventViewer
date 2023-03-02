@@ -35,17 +35,22 @@ class SpineManager {
         this._currSpine = {};
     }
 
-    processSpineByInput(charLabel, charId, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+    processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
         charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect) {
         if (!charLabel) { return; }
         if (charId) {
-            this._currSpine[charLabel] = charId;
+            this._currSpine[charLabel] = {
+                currCharId : charId,
+                currCharCategory : this.spineAlias[charCategory] ?? 'stand'
+            };
         }
-        let currCharId = this._currSpine[charLabel];
-        if (!this._spineMap.has(`${charLabel}_${currCharId}`)) {
-            this._spineMap.set(`${charLabel}_${currCharId}`, new PIXI.spine.Spine(this._loader.resources[`${charLabel}_${currCharId}`].spineData));
-            this._spineMap.get(`${charLabel}_${currCharId}`).alpha = 1;
-            this._container.addChild(this._spineMap.get(`${charLabel}_${currCharId}`));
+        let {currCharId, currCharCategory} = this._currSpine[charLabel];
+        let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`
+        console.log(char_uid)
+        if (!this._spineMap.has(char_uid)) {
+            this._spineMap.set(char_uid, new PIXI.spine.Spine(this._loader.resources[char_uid].spineData));
+            this._spineMap.get(char_uid).alpha = 1;
+            this._container.addChild(this._spineMap.get(char_uid));
         }
 
         charAnim1Loop = charAnim1Loop === undefined ? true : charAnim1Loop;
@@ -55,7 +60,7 @@ class SpineManager {
         charAnim5Loop = charAnim5Loop === undefined ? true : charAnim5Loop;
         charLipAnim = charLipAnim === undefined ? false : charLipAnim;
 
-        let thisSpine = this._spineMap.get(`${charLabel}_${currCharId}`);
+        let thisSpine = this._spineMap.get(char_uid);
 
         try {
             thisSpine.skeleton.setSkinByName('normal');
@@ -133,8 +138,9 @@ class SpineManager {
 
     stopLipAnimation(charLabel) {
         if (!this._currSpine[charLabel]) { return; }
-        let currCharId = this._currSpine[charLabel];
-        if (!this._spineMap.has(`${charLabel}_${currCharId}`) || !this._spineMap.get(`${charLabel}_${currCharId}`).state.tracks[5]) { return; }
+        let {currCharId, currCharCategory} = this._currSpine[charLabel];
+        let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`
+        if (!this._spineMap.has(char_uid) || !this._spineMap.get(char_uid).state.tracks[5]) { return; }
         if (this._lipTrack && this._lipTrack.trackIndex === 5) {
             this._lipTrack.time = 0;
             this._lipTrack.timeScale = 0;
