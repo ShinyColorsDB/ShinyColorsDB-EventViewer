@@ -46,7 +46,6 @@ class SpineManager {
         }
         let {currCharId, currCharCategory} = this._currSpine[charLabel];
         let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`
-        console.log(char_uid)
         if (!this._spineMap.has(char_uid)) {
             this._spineMap.set(char_uid, new PIXI.spine.Spine(this._loader.resources[char_uid].spineData));
             this._spineMap.get(char_uid).alpha = 1;

@@ -105,6 +105,10 @@ async function prepareCanvas(jsonPath, injectedJson) {
                     if (tm._timeoutToClear) {
                         clearTimeout(tm._timeoutToClear);
                     }
+                    if (tm._TexttypingEffect) {
+                        clearInterval(tm._TexttypingEffect)
+                    }
+
                     tm._renderTrack();
                 };
 
