@@ -32,7 +32,7 @@ async function init() {
                 return;
             }
             prepareCanvas(null, e.data.iframeJson);
-        }
+        };
         window.addEventListener('message', receiveJson, false);
     }
 }
@@ -70,7 +70,7 @@ async function prepareCanvas(jsonPath, injectedJson) {
                         tm.setTrack = resources.eventJson.data;
                         resolve();
                     }
-                )
+                );
         });
 
     }
@@ -105,8 +105,8 @@ async function prepareCanvas(jsonPath, injectedJson) {
                     if (tm._timeoutToClear) {
                         clearTimeout(tm._timeoutToClear);
                     }
-                    if (tm._TexttypingEffect) {
-                        clearInterval(tm._TexttypingEffect)
+                    if (tm._textTypingEffect) {
+                        clearInterval(tm._textTypingEffect);
                     }
 
                     tm._renderTrack();

@@ -24,7 +24,7 @@ class SelectManager {
 
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
             let thisSelectContainer = new PIXI.Container();
-            thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${this.neededFrame}`].texture))
+            thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${this.neededFrame}`].texture));
             this._stMap.set(`selectFrame${this.neededFrame}`, thisSelectContainer);
         }
 
@@ -96,7 +96,7 @@ class SelectManager {
 
     _fadeOutOption() {
         this._stMap.forEach(st => {
-            TweenMax.to(st, 1, { alpha: 0 , ease: Power3.easeOut });
+            TweenMax.to(st, 1, { alpha: 0, ease: Power3.easeOut });
         });
         setTimeout(() => {
             this._container.removeChildren(0, this._container.children.length);
