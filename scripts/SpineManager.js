@@ -40,12 +40,12 @@ class SpineManager {
         if (!charLabel) { return; }
         if (charId) {
             this._currSpine[charLabel] = {
-                currCharId : charId,
-                currCharCategory : this.spineAlias[charCategory] ?? 'stand'
+                currCharId: charId,
+                currCharCategory: this.spineAlias[charCategory] ?? 'stand'
             };
         }
-        let {currCharId, currCharCategory} = this._currSpine[charLabel];
-        let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`
+        let { currCharId, currCharCategory } = this._currSpine[charLabel];
+        let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`;
         if (!this._spineMap.has(char_uid)) {
             this._spineMap.set(char_uid, new PIXI.spine.Spine(this._loader.resources[char_uid].spineData));
             this._spineMap.get(char_uid).alpha = 1;
@@ -137,8 +137,8 @@ class SpineManager {
 
     stopLipAnimation(charLabel) {
         if (!this._currSpine[charLabel]) { return; }
-        let {currCharId, currCharCategory} = this._currSpine[charLabel];
-        let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`
+        let { currCharId, currCharCategory } = this._currSpine[charLabel];
+        let char_uid = `${charLabel}_${currCharId}_${currCharCategory}`;
         if (!this._spineMap.has(char_uid) || !this._spineMap.get(char_uid).state.tracks[5]) { return; }
         if (this._lipTrack && this._lipTrack.trackIndex === 5) {
             this._lipTrack.time = 0;

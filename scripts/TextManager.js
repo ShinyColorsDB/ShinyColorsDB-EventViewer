@@ -4,7 +4,7 @@ class TextManager {
         this._loader = PIXI.Loader.shared;
         this._txtFrameMap = new Map();
         this._thisWaitTime = 0;
-        this._typingEffect = null
+        this._typingEffect = null;
     }
 
     get stageObj() {
@@ -15,8 +15,8 @@ class TextManager {
         return this._thisWaitTime;
     }
 
-    get typingEffect(){
-        return this._typingEffect
+    get typingEffect() {
+        return this._typingEffect;
     }
 
     reset() {
@@ -69,18 +69,18 @@ class TextManager {
         this._container.addChildAt(textObj, noSpeaker ? 1 : 2);
         textObj.position.set(240, 510);
 
-        let word_index = 0
-        if(this._typingEffect != null){
-            clearInterval(this._typingEffect)
+        let word_index = 0;
+        if (this._typingEffect != null) {
+            clearInterval(this._typingEffect);
         }
         this._typingEffect = setInterval(() => {
-            if(word_index === text.length){
-                clearInterval(this._typingEffect)
-                this._typingEffect = null
+            if (word_index === text.length) {
+                clearInterval(this._typingEffect);
+                this._typingEffect = null;
             }
 
-            textObj.text += text.charAt(word_index)
-            word_index += 1
+            textObj.text += text.charAt(word_index);
+            word_index += 1;
         }, 50);
 
     }

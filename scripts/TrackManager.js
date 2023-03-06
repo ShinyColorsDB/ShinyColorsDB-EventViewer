@@ -16,7 +16,7 @@ class TrackManager {
         this._movieManager = new MovieManager();
         this._stillManager = new StillManager();
         this._timeoutToClear = null;
-        this._TextTypingEffect = null
+        this._textTypingEffect = null;
         this._autoPlayEnabled = true;
         this._stopped = false;
     }
@@ -183,7 +183,7 @@ class TrackManager {
             this._app.stage.interactive = false;
         }
         else if (text && this.autoplay && !waitType) {
-            this._TextTypingEffect = this._textManager.typingEffect
+            this._textTypingEffect = this._textManager.typingEffect;
             if (voice) {// here to add autoplay for both text and voice condition
                 const voiceTimeout = this._soundManager.voiceDuration;
 
@@ -194,7 +194,7 @@ class TrackManager {
                 }, voiceTimeout);
             }
             else {// here to add autoplay for only text condition
-                const textTimeout = this._textManager.textWaitTime;                
+                const textTimeout = this._textManager.textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this.autoplay) { return; }
                     this._renderTrack();
