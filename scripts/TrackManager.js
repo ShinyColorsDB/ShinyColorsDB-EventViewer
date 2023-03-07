@@ -2,6 +2,7 @@ class TrackManager {
     constructor(app) {
         this._tracks = [];
         this._translateJson = null
+        this._translateCounter = null
         this._current = 0;
         this._nextLabel = null;
         this._stopTrackIndex = -1;
@@ -27,7 +28,7 @@ class TrackManager {
     }
 
     set setTranslateJson(json) {
-        console.log(json)
+        this._translateCounter = json['table']
         this._translateJson = json;
     }
 
@@ -126,9 +127,6 @@ class TrackManager {
         }
         if (charLabel && charId) {
             const thisCharCategory = charCategory ? this._spineManager.spineAlias[charCategory] : "stand";
-            // if (!this._loader.resources[`${charLabel}_${thisCharCategory}`]) {
-            //     this._loader.add(`${charLabel}_${thisCharCategory}`, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
-            // }
             if (!this._loader.resources[`${charLabel}_${charId}_${thisCharCategory}`]) {
                 this._loader.add(`${charLabel}_${charId}_${thisCharCategory}`, `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`);
             }
@@ -166,7 +164,7 @@ class TrackManager {
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
-        this._textManager.processTextFrameByInput(textFrame, speaker, text, this._translateJson['table']);
+        this._textManager.processTextFrameByInput(textFrame, speaker, text, this._translateCounter);
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));

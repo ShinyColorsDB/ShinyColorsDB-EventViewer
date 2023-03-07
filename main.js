@@ -27,11 +27,7 @@ async function init() {
     let translateJson;
     if(isTranslate){
         let masterlist = await fetch(translate_master_list).then((response)=> response.json());
-        masterlist.forEach(([key, hash])=>{
-            if(key === jsonPath){
-                translateUrl = `https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/${hash}.csv`;
-            }
-        })
+        translateUrl = _getCSVUrl(masterlist, jsonPath);
 
         if(translateUrl){
             let translate = await fetch(translateUrl).then((response)=> response.text());
@@ -54,6 +50,18 @@ async function init() {
         window.addEventListener('message', receiveJson, false);
     }
 
+}
+
+const _getCSVUrl = (masterlist, jsonPath) => {
+    let translateUrl;
+    masterlist.forEach(([key, hash])=>{
+        if(key === jsonPath){
+            translateUrl = translate_CSV_url.replace('{uid}', hash);
+            return translateUrl;
+        }
+    })
+
+    return translateUrl;
 }
 
 const _CSVToJSON = (text) => {
