@@ -26,18 +26,19 @@ async function init() {
     let translateUrl;
     let translateJson;
     if(isTranslate){
-        let masterlist = await fetch(translate_master_list).then((response)=> response.json());
-        masterlist.forEach(([key, hash])=>{
-            if(key === jsonPath){
-                translateUrl = `https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/${hash}.csv`;
-                return;
+        fetch(translate_master_list).then((response)=> response.json()).then((json)=>{
+            json.forEach(([key, hash])=>{
+                if(key === jsonPath){
+                    translateUrl = `https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/${hash}.csv`;
+                }
+            })
+
+            if(translateUrl){
+                fetch(translateUrl).then((response)=> response.text()).then((text)=>{
+                    translateJson = _CSVToJSON(text);
+                });
             }
         })
-        
-        if(translateUrl){
-            let translate = await fetch(translateUrl).then((response)=> response.text());
-            translateJson = _CSVToJSON(translate);
-        }
     }
 
     // if not iframe mode
