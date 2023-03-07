@@ -13,5 +13,5 @@ canvas {
 
 @font-face {
     font-family: 'theFont';
-    src: url(/assets/TsunagiGothic.ttf);
+    src: url(./assets/TsunagiGothic.ttf);
 }
