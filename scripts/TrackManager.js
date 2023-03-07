@@ -1,6 +1,7 @@
 class TrackManager {
     constructor(app) {
         this._tracks = [];
+        this._translateJson = null
         this._current = 0;
         this._nextLabel = null;
         this._stopTrackIndex = -1;
@@ -23,6 +24,11 @@ class TrackManager {
 
     set setTrack(tracks) {
         this._tracks = tracks;
+    }
+
+    set setTranslateJson(json) {
+        console.log(json)
+        this._translateJson = json;
     }
 
     get currentTrack() {
@@ -157,11 +163,10 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
-
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
-        this._textManager.processTextFrameByInput(textFrame, speaker, text);
+        this._textManager.processTextFrameByInput(textFrame, speaker, text, this._translateJson['table']);
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));

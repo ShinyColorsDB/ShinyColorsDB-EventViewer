@@ -25,7 +25,7 @@ class TextManager {
         this._endNotification();
     }
 
-    processTextFrameByInput(textFrame, speaker, text) {
+    processTextFrameByInput(textFrame, speaker, text, trans) {
         this._thisWaitTime = 0;
 
         if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
@@ -57,6 +57,13 @@ class TextManager {
             });
             this._container.addChildAt(speakerObj, 1);
             speakerObj.position.set(260, 468);
+        }
+
+        if(trans){
+            let translate = trans.shift();
+            if(translate['trans'] != ''){
+                text = translate['trans'];
+            }
         }
 
         const textStyle = new PIXI.TextStyle({
