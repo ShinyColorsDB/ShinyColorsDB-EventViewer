@@ -27,6 +27,7 @@ class TextManager {
 
     processTextFrameByInput(textFrame, speaker, text, trans) {
         this._thisWaitTime = 0;
+        let managerSound = this._loader.resources['managerSound'].sound;
 
         if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
 
@@ -84,12 +85,16 @@ class TextManager {
         this._typingEffect = setInterval(() => {
             if (word_index === text.length) {
                 clearInterval(this._typingEffect);
+                managerSound.stop()
                 this._typingEffect = null;
             }
 
+            if(!noSpeaker && speaker == 'プロデューサー'){
+                managerSound.play()
+            }
             textObj.text += text.charAt(word_index);
             word_index += 1;
-        }, 50);
+        }, 65);
 
     }
 
