@@ -32,6 +32,8 @@ async function init() {
         if(translateUrl){
             let translate = await fetch(translateUrl).then((response)=> response.text());
             translateJson = _CSVToJSON(translate);
+            const zhfont = new FontFaceObserver(zhcnFont);
+            await zhfont.load();
         }
     }
 
