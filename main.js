@@ -138,10 +138,11 @@ async function prepareCanvas(jsonPath, injectedJson, translateJson) {
         tm.setTrack = injectedJson;
     }
 
+
     app.loader
         .add("touchToStart", "./assets/touchToStart.png")
         .add("autoOn", "./assets/autoOn.png")
-        .add("autoOff", "./assets/autoOff.png")
+        .add("autoOff", "./assets/autoOff.png")        
         .load(
             (_, resources) => {
                 window.addEventListener("message", (e) => {

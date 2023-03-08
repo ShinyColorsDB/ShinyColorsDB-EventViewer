@@ -94,6 +94,7 @@ class TrackManager {
         if (this.currentTrack?.label == "end") {
             this._current = 0;
             this._selectManager.frameReset();
+            this._loader.add("managerSound", './assets/002.m4a')
             this._loader.load(() => {
                 this._renderTrack();
             });
@@ -187,9 +188,9 @@ class TrackManager {
         }
         else if (text && this.autoplay && !waitType) {
             this._textTypingEffect = this._textManager.typingEffect;
+            this._loader.resources['managerSound'].sound.stop()
             if (voice) {// here to add autoplay for both text and voice condition
                 const voiceTimeout = this._soundManager.voiceDuration;
-
                 this._timeoutToClear = setTimeout(() => {
                     if (!this.autoplay) { return; }
                     this._renderTrack();
