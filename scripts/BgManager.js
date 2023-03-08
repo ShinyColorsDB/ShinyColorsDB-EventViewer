@@ -51,14 +51,14 @@ class BgManager {
                 }
 
                 if (this._container.children.length != 1) {
-                    Utilities.fadingEffect(origBg, { alpha: 0, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
+                    Utilities.fadingEffect(origBg, { alpha: 0, time: bgEffectTime ? bgEffectTime / 1000 : 1, ease: 'none', type: "to" });
                     setTimeout(() => {
                         if (this._container.children.length) {
                             this._container.removeChildAt(0);
                         }
                     }, bgEffectTime ? bgEffectTime : 1000);
                 }
-                Utilities.fadingEffect(newBg, { alpha: 1, time: bgEffectTime ? bgEffectTime : 1000, easing: 'none', type: "to" });
+                Utilities.fadingEffect(newBg, { alpha: 1, time: bgEffectTime ? bgEffectTime : 1, ease: 'none', type: "to" });
 
                 break;
             case "mask":
