@@ -15,3 +15,30 @@ canvas {
     font-family: 'theFont';
     src: url(./assets/TsunagiGothic.ttf);
 }
+
+@font-face {
+    font-family: 'three';
+    src: url(./assets/three.ttf);
+}
+
+/* Nazter */
+/* @font-face {
+    font-family: 'jf_jinxuan';
+    src: url(./assets/jf-jinxuan-3.0-bold.otf);
+} */
+
+/* E大 */
+/* @font-face {
+    font-family: 'HummingStd_E';
+    src: url(./assets/primula-HummingStd-E.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: 'HummingStd_E_1';
+    src: url(./assets/primula-HummingStd-E-1.woff2) format('woff2');
+}
+
+@font-face {
+    font-family: 'HummingStd_E_2';
+    src: url(./assets/primula-HummingStd-E-2.woff2) format('woff2');
+} */

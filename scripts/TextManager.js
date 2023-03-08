@@ -66,9 +66,10 @@ class TextManager {
             }
         }
 
+        let family = trans? zhcnFont : usedFont;
         const textStyle = new PIXI.TextStyle({
             align: "left",
-            fontFamily: usedFont,
+            fontFamily: family,
             fontSize: 24,
             padding: 3
         });
