@@ -1,11 +1,23 @@
 class Utilities {
     /**
      * @param {PIXIObject} pixiObj
-     * @param {{type: fromTo,alpha: targetValue, time: effectLastingTime, easing: easingType}} effectValue
+     * @param {{type: fromTo,alpha: targetValue, time: effectLastingTime, ease: easingType}} effectValue
     **/
     static fadingEffect(pixiObj, effectValue) {
 
         const thisEffect = this._getFromTo(effectValue.type);
+        delete effectValue.type;
+
+        if (effectValue?.time) {
+            effectValue.duration = effectValue.time / 1000;
+            delete effectValue.time
+        }
+        if (!effectValue?.ease) {
+            effectValue.ease = "easeInOutQuad";
+        }
+        else {
+            effectValue.ease = this._getEasing(effectValue.ease);
+        }
         thisEffect(pixiObj, effectValue);
     }
 
@@ -26,8 +38,10 @@ class Utilities {
                 return Quad.easeIn;
             case "easeOutQuad":
                 return Quad.easeOut;
-            default:
+            case "none":
                 return Power0.easeNone;
+            default:
+                return Quad.easeInOut;
         }
     }
 }
