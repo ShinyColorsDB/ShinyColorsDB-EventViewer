@@ -25,8 +25,9 @@ class TextManager {
         this._endNotification();
     }
 
-    processTextFrameByInput(textFrame, speaker, text) {
+    processTextFrameByInput(textFrame, speaker, text, trans) {
         this._thisWaitTime = 0;
+        // let managerSound = this._loader.resources['managerSound'].sound;
 
         if (!textFrame || (textFrame == "off" && !this._container.children.length)) { return; }
 
@@ -35,7 +36,7 @@ class TextManager {
             if (textFrame == "off") { return; }
         }
 
-        this._thisWaitTime = text.length * 200 + 500;
+        this._thisWaitTime = text.length * 300 + 500;
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[`textFrame${textFrame}`].texture));
@@ -59,9 +60,17 @@ class TextManager {
             speakerObj.position.set(260, 468);
         }
 
+        if(trans){
+            let translate = trans.shift();
+            if(translate['trans'] != ''){
+                text = translate['trans'];
+            }
+        }
+
+        let family = trans? zhcnFont : usedFont;
         const textStyle = new PIXI.TextStyle({
             align: "left",
-            fontFamily: usedFont,
+            fontFamily: family,
             fontSize: 24,
             padding: 3
         });
@@ -76,12 +85,16 @@ class TextManager {
         this._typingEffect = setInterval(() => {
             if (word_index === text.length) {
                 clearInterval(this._typingEffect);
+                // managerSound.stop()
                 this._typingEffect = null;
             }
 
+            // if(!noSpeaker && speaker == 'プロデューサー'){
+            //     managerSound.play()
+            // }
             textObj.text += text.charAt(word_index);
             word_index += 1;
-        }, 50);
+        }, 65);
 
     }
 

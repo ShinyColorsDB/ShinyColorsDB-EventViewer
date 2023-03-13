@@ -8,6 +8,7 @@ async function init() {
     let eventType = getQueryVariable("eventType", "produce_events");
 
     let isIframeMode = getQueryVariable("iframeMode", null) === "1";
+
     let jsonPath;
     if (isIframeMode) {
 
@@ -21,9 +22,24 @@ async function init() {
         window.location.search = `eventType=${eventType}&eventId=${eventId}`;
     }
 
+    let isTranslate = getQueryVariable("isTranslate", null) === '1';
+    let translateUrl;
+    let translateJson;
+    if(isTranslate){
+        let masterlist = await fetch(translate_master_list).then((response)=> response.json());
+        translateUrl = _getCSVUrl(masterlist, jsonPath);
+
+        if(translateUrl){
+            let translate = await fetch(translateUrl).then((response)=> response.text());
+            translateJson = _CSVToJSON(translate);
+            const zhfont = new FontFaceObserver(zhcnFont);
+            await zhfont.load();
+        }
+    }
+
     // if not iframe mode
     if (!isIframeMode) {
-        prepareCanvas(jsonPath);
+        prepareCanvas(jsonPath, null, translateJson);
     }
     // if iframe mode
     else {
@@ -35,9 +51,49 @@ async function init() {
         };
         window.addEventListener('message', receiveJson, false);
     }
+
 }
 
-async function prepareCanvas(jsonPath, injectedJson) {
+const _getCSVUrl = (masterlist, jsonPath) => {
+    let translateUrl;
+    masterlist.forEach(([key, hash])=>{
+        if(key === jsonPath){
+            translateUrl = translate_CSV_url.replace('{uid}', hash);
+            return translateUrl;
+        }
+    })
+
+    return translateUrl;
+}
+
+const _CSVToJSON = (text) => {
+    const json = {
+        translater : '',
+        url : '',
+        table : []
+    }
+    const table = text.split(/\r\n/).slice(1);    
+    table.forEach(row => {
+        const columns = row.split(',');
+        if(columns[0] === 'info'){
+            json['url'] = columns[1];
+        }
+        else if(columns[0] === '译者'){
+            json['translater'] = columns[1];
+        }
+        else if(columns[0] != ''){
+            json['table'].push({
+                id : columns[0],
+                name : columns[1],
+                text : columns[2].replace('\\n', '\r\n'),
+                trans : columns[3].replace('\\n', '\r\n'),
+            })
+        }
+    })
+    return json;
+}
+
+async function prepareCanvas(jsonPath, injectedJson, translateJson) {
     if (document.getElementById("ShinyColors")) {
         document.getElementById("ShinyColors").remove();
     }
@@ -60,6 +116,10 @@ async function prepareCanvas(jsonPath, injectedJson) {
     let tm = new TrackManager(app);
     tm.addToStage();
 
+    if(translateJson){
+        tm.setTranslateJson = translateJson;
+    }
+
     if (jsonPath) {
         await new Promise((resolve, reject) => {
             app.loader
@@ -78,10 +138,11 @@ async function prepareCanvas(jsonPath, injectedJson) {
         tm.setTrack = injectedJson;
     }
 
+
     app.loader
         .add("touchToStart", "./assets/touchToStart.png")
         .add("autoOn", "./assets/autoOn.png")
-        .add("autoOff", "./assets/autoOff.png")
+        .add("autoOff", "./assets/autoOff.png")        
         .load(
             (_, resources) => {
                 window.addEventListener("message", (e) => {
