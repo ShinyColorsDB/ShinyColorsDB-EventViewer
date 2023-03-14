@@ -18,7 +18,7 @@ async function init() {
                 return;
             }
             // prepareCanvas(null, e.data.iframeJson);
-            advPlayer.loadTrackScript(e.data.iframeJson)
+            advPlayer.loadTrackScript(e.data.iframeJson);
         };
         window.addEventListener('message', receiveJson, false);
     }
@@ -33,15 +33,15 @@ async function init() {
             window.location.search = `eventType=${eventType}&eventId=${eventId}`;
         }
     
-        await advPlayer.loadTrackScript(jsonPath)
+        await advPlayer.loadTrackScript(jsonPath);
     }
     
     if(isTranslate){
         await advPlayer.LoadFont(zhcnFont); //load Font
-        await advPlayer.loadTranslateScript(jsonPath)
+        await advPlayer.loadTranslateScript(jsonPath);
     }
     
-    advPlayer.start()
+    advPlayer.start();
 }
 
 function getQueryVariable(name, defRet = null) {
@@ -65,7 +65,7 @@ class AdvPlayer {
 
     constructor(){
         this.createApp();
-        this.createPlayer()
+        this.createPlayer();
     }
 
     createApp(){
@@ -89,7 +89,7 @@ class AdvPlayer {
     createPlayer(){
         if(!this._app){
             console.error('PIXI app has not been initialized');
-            return 
+            return ;
         }
         this._tm = new TrackManager(this._app);
         this._tm.addToStage();
@@ -105,15 +105,15 @@ class AdvPlayer {
             return new Promise((res, rej)=>{
                 this._app.loader.add("eventJson", `${assetUrl}/json/${Track}`)
                 .load((_, resources) => {
-                    if (resources.eventJson.error && !injectedJson) { alert("No such event."); return; }
+                    if (resources.eventJson.error) { alert("No such event."); return; }
                     this._tm.setTrack = resources.eventJson.data;
-                    res(Track)
+                    res(Track);
                 })
             })
         }
         else if(typeof Track === 'object'){
             this._tm.setTrack = Track;
-            return Promise.resolve(Track)
+            return Promise.resolve(Track);
         }
     }
 
@@ -123,10 +123,10 @@ class AdvPlayer {
         }
 
         else if(typeof Script === 'string'){
-            let TranslateUrl = await this._searchFromMasterList(Script)
+            let TranslateUrl = await this._searchFromMasterList(Script);
 
             if(!TranslateUrl){
-                return Promise.reject()
+                return Promise.reject();
             }
 
             return new Promise((res, rej)=>{
@@ -136,7 +136,7 @@ class AdvPlayer {
                     if(translateJson){
                         this._tm.setTranslateJson = translateJson;
                     }
-                    res(translateJson)
+                    res(translateJson);
                 })
             })
         }
@@ -224,8 +224,8 @@ class AdvPlayer {
 
     _ready = (resources) =>{
         this._Menu.touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
-        this._Menu.autoOn = new PIXI.Sprite(resources.autoOn.texture)
-        this._Menu.autoOff = new PIXI.Sprite(resources.autoOff.texture)
+        this._Menu.autoOn = new PIXI.Sprite(resources.autoOn.texture);
+        this._Menu.autoOff = new PIXI.Sprite(resources.autoOff.texture);
 
         // this._app.stage.interactive = true;
         let touchToStart = this._Menu.touchToStart;                
@@ -252,11 +252,11 @@ class AdvPlayer {
         this._interestedEvents.forEach(e => { // autoplay is initialized to false
             autoOn.on(e, () => {
                 this._tm.toggleAutoplay();
-                this._toggleAutoplay()
+                this._toggleAutoplay();
             });
             autoOff.on(e, () => {
                 this._tm.toggleAutoplay();
-                this._toggleAutoplay()
+                this._toggleAutoplay();
             });
         });
 
