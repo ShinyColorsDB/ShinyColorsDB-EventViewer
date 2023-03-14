@@ -1,242 +1,47 @@
 'use strict';
 
 async function init() {
-    const font = new FontFaceObserver(usedFont);
-    await font.load();
 
-    let eventId = getQueryVariable("eventId", null);
+    let eventId = getQueryVariable("eventId");
     let eventType = getQueryVariable("eventType", "produce_events");
-
     let isIframeMode = getQueryVariable("iframeMode", null) === "1";
-
-    let jsonPath;
-    if (isIframeMode) {
-
-    }
-    else if (eventId) {
-        jsonPath = `${eventType}/${eventId}.json`;
-    } else {
-        jsonPath = prompt("input json path: ", "produce_events/202100711.json");
-        eventId = jsonPath.split("/")[1].split(".")[0];
-        eventType = jsonPath.split("/")[0];
-        window.location.search = `eventType=${eventType}&eventId=${eventId}`;
-    }
-
     let isTranslate = getQueryVariable("isTranslate", null) === '1';
-    let translateUrl;
-    let translateJson;
-    if(isTranslate){
-        let masterlist = await fetch(translate_master_list).then((response)=> response.json());
-        translateUrl = _getCSVUrl(masterlist, jsonPath);
+    
+    let jsonPath; 
 
-        if(translateUrl){
-            let translate = await fetch(translateUrl).then((response)=> response.text());
-            translateJson = _CSVToJSON(translate);
-            const zhfont = new FontFaceObserver(zhcnFont);
-            await zhfont.load();
-        }
-    }
+    const advPlayer = new AdvPlayer();
+    await advPlayer.LoadFont(usedFont); //load Font
 
-    // if not iframe mode
-    if (!isIframeMode) {
-        prepareCanvas(jsonPath, null, translateJson);
-    }
-    // if iframe mode
-    else {
+    if (isIframeMode) {
         const receiveJson = function (e) {
             if (!e.origin || !e.data?.iframeJson) {
                 return;
             }
-            prepareCanvas(null, e.data.iframeJson);
+            // prepareCanvas(null, e.data.iframeJson);
+            advPlayer.loadTrackScript(e.data.iframeJson)
         };
         window.addEventListener('message', receiveJson, false);
     }
-
-}
-
-const _getCSVUrl = (masterlist, jsonPath) => {
-    let translateUrl;
-    masterlist.forEach(([key, hash])=>{
-        if(key === jsonPath){
-            translateUrl = translate_CSV_url.replace('{uid}', hash);
-            return translateUrl;
+    else{
+        if (eventId) {
+            jsonPath = `${eventType}/${eventId}.json`;
         }
-    })
-
-    return translateUrl;
-}
-
-const _CSVToJSON = (text) => {
-    const json = {
-        translater : '',
-        url : '',
-        table : []
-    }
-    const table = text.split(/\r\n/).slice(1);    
-    table.forEach(row => {
-        const columns = row.split(',');
-        if(columns[0] === 'info'){
-            json['url'] = columns[1];
+        else {
+            jsonPath = prompt("input json path: ", "produce_events/202100711.json");
+            eventId = jsonPath.split("/")[1].split(".")[0];
+            eventType = jsonPath.split("/")[0];
+            window.location.search = `eventType=${eventType}&eventId=${eventId}`;
         }
-        else if(columns[0] === '译者'){
-            json['translater'] = columns[1];
-        }
-        else if(columns[0] != ''){
-            json['table'].push({
-                id : columns[0],
-                name : columns[1],
-                text : columns[2].replace('\\n', '\r\n'),
-                trans : columns[3].replace('\\n', '\r\n'),
-            })
-        }
-    })
-    return json;
-}
-
-async function prepareCanvas(jsonPath, injectedJson, translateJson) {
-    if (document.getElementById("ShinyColors")) {
-        document.getElementById("ShinyColors").remove();
+    
+        await advPlayer.loadTrackScript(jsonPath)
     }
-
-    const interestedEvents = ["click", "touchstart"];
-    let app = new PIXI.Application({
-        width: 1136,
-        height: 640
-    });
-
-    app.view.setAttribute("id", "ShinyColors");
-
-    document.body.appendChild(app.view);
-
-    resize(app);
-    window.onresize = () => {
-        resize(app);
-    };
-
-    let tm = new TrackManager(app);
-    tm.addToStage();
-
-    if(translateJson){
-        tm.setTranslateJson = translateJson;
+    
+    if(isTranslate){
+        await advPlayer.LoadFont(zhcnFont); //load Font
+        await advPlayer.loadTranslateScript(jsonPath)
     }
-
-    if (jsonPath) {
-        await new Promise((resolve, reject) => {
-            app.loader
-                .add("eventJson", `${assetUrl}/json/${jsonPath}`)
-                .load(
-                    (_, resources) => {
-                        if (resources.eventJson.error && !injectedJson) { alert("No such event."); return; }
-                        tm.setTrack = resources.eventJson.data;
-                        resolve();
-                    }
-                );
-        });
-
-    }
-    else {
-        tm.setTrack = injectedJson;
-    }
-
-
-    app.loader
-        .add("touchToStart", "./assets/touchToStart.png")
-        .add("autoOn", "./assets/autoOn.png")
-        .add("autoOff", "./assets/autoOff.png")        
-        .load(
-            (_, resources) => {
-                window.addEventListener("message", (e) => {
-                    if (!e.origin || !e.data?.iframeJson) {
-                        return;
-                    }
-                    tm.endOfEvent();
-                    tm = null;
-                    app.stage.destroy(true);
-                });
-
-                const touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
-                const autoOn = new PIXI.Sprite(resources.autoOn.texture),
-                    autoOff = new PIXI.Sprite(resources.autoOff.texture);
-                app.stage.addChild(touchToStart);
-                touchToStart.anchor.set(0.5);
-                touchToStart.position.set(568, 500);
-
-                const nextTrack = function () {
-                    if (tm.autoplay) { return; }
-                    if (tm._timeoutToClear) {
-                        clearTimeout(tm._timeoutToClear);
-                    }
-                    if (tm._textTypingEffect) {
-                        clearInterval(tm._textTypingEffect);
-                    }
-
-                    tm._renderTrack();
-                };
-
-                const afterTouch = function () {
-                    app.stage.interactive = false;
-                    app.stage.removeChild(touchToStart);
-
-                    tm.loadAssetsByTrack();
-
-                    autoOn.anchor.set(0.5);
-                    autoOff.anchor.set(0.5);
-
-                    interestedEvents.forEach(e => { // autoplay is initialized to false
-                        autoOn.on(e, () => {
-                            tm.toggleAutoplay();
-                            toggleAutoplay(autoOn, autoOff, tm.autoplay, tm, app);
-                        });
-                        autoOff.on(e, () => {
-                            tm.toggleAutoplay();
-                            toggleAutoplay(autoOn, autoOff, tm.autoplay, tm, app);
-                        });
-                    });
-
-                    app.stage.addChild(autoOn);
-                    app.stage.addChild(autoOff);
-                    autoOn.position.set(1075, 50);
-                    autoOff.position.set(1075, 50);
-                    autoOn.alpha = 1;
-                    autoOff.alpha = 0;
-                    autoOn.interactive = true;
-                    autoOff.interactive = false;
-
-                    interestedEvents.forEach(e => {
-                        app.view.removeEventListener(e, afterTouch);
-                    });
-
-                    interestedEvents.forEach(e => {
-                        app.stage.on(e, nextTrack);
-                    });
-                };
-
-                interestedEvents.forEach(e => {
-                    app.view.addEventListener(e, afterTouch);
-                });
-            }
-        );
-}
-
-function resize(theApp) {
-    const height = document.documentElement.clientHeight,
-        width = document.documentElement.clientWidth;
-
-    const ratioX = width / 1136,
-        ratioY = height / 640;
-
-    let resizedX, resizedY;
-
-    if (ratioX > ratioY) {
-        resizedX = 1136 * ratioY;
-        resizedY = 640 * ratioY;
-    } else {
-        resizedX = 1136 * ratioX;
-        resizedY = 640 * ratioX;
-    }
-
-    theApp.view.style.width = resizedX + 'px';
-    theApp.view.style.height = resizedY + 'px';
+    
+    advPlayer.start()
 }
 
 function getQueryVariable(name, defRet = null) {
@@ -249,30 +54,273 @@ function getQueryVariable(name, defRet = null) {
     }
 }
 
-function toggleAutoplay(on, off, status, tm, app) {
-    if (status) { // toggle on
-        if (!tm._timeoutToClear) {
-            tm._renderTrack();
+class AdvPlayer {
+
+    _interestedEvents = ["click", "touchstart"];
+    _Menu = {
+        touchToStart : null,
+        autoOn : null,
+        autoOff : null,
+    }
+    
+    constructor(){
+        this.createApp();
+        this.createPlayer()
+    }
+
+    createApp(){
+        if (document.getElementById("ShinyColors")) {
+            document.getElementById("ShinyColors").remove();
+        }
+    
+        this._app = new PIXI.Application({
+            width: 1136,
+            height: 640
+        });
+    
+        this._app.view.setAttribute("id", "ShinyColors");
+    
+        document.body.appendChild(this._app.view);
+
+        this._resize();
+        window.onresize = () => this._resize();
+    }
+
+    createPlayer(){
+        if(!this._app){
+            console.error('PIXI app has not been initialized');
+            return 
+        }
+        this._tm = new TrackManager(this._app);
+        this._tm.addToStage();
+    }
+
+    async loadTrackScript(Track){
+
+        if(!this._app || !this._tm){
+            return Promise.reject();
         }
 
-        on.alpha = 1;
-        on.interactive = true;
-        off.alpha = 0;
-        off.interactive = false;
-
-        app.stage.interactive = false;
+        if(typeof Track === 'string'){
+            return new Promise((res, rej)=>{
+                this._app.loader.add("eventJson", `${assetUrl}/json/${Track}`)
+                .load((_, resources) => {
+                    if (resources.eventJson.error && !injectedJson) { alert("No such event."); return; }
+                    this._tm.setTrack = resources.eventJson.data;
+                    res(Track)
+                })
+            })
+        }
+        else{
+            this._tm.setTrack = Track;
+            return Promise.resolve(Track)
+        }
     }
-    else { // toggle off
-        if (tm._timeoutToClear) {
-            clearTimeout(tm._timeoutToClear);
-            tm._timeoutToClear = null;
+
+    async loadTranslateScript(Script){
+        if(!this._app || !this._tm){
+            return Promise.reject();
         }
 
-        on.alpha = 0;
-        on.interactive = false;
-        off.alpha = 1;
-        off.interactive = true;
+        else if(typeof Script === 'string'){
+            let TranslateUrl = await this._searchFromMasterList(Script)
 
-        app.stage.interactive = true;
+            if(!TranslateUrl){
+                return Promise.reject()
+            }
+
+            return new Promise((res, rej)=>{
+                this._app.loader.add("TranslateUrl", TranslateUrl)
+                .load((_, resources) => {
+                    let translateJson = this._CSVToJSON(resources.TranslateUrl.data);
+                    if(translateJson){
+                        this._tm.setTranslateJson = translateJson;
+                    }
+                    res(translateJson)
+                })
+            })
+        }
+
+        else if(typeof Script === 'object'){
+            this._tm.setTranslateJson = Script;
+            return Promise.resolve()
+        }
     }
+
+    _searchFromMasterList(jsonPath){   
+        return new Promise((res, rej) => {
+            this._app.loader.add("TranslateMasterList", translate_master_list)
+            .load((_, resources) => {
+                let translateUrl = this._getCSVUrl(resources.TranslateMasterList.data, jsonPath);
+                res(translateUrl);
+            })
+        })
+    }
+
+    async LoadFont(FontName){
+        const font = new FontFaceObserver(FontName);
+        return await font.load();
+    }
+
+    _getCSVUrl = (masterlist, jsonPath) => {
+        let translateUrl;
+        masterlist.forEach(([key, hash])=>{
+            if(key === jsonPath){
+                translateUrl = translate_CSV_url.replace('{uid}', hash);
+                return translateUrl;
+            }
+        })
+    
+        return translateUrl;
+    }
+
+    _CSVToJSON = (text) => {
+        const json = {
+            translater : '',
+            url : '',
+            table : []
+        }
+        const table = text.split(/\r\n/).slice(1);    
+        table.forEach(row => {
+            const columns = row.split(',');
+            if(columns[0] === 'info'){
+                json['url'] = columns[1];
+            }
+            else if(columns[0] === '译者'){
+                json['translater'] = columns[1];
+            }
+            else if(columns[0] != ''){
+                json['table'].push({
+                    id : columns[0],
+                    name : columns[1],
+                    text : columns[2].replace('\\n', '\r\n'),
+                    trans : columns[3].replace('\\n', '\r\n'),
+                })
+            }
+        })
+        return json;
+    }
+
+    _resize() {
+        let height = document.documentElement.clientHeight;
+        let width = document.documentElement.clientWidth;
+
+        let ratio = Math.min(width / 1136, height / 640);
+    
+        let resizedX = 1136 * ratio;
+        let resizedY = 640 * ratio;
+    
+        this._app.view.style.width = resizedX + 'px';
+        this._app.view.style.height = resizedY + 'px';
+    }
+
+    start(){
+        this._app.loader
+            .add("touchToStart", "./assets/touchToStart.png")
+            .add("autoOn", "./assets/autoOn.png")
+            .add("autoOff", "./assets/autoOff.png")
+            .load((_, resources) => this._ready(resources))
+    }
+
+    _ready = (resources) =>{
+        this._Menu.touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
+        this._Menu.autoOn = new PIXI.Sprite(resources.autoOn.texture)
+        this._Menu.autoOff = new PIXI.Sprite(resources.autoOff.texture)
+
+        // this._app.stage.interactive = true;
+        let touchToStart = this._Menu.touchToStart;                
+        touchToStart.anchor.set(0.5);
+        touchToStart.position.set(568, 500);
+        this._app.stage.addChild(touchToStart)
+        
+        this._interestedEvents.forEach(e => {
+            this._app.view.addEventListener(e, this._afterTouch);
+        });
+    }
+
+    _afterTouch = async() => {
+        let {touchToStart, autoOn, autoOff} = this._Menu;
+
+        this._app.stage.interactive = false;
+        this._app.stage.removeChild(touchToStart);
+
+        this._tm.loadAssetsByTrack();
+
+        autoOn.anchor.set(0.5);
+        autoOff.anchor.set(0.5);
+
+        this._interestedEvents.forEach(e => { // autoplay is initialized to false
+            autoOn.on(e, () => {
+                this._tm.toggleAutoplay();
+                this._toggleAutoplay()
+            });
+            autoOff.on(e, () => {
+                this._tm.toggleAutoplay();
+                this._toggleAutoplay()
+            });
+        });
+
+        this._app.stage.addChild(autoOn);
+        this._app.stage.addChild(autoOff);
+        autoOn.position.set(1075, 50);
+        autoOff.position.set(1075, 50);
+        autoOn.alpha = 1;
+        autoOff.alpha = 0;
+        autoOn.interactive = true;
+        autoOff.interactive = false;
+
+        this._interestedEvents.forEach(e => {
+            this._app.view.removeEventListener(e, this._afterTouch);
+        });
+
+        this._interestedEvents.forEach(e => {
+            this._app.stage.on(e, this._nextTrack);
+        });
+    }
+
+    _toggleAutoplay(){
+        let {autoOn, autoOff} = this._Menu;
+        
+        if (this._tm.autoplay) { // toggle on
+            if (!this._tm._timeoutToClear) {
+                this._tm._renderTrack();
+            }
+    
+            autoOn.alpha = 1;
+            autoOn.interactive = true;
+            // autoOn.cursor = 'pointer'
+            autoOff.alpha = 0;
+            autoOff.interactive = false;
+            // autoOff.cursor = 'none'
+    
+            this._app.stage.interactive = false;
+        }
+        else { // toggle off
+            if (this._tm._timeoutToClear) {
+                clearTimeout(this._tm._timeoutToClear);
+                this._tm._timeoutToClear = null;
+            }
+    
+            autoOn.alpha = 0;
+            autoOn.interactive = false;
+            // autoOn.cursor = 'none'
+            autoOff.alpha = 1;
+            autoOff.interactive = true;
+            // autoOff.cursor = 'pointer'
+    
+            this._app.stage.interactive = true;
+        }
+    }
+
+    _nextTrack = () => {
+        if (this._tm.autoplay) { return; }
+        if (this._tm._timeoutToClear) {
+            clearTimeout(this._tm._timeoutToClear);
+        }
+        if (this._tm._textTypingEffect) {
+            clearInterval(this._tm._textTypingEffect);
+        }
+
+        this._tm._renderTrack();
+    };
 }
