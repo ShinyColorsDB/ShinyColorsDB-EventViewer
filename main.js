@@ -62,7 +62,7 @@ class AdvPlayer {
         autoOn : null,
         autoOff : null,
     }
-    
+
     constructor(){
         this.createApp();
         this.createPlayer()
@@ -111,7 +111,7 @@ class AdvPlayer {
                 })
             })
         }
-        else{
+        else if(typeof Track === 'object'){
             this._tm.setTrack = Track;
             return Promise.resolve(Track)
         }
