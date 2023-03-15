@@ -166,7 +166,7 @@ class AdvPlayer {
 
     async LoadFont(FontName){
         const font = new FontFaceObserver(FontName);
-        return await font.load();
+        return await font.load(null, fontTimeout);
     }
 
     _getCSVUrl = (masterlist, jsonPath) => {
