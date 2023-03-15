@@ -21,6 +21,9 @@ async function init() {
             advPlayer.loadTrackScript(e.data.iframeJson);
         };
         window.addEventListener('message', receiveJson, false);
+        window.parent.postMessage({
+            eventViewerIframeLoaded: true
+        }, "*")
     }
     else{
         if (eventId) {
