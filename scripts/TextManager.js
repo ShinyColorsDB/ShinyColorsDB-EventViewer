@@ -5,6 +5,11 @@ class TextManager {
         this._txtFrameMap = new Map();
         this._thisWaitTime = 0;
         this._typingEffect = null;
+        this._languageType = 0
+    }
+
+    set languageType(type){
+        this._languageType = type
     }
 
     get stageObj() {
@@ -63,17 +68,18 @@ class TextManager {
         if(trans){
             let translate = trans.shift();
             if(translate['trans'] != ''){
-                text = translate['trans'];
+                text = this._languageType === 1 ? translate['trans'] : text;
             }
         }
 
-        let family = trans? zhcnFont : usedFont;
+        let family = trans && this._languageType === 1 ? zhcnFont : usedFont;
         const textStyle = new PIXI.TextStyle({
             align: "left",
             fontFamily: family,
             fontSize: 24,
             padding: 3
         });
+
         let textObj = new PIXI.Text('', textStyle);
         this._container.addChildAt(textObj, noSpeaker ? 1 : 2);
         textObj.position.set(240, 510);

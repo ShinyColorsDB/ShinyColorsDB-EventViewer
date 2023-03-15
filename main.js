@@ -37,6 +37,7 @@ async function init() {
     }
     
     if(isTranslate){
+        advPlayer.isTranslate = true
         await advPlayer.LoadFont(zhcnFont); //load Font
         await advPlayer.loadTranslateScript(jsonPath);
     }
@@ -61,11 +62,19 @@ class AdvPlayer {
         touchToStart : null,
         autoOn : null,
         autoOff : null,
+        zhOn : null,
+        zhJPOn : null,
+        jpON : null
     }
+    _isTranslate = false
 
     constructor(){
         this.createApp();
         this.createPlayer();
+    }
+
+    set isTranslate(boolean){
+        this._isTranslate = boolean
     }
 
     createApp(){
@@ -84,6 +93,9 @@ class AdvPlayer {
 
         this._resize();
         window.onresize = () => this._resize();
+
+        globalThis.__PIXI_APP__ = this._app;
+
     }
 
     createPlayer(){
@@ -219,6 +231,9 @@ class AdvPlayer {
             .add("touchToStart", "./assets/touchToStart.png")
             .add("autoOn", "./assets/autoOn.png")
             .add("autoOff", "./assets/autoOff.png")
+            .add("jpON", "./assets/jpOn.png")
+            .add("zhJPOn", "./assets/zhJPOn.png")
+            .add("zhOn", "./assets/zhOn.png")
             .load((_, resources) => this._ready(resources))
     }
 
@@ -226,6 +241,9 @@ class AdvPlayer {
         this._Menu.touchToStart = new PIXI.Sprite(resources.touchToStart.texture);
         this._Menu.autoOn = new PIXI.Sprite(resources.autoOn.texture);
         this._Menu.autoOff = new PIXI.Sprite(resources.autoOff.texture);
+        this._Menu.jpON = new PIXI.Sprite(resources.jpON.texture);
+        this._Menu.zhOn = new PIXI.Sprite(resources.zhOn.texture);
+        this._Menu.zhJPOn = new PIXI.Sprite(resources.zhJPOn.texture);
 
         // this._app.stage.interactive = true;
         let touchToStart = this._Menu.touchToStart;                
@@ -239,15 +257,28 @@ class AdvPlayer {
     }
 
     _afterTouch = async() => {
-        let {touchToStart, autoOn, autoOff} = this._Menu;
+        let {touchToStart, autoOn, autoOff, zhOn, jpON, zhJPOn} = this._Menu;
 
         this._app.stage.interactive = false;
         this._app.stage.removeChild(touchToStart);
 
         this._tm.loadAssetsByTrack();
 
+        //auto Btn
         autoOn.anchor.set(0.5);
         autoOff.anchor.set(0.5);
+
+        this._app.stage.addChild(autoOn);
+        this._app.stage.addChild(autoOff);
+
+        autoOn.position.set(1075, 50);
+        autoOff.position.set(1075, 50);
+
+        autoOn.alpha = 1;
+        autoOff.alpha = 0;
+
+        autoOn.interactive = true;
+        autoOff.interactive = false;
 
         this._interestedEvents.forEach(e => { // autoplay is initialized to false
             autoOn.on(e, () => {
@@ -260,14 +291,43 @@ class AdvPlayer {
             });
         });
 
-        this._app.stage.addChild(autoOn);
-        this._app.stage.addChild(autoOff);
-        autoOn.position.set(1075, 50);
-        autoOff.position.set(1075, 50);
-        autoOn.alpha = 1;
-        autoOff.alpha = 0;
-        autoOn.interactive = true;
-        autoOff.interactive = false;
+        if(this._isTranslate){
+            //Trans
+            zhOn.anchor.set(0.5);
+            jpON.anchor.set(0.5);
+            zhJPOn.anchor.set(0.5);
+            
+            zhOn.position.set(1075, 130);
+            jpON.position.set(1075, 130);
+            zhJPOn.position.set(1075, 130);
+
+            this._app.stage.addChild(jpON);
+            this._app.stage.addChild(zhOn);
+            this._app.stage.addChild(zhJPOn);
+    
+            jpON.alpha = 1;
+            zhOn.alpha = 0;
+            zhJPOn.alpha = 0;
+    
+            jpON.interactive = true;
+            zhOn.interactive = false;
+            zhJPOn.interactive = false;
+
+            this._interestedEvents.forEach(e => { // autoplay is initialized to false
+                zhOn.on(e, () => {
+                    this._tm.toggleLangDisplay();
+                    this._toggleLangDisplay()
+                });
+                jpON.on(e, () => {
+                    this._tm.toggleLangDisplay();
+                    this._toggleLangDisplay()
+                });
+                zhJPOn.on(e, () => {
+                    this._tm.toggleLangDisplay();
+                    this._toggleLangDisplay()
+                });
+            });
+        }
 
         this._interestedEvents.forEach(e => {
             this._app.view.removeEventListener(e, this._afterTouch);
@@ -312,7 +372,26 @@ class AdvPlayer {
         }
     }
 
+    _toggleLangDisplay(){
+
+        let {jpON, zhOn, zhJPOn} = this._Menu;
+        let btns = [jpON, zhOn, zhJPOn]
+        let next = this._tm._translateLang
+        
+        btns.forEach((btn, index)=>{
+            if(index === next){
+                btn.alpha = 1;
+                btn.interactive = true;
+            }
+            else{
+                btn.alpha = 0;
+                btn.interactive = false;
+            }
+        })
+    }
+
     _nextTrack = () => {
+
         if (this._tm.autoplay) { return; }
         if (this._tm._timeoutToClear) {
             clearTimeout(this._tm._timeoutToClear);
