@@ -90,12 +90,9 @@ class AdvPlayer {
         this._app.view.setAttribute("id", "ShinyColors");
     
         document.body.appendChild(this._app.view);
-
+        
         this._resize();
         window.onresize = () => this._resize();
-
-        globalThis.__PIXI_APP__ = this._app;
-
     }
 
     createPlayer(){
@@ -390,8 +387,8 @@ class AdvPlayer {
         })
     }
 
-    _nextTrack = () => {
-
+    _nextTrack = (ev) => {
+        if (ev.target !== this._app.stage) {return ;}
         if (this._tm.autoplay) { return; }
         if (this._tm._timeoutToClear) {
             clearTimeout(this._tm._timeoutToClear);

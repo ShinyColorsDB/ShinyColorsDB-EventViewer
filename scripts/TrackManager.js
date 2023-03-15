@@ -252,10 +252,7 @@ class TrackManager {
     toggleLangDisplay() {
         this._translateLang = (this._translateLang+1) % 2;
         this._textManager.languageType = this._translateLang
-    }
-
-    _changeTextLang(){
-        // this._textManager
+        this._textManager.toggleLanguage()
     }
 
     _jumpTo(nextLabel) {
