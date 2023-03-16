@@ -13,24 +13,16 @@ async function init() {
     await advPlayer.LoadFont(usedFont); //load Font
 
     if (isIframeMode) {
-        const receiveJson = async function (e) {
+        const receiveJson = function (e) {
             if (!e.origin || !e.data?.iframeJson) {
                 return;
             }
-
             // prepareCanvas(null, e.data.iframeJson);
             advPlayer.loadTrackScript(e.data.iframeJson);
-
             if (e.data.csvText) {
-                const translateJson = advPlayer.CSVToJSON(e.data.csvText)
-                
-                await advPlayer.LoadFont(zhcnFont)
-                advPlayer.isTranslate = true
-                // advPlayer._tm.setTranslateJson = translateJson;
-                advPlayer.loadTranslateScript(translateJson)
+                const translateJson = advPlayer._CSVToJSON(e.data.csvText)
+                advPlayer._tm.setTranslateJson = translateJson;
             }
-
-            advPlayer.start();
         };
         window.addEventListener('message', receiveJson, false);
         window.parent.postMessage({
@@ -49,16 +41,15 @@ async function init() {
         }
     
         await advPlayer.loadTrackScript(jsonPath);
-
-        if(isTranslate){
-            advPlayer.isTranslate = true
-            await advPlayer.LoadFont(zhcnFont); //load Font
-            await advPlayer.getAndLoadTranslateScript(jsonPath);
-        }
-
-        advPlayer.start();
     }
     
+    if(isTranslate){
+        advPlayer.isTranslate = true
+        await advPlayer.LoadFont(zhcnFont); //load Font
+        await advPlayer.loadTranslateScript(jsonPath);
+    }
+    
+    advPlayer.start();
 }
 
 function getQueryVariable(name, defRet = null) {
@@ -82,7 +73,7 @@ class AdvPlayer {
         zhJPOn : null,
         jpON : null
     }
-    _isTranslate = false;
+    _isTranslate = false
 
     constructor(){
         this.createApp();
@@ -90,7 +81,7 @@ class AdvPlayer {
     }
 
     set isTranslate(boolean){
-        this._isTranslate = boolean;
+        this._isTranslate = boolean
     }
 
     createApp(){
@@ -106,7 +97,7 @@ class AdvPlayer {
         this._app.view.setAttribute("id", "ShinyColors");
     
         document.body.appendChild(this._app.view);
-
+        
         this._resize();
         window.onresize = () => this._resize();
     }
@@ -142,36 +133,33 @@ class AdvPlayer {
         }
     }
 
-    async getAndLoadTranslateScript(jsonPath){
+    async loadTranslateScript(Script){
         if(!this._app || !this._tm){
             return Promise.reject();
         }
 
-        let TranslateUrl = await this._searchFromMasterList(jsonPath);
+        else if(typeof Script === 'string'){
+            let TranslateUrl = await this._searchFromMasterList(Script);
 
-        if(!TranslateUrl){
-            return Promise.reject();
-        }
+            if(!TranslateUrl){
+                return Promise.reject();
+            }
 
-        return new Promise((res, rej)=>{
-            this._app.loader.add("TranslateUrl", TranslateUrl)
-            .load((_, resources) => {
-                let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
-                if(translateJson){
-                    this._tm.setTranslateJson = translateJson;
-                }
-                res(translateJson);
+            return new Promise((res, rej)=>{
+                this._app.loader.add("TranslateUrl", TranslateUrl)
+                .load((_, resources) => {
+                    let translateJson = this._CSVToJSON(resources.TranslateUrl.data);
+                    if(translateJson){
+                        this._tm.setTranslateJson = translateJson;
+                    }
+                    res(translateJson);
+                })
             })
-        })
-    }
-
-    loadTranslateScript(Script){
-        if(!this._app || !this._tm){
-            return;
         }
 
-        if(typeof Script === 'object'){
+        else if(typeof Script === 'object'){
             this._tm.setTranslateJson = Script;
+            return Promise.resolve()
         }
     }
 
@@ -202,7 +190,7 @@ class AdvPlayer {
         return translateUrl;
     }
 
-    CSVToJSON = (text) => {
+    _CSVToJSON = (text) => {
         const json = {
             translater : '',
             url : '',
@@ -265,7 +253,7 @@ class AdvPlayer {
         let touchToStart = this._Menu.touchToStart;                
         touchToStart.anchor.set(0.5);
         touchToStart.position.set(568, 500);
-        this._app.stage.addChild(touchToStart);
+        this._app.stage.addChild(touchToStart)
         
         this._interestedEvents.forEach(e => {
             this._app.view.addEventListener(e, this._afterTouch);
@@ -307,8 +295,8 @@ class AdvPlayer {
             });
         });
 
-        //Trans
         if(this._isTranslate){
+            //Trans
             zhOn.anchor.set(0.5);
             jpON.anchor.set(0.5);
             zhJPOn.anchor.set(0.5);
@@ -332,19 +320,19 @@ class AdvPlayer {
             this._interestedEvents.forEach(e => { // autoplay is initialized to false
                 zhOn.on(e, () => {
                     this._tm.toggleLangDisplay();
-                    this._toggleLangDisplay();
+                    this._toggleLangDisplay()
                 });
                 jpON.on(e, () => {
                     this._tm.toggleLangDisplay();
-                    this._toggleLangDisplay();
+                    this._toggleLangDisplay()
                 });
                 zhJPOn.on(e, () => {
                     this._tm.toggleLangDisplay();
-                    this._toggleLangDisplay();
+                    this._toggleLangDisplay()
                 });
             });
         }
-        
+
         this._interestedEvents.forEach(e => {
             this._app.view.removeEventListener(e, this._afterTouch);
         });
@@ -389,9 +377,10 @@ class AdvPlayer {
     }
 
     _toggleLangDisplay(){
+
         let {jpON, zhOn, zhJPOn} = this._Menu;
-        let btns = [jpON, zhOn, zhJPOn];
-        let next = this._tm._translateLang;
+        let btns = [jpON, zhOn, zhJPOn]
+        let next = this._tm._translateLang
         
         btns.forEach((btn, index)=>{
             if(index === next){
@@ -404,7 +393,6 @@ class AdvPlayer {
             }
         })
     }
-
 
     _nextTrack = (ev) => {
         if (ev.target !== this._app.stage) {return ;}
