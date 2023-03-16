@@ -5,6 +5,13 @@ class TextManager {
         this._txtFrameMap = new Map();
         this._thisWaitTime = 0;
         this._typingEffect = null;
+        //translate
+        this._languageType = 0 // 0:jp 1:zh 2:jp+zh
+        this._currentText = {}
+    }
+
+    set languageType(type){
+        this._languageType = type
     }
 
     get stageObj() {
@@ -60,23 +67,27 @@ class TextManager {
             speakerObj.position.set(260, 468);
         }
 
+        this._currentText.jp = text
+
         if(trans){
             let translate = trans.shift();
             if(translate['trans'] != ''){
-                text = translate['trans'];
+                text = this._languageType === 1 ? translate['trans'] : text;
+                this._currentText.zh = translate['trans']
             }
         }
 
-        let family = trans? zhcnFont : usedFont;
+        let family = trans && this._languageType === 1 ? zhcnFont : usedFont;
         const textStyle = new PIXI.TextStyle({
             align: "left",
             fontFamily: family,
             fontSize: 24,
             padding: 3
         });
-        let textObj = new PIXI.Text('', textStyle);
-        this._container.addChildAt(textObj, noSpeaker ? 1 : 2);
-        textObj.position.set(240, 510);
+
+        this.textObj = new PIXI.Text('', textStyle);
+        this._container.addChildAt(this.textObj, noSpeaker ? 1 : 2);
+        this.textObj.position.set(240, 510);
 
         let word_index = 0;
         if (this._typingEffect != null) {
@@ -92,10 +103,30 @@ class TextManager {
             // if(!noSpeaker && speaker == 'プロデューサー'){
             //     managerSound.play()
             // }
-            textObj.text += text.charAt(word_index);
+            this.textObj.text += text.charAt(word_index);
             word_index += 1;
         }, 65);
 
+    }
+
+    toggleLanguage(){
+        if(this._typingEffect){
+            clearInterval(this._typingEffect);
+            this._typingEffect = null;
+        }
+
+        if(this.textObj){
+            let text;
+            if(this._languageType === 0){
+                text = this._currentText.jp;
+                this.textObj.style.fontFamily = usedFont
+            }
+            else if(this._languageType === 1){
+                text = this._currentText.zh;
+                this.textObj.style.fontFamily = zhcnFont
+            }
+            this.textObj.text = text ?? '';
+        }
     }
 
     _endNotification() {

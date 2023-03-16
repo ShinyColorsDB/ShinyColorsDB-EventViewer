@@ -1,8 +1,6 @@
 class TrackManager {
     constructor(app) {
         this._tracks = [];
-        this._translateJson = null
-        this._translateCounter = null
         this._current = 0;
         this._nextLabel = null;
         this._stopTrackIndex = -1;
@@ -21,6 +19,10 @@ class TrackManager {
         this._textTypingEffect = null;
         this._autoPlayEnabled = true;
         this._stopped = false;
+        //translate
+        this._translateJson = null
+        this._translateCounter = null
+        this._translateLang = 0 // 0:jp 1:zh 2:jp+zh
     }
 
     set setTrack(tracks) {
@@ -245,6 +247,12 @@ class TrackManager {
 
     toggleAutoplay() {
         this._autoPlayEnabled = !this._autoPlayEnabled;
+    }
+
+    toggleLangDisplay() {
+        this._translateLang = (this._translateLang+1) % 2;
+        this._textManager.languageType = this._translateLang
+        this._textManager.toggleLanguage()
     }
 
     _jumpTo(nextLabel) {
