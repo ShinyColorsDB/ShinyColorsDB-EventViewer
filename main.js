@@ -19,8 +19,15 @@ async function init() {
             }
             // prepareCanvas(null, e.data.iframeJson);
             advPlayer.loadTrackScript(e.data.iframeJson);
+            if (e.data.csvText) {
+                const translateJson = advPlayer._CSVToJSON(e.data.csvText)
+                advPlayer._tm.setTranslateJson = translateJson;
+            }
         };
         window.addEventListener('message', receiveJson, false);
+        window.parent.postMessage({
+            eventViewerIframeLoaded: true
+        }, "*")
     }
     else{
         if (eventId) {
@@ -168,7 +175,7 @@ class AdvPlayer {
 
     async LoadFont(FontName){
         const font = new FontFaceObserver(FontName);
-        return await font.load();
+        return await font.load(null, fontTimeout);
     }
 
     _getCSVUrl = (masterlist, jsonPath) => {
