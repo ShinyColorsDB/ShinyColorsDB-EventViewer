@@ -156,7 +156,7 @@ class AdvPlayer {
         return new Promise((res, rej)=>{
             this._app.loader.add("TranslateUrl", TranslateUrl)
             .load((_, resources) => {
-                let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
+                let translateJson = this.CSVToJSON(resources.TranslateUrl.data);                
                 if(translateJson){
                     this.isTranslate = true
                     this._tm.setTranslateJson = translateJson;

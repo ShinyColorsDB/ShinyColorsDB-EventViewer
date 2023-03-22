@@ -7,7 +7,7 @@ class TextManager {
         this._typingEffect = null;
         //translate
         this._languageType = 0 // 0:jp 1:zh 2:jp+zh
-        this._currentText = {}
+        this._currentText = {jp:'', zh:''}
     }
 
     set languageType(type){
@@ -32,7 +32,7 @@ class TextManager {
         this._endNotification();
     }
 
-    processTextFrameByInput(textFrame, speaker, text, trans) {
+    processTextFrameByInput(textFrame, speaker, text, translation) {
         this._thisWaitTime = 0;
         // let managerSound = this._loader.resources['managerSound'].sound;
 
@@ -67,17 +67,13 @@ class TextManager {
             speakerObj.position.set(260, 468);
         }
 
-        this._currentText.jp = text
-
-        if(trans){
-            let translate = trans.shift();
-            if(translate['trans'] != ''){
-                text = this._languageType === 1 ? translate['trans'] : text;
-                this._currentText.zh = translate['trans']
-            }
+        if(translation){
+            this._currentText.jp = text;
+            this._currentText.zh = translation['trans'];
+            text = this._languageType === 1 ? translation['trans'] : text;
         }
 
-        let family = trans && this._languageType === 1 ? zhcnFont : usedFont;
+        let family = translation && this._languageType === 1 ? zhcnFont : usedFont;
         const textStyle = new PIXI.TextStyle({
             align: "left",
             fontFamily: family,
@@ -109,7 +105,9 @@ class TextManager {
 
     }
 
-    toggleLanguage(){
+    toggleLanguage(type){
+        this.languageType = type
+        
         if(this._typingEffect){
             clearInterval(this._typingEffect);
             this._typingEffect = null;
@@ -119,11 +117,11 @@ class TextManager {
             let text;
             if(this._languageType === 0){
                 text = this._currentText.jp;
-                this.textObj.style.fontFamily = usedFont
+                this.textObj.style.fontFamily = usedFont;
             }
             else if(this._languageType === 1){
                 text = this._currentText.zh;
-                this.textObj.style.fontFamily = zhcnFont
+                this.textObj.style.fontFamily = zhcnFont;
             }
             this.textObj.text = text ?? '';
         }
