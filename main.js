@@ -25,7 +25,7 @@ async function init() {
                 const translateJson = advPlayer.CSVToJSON(e.data.csvText)
                 
                 await advPlayer.LoadFont(zhcnFont)
-                advPlayer.isTranslate = true
+                // advPlayer.isTranslate = true
                 // advPlayer._tm.setTranslateJson = translateJson;
                 advPlayer.loadTranslateScript(translateJson)
             }
@@ -51,7 +51,7 @@ async function init() {
         await advPlayer.loadTrackScript(jsonPath);
 
         if(isTranslate){
-            advPlayer.isTranslate = true
+            // advPlayer.isTranslate = true
             await advPlayer.LoadFont(zhcnFont); //load Font
             await advPlayer.getAndLoadTranslateScript(jsonPath);
         }
@@ -156,8 +156,9 @@ class AdvPlayer {
         return new Promise((res, rej)=>{
             this._app.loader.add("TranslateUrl", TranslateUrl)
             .load((_, resources) => {
-                let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
+                let translateJson = this.CSVToJSON(resources.TranslateUrl.data);                
                 if(translateJson){
+                    this.isTranslate = true
                     this._tm.setTranslateJson = translateJson;
                 }
                 res(translateJson);
@@ -171,6 +172,7 @@ class AdvPlayer {
         }
 
         if(typeof Script === 'object'){
+            this.isTranslate = true
             this._tm.setTranslateJson = Script;
         }
     }

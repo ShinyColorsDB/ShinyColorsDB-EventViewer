@@ -21,7 +21,7 @@ class TrackManager {
         this._stopped = false;
         //translate
         this._translateJson = null
-        this._translateCounter = null
+        this._translateCurrent = null
         this._translateLang = 0 // 0:jp 1:zh 2:jp+zh
     }
 
@@ -30,8 +30,8 @@ class TrackManager {
     }
 
     set setTranslateJson(json) {
-        this._translateCounter = json['table']
         this._translateJson = json;
+        // this._translateTable = json['table']
     }
 
     get currentTrack() {
@@ -158,17 +158,24 @@ class TrackManager {
             return;
         }
 
-        const { speaker, text, textCtrl, textWait, textFrame,
+        const { id, speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
             charSpine, charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
 
+        if(this._translateJson){
+            this._translateCurrent = this._translateJson.table.find((data)=> data.name == speaker && data.text == text)
+            if(select){
+                this._translateCurrent = this._translateJson.table.find((data)=> data.id == "select" && data.text == select)
+            }
+        }
+
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
-        this._textManager.processTextFrameByInput(textFrame, speaker, text, this._translateCounter);
-        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this));
+        this._textManager.processTextFrameByInput(textFrame, speaker, text, this._translateCurrent);
+        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), this._translateCurrent);
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
         this._spineManager.processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
@@ -251,8 +258,9 @@ class TrackManager {
 
     toggleLangDisplay() {
         this._translateLang = (this._translateLang+1) % 2;
-        this._textManager.languageType = this._translateLang
-        this._textManager.toggleLanguage()
+        this._textManager.toggleLanguage(this._translateLang)
+        this._selectManager.toggleLanguage(this._translateLang)
+
     }
 
     _jumpTo(nextLabel) {
