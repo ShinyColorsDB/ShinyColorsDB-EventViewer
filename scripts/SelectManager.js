@@ -21,7 +21,7 @@ class SelectManager {
         this._stMap.clear();
     }
 
-    processSelectByInput(selectDesc, nextLabel, onClick, afterSelection, translation) {
+    processSelectByInput(selectDesc, nextLabel, onClick, afterSelection, translated_text) {
         if (!selectDesc) { return; }
 
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
@@ -50,13 +50,13 @@ class SelectManager {
 
         }, { once: true });
 
-        if(translation){
+        if(translated_text){
             currentText.jp = selectDesc;
-            currentText.zh = translation['trans'];
-            selectDesc = this._languageType === 1 ? translation['trans'] : selectDesc;
+            currentText.zh = translated_text;
+            selectDesc = this._languageType === 1 ? translated_text : selectDesc;
         }
 
-        let family = translation && this._languageType === 1 ? zhcnFont : usedFont;
+        let family = translated_text && this._languageType === 1 ? zhcnFont : usedFont;
         let textObj = new PIXI.Text(selectDesc, {
             fontFamily: family,
             fontSize: 24,

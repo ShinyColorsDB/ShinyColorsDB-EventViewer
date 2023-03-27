@@ -32,7 +32,7 @@ class TextManager {
         this._endNotification();
     }
 
-    processTextFrameByInput(textFrame, speaker, text, translation) {
+    processTextFrameByInput(textFrame, speaker, text, translated_text) {
         this._thisWaitTime = 0;
         // let managerSound = this._loader.resources['managerSound'].sound;
 
@@ -67,13 +67,13 @@ class TextManager {
             speakerObj.position.set(260, 468);
         }
 
-        if(translation){
+        if(translated_text){
             this._currentText.jp = text;
-            this._currentText.zh = translation['trans'];
-            text = this._languageType === 1 ? translation['trans'] : text;
+            this._currentText.zh = translated_text;
+            text = this._languageType === 1 ? translated_text : text;
         }
 
-        let family = translation && this._languageType === 1 ? zhcnFont : usedFont;
+        let family = translated_text && this._languageType === 1 ? zhcnFont : usedFont;
         const textStyle = new PIXI.TextStyle({
             align: "left",
             fontFamily: family,
