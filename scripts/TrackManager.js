@@ -95,7 +95,6 @@ class TrackManager {
         if (this.currentTrack?.label == "end") {
             this._current = 0;
             this._selectManager.frameReset();
-            console.log(this._tracks)
             // this._loader.add("managerSound", './assets/002.m4a')
             this._loader.load(() => {
                 this._renderTrack();
