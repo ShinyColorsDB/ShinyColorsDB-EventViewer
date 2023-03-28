@@ -21,7 +21,6 @@ class TrackManager {
         this._stopped = false;
         //translate
         this._translateJson = null
-        this._translateCurrent = null
         this._translateLang = 0 // 0:jp 1:zh 2:jp+zh
     }
 
@@ -102,11 +101,14 @@ class TrackManager {
             });
             return;
         }
-        const { select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie,
+        const { speaker, text, select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie,
             charId, charType, charLabel, charCategory,
             stillType, stillId, stillCtrl, still
         } = this.currentTrack;
 
+        if(speaker && text && this._translateJson){
+            this.currentTrack.translated_text = this._translateJson.table.find((data)=> data.name == speaker && data.text == text)['trans']
+        }
         if (textFrame && textFrame != "off" && !this._loader.resources[`textFrame${textFrame}`]) {
             this._loader.add(`textFrame${textFrame}`, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
         }
@@ -136,6 +138,9 @@ class TrackManager {
         }
         if (select && !this._loader.resources[`selectFrame${this._selectManager.neededFrame}`]) {
             this._loader.add(`selectFrame${this._selectManager.neededFrame}`, `${assetUrl}/images/event/select_frame/00${this._selectManager.neededFrame}.png`);
+            if(this._translateJson){
+                this.currentTrack.translated_text = this._translateJson.table.find((data)=> data.id == "select" && data.text == select)['trans']
+            }
             this._selectManager.frameForward();
         }
         if (still && !this._loader.resources[`still${still}`] && still != "off") {
@@ -158,24 +163,17 @@ class TrackManager {
             return;
         }
 
-        const { id, speaker, text, textCtrl, textWait, textFrame,
+        const { speaker, text, textCtrl, textWait, textFrame,
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
             charSpine, charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
-            effectLabel, effectTarget, effectValue, waitType, waitTime } = this.currentTrack;
-
-        if(this._translateJson){
-            this._translateCurrent = this._translateJson.table.find((data)=> data.name == speaker && data.text == text)
-            if(select){
-                this._translateCurrent = this._translateJson.table.find((data)=> data.id == "select" && data.text == select)
-            }
-        }
+            effectLabel, effectTarget, effectValue, waitType, waitTime, translated_text} = this.currentTrack;
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
-        this._textManager.processTextFrameByInput(textFrame, speaker, text, this._translateCurrent);
-        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), this._translateCurrent);
+        this._textManager.processTextFrameByInput(textFrame, speaker, text, translated_text);
+        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text);
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
         this._spineManager.processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
@@ -260,7 +258,6 @@ class TrackManager {
         this._translateLang = (this._translateLang+1) % 2;
         this._textManager.toggleLanguage(this._translateLang)
         this._selectManager.toggleLanguage(this._translateLang)
-
     }
 
     _jumpTo(nextLabel) {
