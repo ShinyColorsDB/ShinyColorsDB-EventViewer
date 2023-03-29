@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "serve": "node serve.js"
+  },
+  "devDependencies": {
+    "express": "^4.18.2"
+  }
+}

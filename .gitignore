@@ -3,3 +3,5 @@
 .note.txt
 
 assets/*.woff2
+node_modules
+.vscode
