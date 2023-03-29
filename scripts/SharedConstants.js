@@ -1,3 +1,4 @@
+const vision = '1.0.0'
 const assetUrl = "https://viewer.shinycolors.moe";
 const usedFont = "theFont";
 const zhcnFont = "three";

@@ -18,15 +18,12 @@ async function init() {
                 return;
             }
 
-            // prepareCanvas(null, e.data.iframeJson);
             advPlayer.loadTrackScript(e.data.iframeJson);
 
             if (e.data.csvText) {
                 const translateJson = advPlayer.CSVToJSON(e.data.csvText)
                 
                 await advPlayer.LoadFont(zhcnFont)
-                // advPlayer.isTranslate = true
-                // advPlayer._tm.setTranslateJson = translateJson;
                 advPlayer.loadTranslateScript(translateJson)
             }
 
@@ -71,7 +68,6 @@ function getQueryVariable(name, defRet = null) {
     }
 }
 
-
 class AdvPlayer {
 
     _interestedEvents = ["click", "touchstart"];
@@ -90,6 +86,7 @@ class AdvPlayer {
     constructor(){
         this.createApp();
         this.createPlayer();
+        this._Hello()
     }
 
     set isTranslate(boolean){
@@ -100,12 +97,14 @@ class AdvPlayer {
         if (document.getElementById("ShinyColors")) {
             document.getElementById("ShinyColors").remove();
         }
-    
+        
+        PIXI.utils.skipHello()
+
         this._app = new PIXI.Application({
             width: 1136,
-            height: 640
+            height: 640,
         });
-    
+        
         this._app.view.setAttribute("id", "ShinyColors");
     
         document.body.appendChild(this._app.view);
@@ -371,4 +370,17 @@ class AdvPlayer {
 
         this._tm._renderTrack();
     };
+
+    _Hello(){
+        const log = [
+            `\n\n %c  %c   ShinyColors Event Viewer v${vision}  %c  %c  https://github.com/ShinyColorsDB/ShinyColorsDB-EventViewer  %c \n\n`,
+            'background: #28de10; padding:5px 0;',
+            'color: #28de10; background: #030307; padding:5px 0;',
+            'background: #28de10; padding:5px 0;',
+            'background: #5eff84; padding:5px 0;',
+            'background: #28de10; padding:5px 0;',
+        ];
+    
+        console.log(...log);
+    }
 }
