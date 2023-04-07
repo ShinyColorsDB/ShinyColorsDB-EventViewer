@@ -23,8 +23,10 @@ async function init() {
             if (e.data.csvText) {
                 const translateJson = advPlayer.CSVToJSON(e.data.csvText)
                 
-                await advPlayer.LoadFont(zhcnFont)
-                advPlayer.loadTranslateScript(translateJson)
+                if(translateJson) {
+                    await advPlayer.LoadFont(zhcnFont)
+                    advPlayer.loadTranslateScript(translateJson)
+                }
             }
 
             advPlayer.start();
@@ -160,7 +162,7 @@ class AdvPlayer {
             .load((_, resources) => {
                 let translateJson = this.CSVToJSON(resources.TranslateUrl.data);                
                 if(translateJson){
-                    this.isTranslate = true
+                    this._isTranslate = true
                     this._tm.setTranslateJson = translateJson;
                 }
                 res(translateJson);
@@ -174,7 +176,7 @@ class AdvPlayer {
         }
 
         if(typeof Script === 'object'){
-            this.isTranslate = true
+            this._isTranslate = true
             this._tm.setTranslateJson = Script;
         }
     }
@@ -207,11 +209,17 @@ class AdvPlayer {
     }
 
     CSVToJSON = (text) => {
+
+        if(text === ""){
+            return
+        }
+
         const json = {
             translater : '',
             url : '',
             table : []
         }
+        
         const table = text.split(/\r\n/).slice(1);    
         table.forEach(row => {
             const columns = row.split(',');
