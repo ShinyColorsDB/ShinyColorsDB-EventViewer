@@ -14,8 +14,11 @@ class BgManager {
         this._bgMap.clear();
     }
 
-    processBgByInput(bg, bgEffect, bgEffectTime) {
-        if (bg && bgEffect) {
+    processBgByInput(bg, bgEffect, bgEffectTime, isFastForward) {
+        if (isFastForward) {
+            this._insertNewBg(bg, 1, true);
+        }
+        else if (bg && bgEffect) {
             this._changeBgByEffect(bg, bgEffect, bgEffectTime);
         }
         else if (bg && !bgEffect) {

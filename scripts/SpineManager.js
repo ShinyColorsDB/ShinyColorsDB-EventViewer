@@ -36,7 +36,7 @@ class SpineManager {
     }
 
     processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect) {
+        charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect, isFastForward) {
         if (!charLabel) { return; }
         if (charId) {
             this._currSpine[charLabel] = {
@@ -81,6 +81,7 @@ class SpineManager {
             if (charEffect.type == "from") { thisSpine.alpha = 1; }
             if (charEffect?.x) { charEffect.x += thisSpine.x; }
             if (charEffect?.y) { charEffect.y += thisSpine.y; }
+            if (isFastForward) { charEffect.time = 50; }
             Utilities.fadingEffect(thisSpine, charEffect);
         }
 
@@ -104,7 +105,7 @@ class SpineManager {
             this._setCharacterAnimation(charAnim5, charAnim5Loop, 4, thisSpine);
         }
 
-        if (charLipAnim) {
+        if (charLipAnim && !isFastForward) {
             const trackEntry = this._setCharacterAnimation(charLipAnim, true, 5, thisSpine);
             if (lipAnimDuration) {
                 this._timeoutToClear = setTimeout(() => {
