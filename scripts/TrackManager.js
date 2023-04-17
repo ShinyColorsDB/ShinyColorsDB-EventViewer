@@ -22,8 +22,9 @@ class TrackManager {
         //translate
         this._translateJson = null;
         this._translateLang = 0; // 0:jp 1:zh 2:jp+zh
-
         this._selecting = false;
+
+        this._fastForwardMode = false;
     }
 
     set setTrack(tracks) {
@@ -53,6 +54,13 @@ class TrackManager {
 
     set nextLabel(v) {
         this._nextLabel = v;
+    }
+
+    frameJumpListener() {
+        window.addEventListener('message', (e) => {
+            if (!e.origin) { return; }
+
+        });
     }
 
     destroy() {
@@ -171,16 +179,16 @@ class TrackManager {
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
             effectLabel, effectTarget, effectValue, waitType, waitTime, translated_text } = this.currentTrack;
 
-        this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
-        this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
+        this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime, this._fastForwardMode);
+        this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime, this._fastForwardMode);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
-        this._textManager.processTextFrameByInput(textFrame, speaker, text, translated_text);
+        this._textManager.processTextFrameByInput(textFrame, speaker, text, translated_text, this._fastForwardMode);
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text);
-        this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl);
-        this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager));
+        this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl, this._fastForwardMode);
+        this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager), this._fastForwardMode);
         this._spineManager.processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect);
-        this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue);
+            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect, this._fastForwardMode);
+        this._effectManager.processEffectByInput(effectLabel, effectTarget, effectValue, this._fastForwardMode);
 
         if (nextLabel == "end") { // will be handled at forward();
             this._nextLabel = "end";
@@ -199,7 +207,7 @@ class TrackManager {
         else if (text && this.autoplay && !waitType) {
             this._textTypingEffect = this._textManager.typingEffect;
             // this._loader.resources['managerSound'].sound.stop()
-            if (voice) {// here to add autoplay for both text and voice condition
+            if (voice) { // here to add autoplay for both text and voice condition
                 const voiceTimeout = this._soundManager.voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this.autoplay) { return; }
@@ -207,7 +215,7 @@ class TrackManager {
                     this._timeoutToClear = null;
                 }, voiceTimeout);
             }
-            else {// here to add autoplay for only text condition
+            else { // here to add autoplay for only text condition
                 const textTimeout = this._textManager.textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this.autoplay) { return; }
@@ -237,7 +245,6 @@ class TrackManager {
         else {
             this._renderTrack();
         }
-
     }
 
     endOfEvent() {
@@ -272,6 +279,10 @@ class TrackManager {
             return;
         }
         throw new Error(`label ${nextLabel} is not found.`);
+    }
+
+    _jumpToFrame(frame) {
+        this._current = frame;
     }
 
     _afterSelection() {

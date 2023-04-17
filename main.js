@@ -22,7 +22,7 @@ async function init() {
 
             if (e.data.csvText) {
                 const translateJson = advPlayer.CSVToJSON(e.data.csvText);
-                
+
                 if (translateJson) {
                     await advPlayer.LoadFont(zhcnFont);
                     advPlayer.loadTranslateScript(translateJson);
@@ -58,8 +58,6 @@ async function init() {
         advPlayer.start();
     }
 
-}
-
 function getQueryVariable(name, defRet = null) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     const result = window.location.search.substring(1).match(reg);
@@ -85,6 +83,8 @@ class AdvPlayer {
     };
     _switchLangBtn_texture = [];
     _isTranslate = false;
+    _tm = undefined;
+    _app = undefined;
 
     constructor() {
         this.createApp();
@@ -100,7 +100,6 @@ class AdvPlayer {
         if (document.getElementById("ShinyColors")) {
             document.getElementById("ShinyColors").remove();
         }
-
         PIXI.utils.skipHello();
 
         this._app = new PIXI.Application({
@@ -384,7 +383,7 @@ class AdvPlayer {
             'background: #5eff84; padding:5px 0;',
             'background: #28de10; padding:5px 0;',
         ];
-    
+
         console.log(...log);
     }
 }

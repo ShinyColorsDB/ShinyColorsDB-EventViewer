@@ -3,7 +3,7 @@ class Utilities {
      * @param {PIXIObject} pixiObj
      * @param {{type: fromTo,alpha: targetValue, time: effectLastingTime, ease: easingType}} effectValue
     **/
-    static fadingEffect(pixiObj, effectValue) {
+    static fadingEffect(pixiObj, effectValue, isFastForward) {
 
         const thisEffect = this._getFromTo(effectValue.type);
         delete effectValue.type;
@@ -11,6 +11,9 @@ class Utilities {
         if (effectValue?.time) {
             effectValue.duration = effectValue.time / 1000;
             delete effectValue.time;
+        }
+        if (isFastForward) {
+            effectValue.duration = 50 / 1000;
         }
         if (!effectValue?.ease) {
             effectValue.ease = "easeInOutQuad";
