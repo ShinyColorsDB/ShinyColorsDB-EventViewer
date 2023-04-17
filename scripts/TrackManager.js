@@ -19,6 +19,7 @@ class TrackManager {
         this._textTypingEffect = null;
         this._autoPlayEnabled = true;
         this._stopped = false;
+        this._selecting = false;
         //translate
         this._translateJson = null
         this._translateLang = 0 // 0:jp 1:zh 2:jp+zh
@@ -30,7 +31,6 @@ class TrackManager {
 
     set setTranslateJson(json) {
         this._translateJson = json;
-        // this._translateTable = json['table']
     }
 
     get currentTrack() {
@@ -155,6 +155,7 @@ class TrackManager {
     }
 
     _renderTrack() {
+        if (this._selecting) {return ; }
         if (this._stopped) { return; }
         console.log(`${this._current}/${this._tracks.length - 1}`, this.currentTrack);
 
@@ -192,6 +193,7 @@ class TrackManager {
         }
         else if (select && textCtrl) { // do nothing, waiting for selection
             this._app.stage.interactive = false;
+            this._selecting = true;
         }
         else if (text && this.autoplay && !waitType) {
             this._textTypingEffect = this._textManager.typingEffect;
@@ -273,6 +275,7 @@ class TrackManager {
 
     _afterSelection() {
         this._app.stage.interactive = true;
+        this._selecting = false;
         this._renderTrack();
     }
 }

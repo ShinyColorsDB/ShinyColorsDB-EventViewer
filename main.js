@@ -381,7 +381,7 @@ class AdvPlayer {
 
     _Hello(){
         const log = [
-            `\n\n %c  %c   ShinyColors Event Viewer v${vision}  %c  %c  https://github.com/ShinyColorsDB/ShinyColorsDB-EventViewer  %c \n\n`,
+            `\n\n %c  %c   ShinyColors Event Viewer   %c  %c  https://github.com/ShinyColorsDB/ShinyColorsDB-EventViewer  %c \n\n`,
             'background: #28de10; padding:5px 0;',
             'color: #28de10; background: #030307; padding:5px 0;',
             'background: #28de10; padding:5px 0;',
