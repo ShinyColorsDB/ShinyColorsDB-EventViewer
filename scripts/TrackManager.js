@@ -20,8 +20,10 @@ class TrackManager {
         this._autoPlayEnabled = true;
         this._stopped = false;
         //translate
-        this._translateJson = null
-        this._translateLang = 0 // 0:jp 1:zh 2:jp+zh
+        this._translateJson = null;
+        this._translateLang = 0; // 0:jp 1:zh 2:jp+zh
+
+        this._selecting = false;
     }
 
     set setTrack(tracks) {
@@ -106,8 +108,8 @@ class TrackManager {
             stillType, stillId, stillCtrl, still
         } = this.currentTrack;
 
-        if(speaker && text && this._translateJson){
-            this.currentTrack.translated_text = this._translateJson.table.find((data)=> data.name == speaker && data.text == text)['trans']
+        if (speaker && text && this._translateJson) {
+            this.currentTrack.translated_text = this._translateJson.table.find((data) => data.name == speaker && data.text == text)['trans'];
         }
         if (textFrame && textFrame != "off" && !this._loader.resources[`textFrame${textFrame}`]) {
             this._loader.add(`textFrame${textFrame}`, `${assetUrl}/images/event/text_frame/${textFrame}.png`);
@@ -138,8 +140,8 @@ class TrackManager {
         }
         if (select && !this._loader.resources[`selectFrame${this._selectManager.neededFrame}`]) {
             this._loader.add(`selectFrame${this._selectManager.neededFrame}`, `${assetUrl}/images/event/select_frame/00${this._selectManager.neededFrame}.png`);
-            if(this._translateJson){
-                this.currentTrack.translated_text = this._translateJson.table.find((data)=> data.id == "select" && data.text == select)['trans']
+            if (this._translateJson) {
+                this.currentTrack.translated_text = this._translateJson.table.find((data) => data.id == "select" && data.text == select)['trans'];
             }
             this._selectManager.frameForward();
         }
@@ -155,7 +157,7 @@ class TrackManager {
     }
 
     _renderTrack() {
-        if (this._stopped) { return; }
+        if (this._stopped || this._selecting) { return; }
         console.log(`${this._current}/${this._tracks.length - 1}`, this.currentTrack);
 
         if (this.currentTrack.label == "end") {
@@ -167,7 +169,7 @@ class TrackManager {
             bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, voiceKeep, lip, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
             charSpine, charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
             charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
-            effectLabel, effectTarget, effectValue, waitType, waitTime, translated_text} = this.currentTrack;
+            effectLabel, effectTarget, effectValue, waitType, waitTime, translated_text } = this.currentTrack;
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime);
@@ -192,6 +194,7 @@ class TrackManager {
         }
         else if (select && textCtrl) { // do nothing, waiting for selection
             this._app.stage.interactive = false;
+            this._selecting = true;
         }
         else if (text && this.autoplay && !waitType) {
             this._textTypingEffect = this._textManager.typingEffect;
@@ -255,9 +258,9 @@ class TrackManager {
     }
 
     toggleLangDisplay() {
-        this._translateLang = (this._translateLang+1) % 2;
-        this._textManager.toggleLanguage(this._translateLang)
-        this._selectManager.toggleLanguage(this._translateLang)
+        this._translateLang = (this._translateLang + 1) % 2;
+        this._textManager.toggleLanguage(this._translateLang);
+        this._selectManager.toggleLanguage(this._translateLang);
     }
 
     _jumpTo(nextLabel) {
@@ -273,6 +276,7 @@ class TrackManager {
 
     _afterSelection() {
         this._app.stage.interactive = true;
+        this._selecting = false;
         this._renderTrack();
     }
 }

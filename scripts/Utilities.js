@@ -10,7 +10,7 @@ class Utilities {
 
         if (effectValue?.time) {
             effectValue.duration = effectValue.time / 1000;
-            delete effectValue.time
+            delete effectValue.time;
         }
         if (!effectValue?.ease) {
             effectValue.ease = "easeInOutQuad";

@@ -5,7 +5,7 @@ class SelectManager {
         this._stMap = new Map();
         this._neededFrame = 1;
         //translate
-        this._languageType = 0 // 0:jp 1:zh 2:jp+zh
+        this._languageType = 0; // 0:jp 1:zh 2:jp+zh
     }
 
     get stageObj() {
@@ -27,11 +27,11 @@ class SelectManager {
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
             let thisSelectContainer = new PIXI.Container();
             thisSelectContainer.addChild(new PIXI.Sprite(this._loader.resources[`selectFrame${this.neededFrame}`].texture));
-            let currentText = {jp:'', zh:''}
-            this._stMap.set(`selectFrame${this.neededFrame}`, {thisSelectContainer : thisSelectContainer, currentText : currentText});
+            let currentText = { jp: '', zh: '' };
+            this._stMap.set(`selectFrame${this.neededFrame}`, { thisSelectContainer: thisSelectContainer, currentText: currentText });
         }
 
-        let {thisSelectContainer, currentText} = this._stMap.get(`selectFrame${this.neededFrame}`);
+        let { thisSelectContainer, currentText } = this._stMap.get(`selectFrame${this.neededFrame}`);
         thisSelectContainer.interactive = true;
         const localBound = thisSelectContainer.getLocalBounds();
         thisSelectContainer.pivot.set(localBound.width / 2, localBound.height / 2);
@@ -50,7 +50,7 @@ class SelectManager {
 
         }, { once: true });
 
-        if(translated_text){
+        if (translated_text) {
             currentText.jp = selectDesc;
             currentText.zh = translated_text;
             selectDesc = this._languageType === 1 ? translated_text : selectDesc;
@@ -98,29 +98,29 @@ class SelectManager {
         this._neededFrame = 1;
     }
 
-    toggleLanguage(type){
-        this._languageType = type
-        this._stMap.forEach((value, key)=>{
-            let {thisSelectContainer, currentText} = value
-            let textObj = thisSelectContainer.getChildAt(1)
-            if(this._languageType === 0){
+    toggleLanguage(type) {
+        this._languageType = type;
+        this._stMap.forEach((value, key) => {
+            let { thisSelectContainer, currentText } = value;
+            let textObj = thisSelectContainer.getChildAt(1);
+            if (this._languageType === 0) {
                 textObj.style.fontFamily = usedFont;
                 textObj.text = currentText.jp;
             }
-            else if(this._languageType === 1){
+            else if (this._languageType === 1) {
                 textObj.style.fontFamily = zhcnFont;
                 textObj.text = currentText.zh;
             }
-        })
+        });
     }
-    
+
     _disableInteractive() {
         this._stMap.forEach(st => {
             st.interactive = false;
         });
     }
 
-    
+
     _fadeOutOption() {
         this._stMap.forEach(st => {
             TweenMax.to(st, 1, { alpha: 0, ease: Power3.easeOut });

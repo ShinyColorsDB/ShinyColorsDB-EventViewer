@@ -6,12 +6,12 @@ class TextManager {
         this._thisWaitTime = 0;
         this._typingEffect = null;
         //translate
-        this._languageType = 0 // 0:jp 1:zh 2:jp+zh
-        this._currentText = {jp:'', zh:''}
+        this._languageType = 0; // 0:jp 1:zh 2:jp+zh
+        this._currentText = { jp: '', zh: '' };
     }
 
-    set languageType(type){
-        this._languageType = type
+    set languageType(type) {
+        this._languageType = type;
     }
 
     get stageObj() {
@@ -67,7 +67,7 @@ class TextManager {
             speakerObj.position.set(260, 468);
         }
 
-        if(translated_text){
+        if (translated_text) {
             this._currentText.jp = text;
             this._currentText.zh = translated_text;
             text = this._languageType === 1 ? translated_text : text;
@@ -105,21 +105,21 @@ class TextManager {
 
     }
 
-    toggleLanguage(type){
-        this.languageType = type
-        
-        if(this._typingEffect){
+    toggleLanguage(type) {
+        this.languageType = type;
+
+        if (this._typingEffect) {
             clearInterval(this._typingEffect);
             this._typingEffect = null;
         }
 
-        if(this.textObj){
+        if (this.textObj) {
             let text;
-            if(this._languageType === 0){
+            if (this._languageType === 0) {
                 text = this._currentText.jp;
                 this.textObj.style.fontFamily = usedFont;
             }
-            else if(this._languageType === 1){
+            else if (this._languageType === 1) {
                 text = this._currentText.zh;
                 this.textObj.style.fontFamily = zhcnFont;
             }
