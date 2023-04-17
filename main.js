@@ -18,16 +18,15 @@ async function init() {
                 return;
             }
 
-            // prepareCanvas(null, e.data.iframeJson);
             advPlayer.loadTrackScript(e.data.iframeJson);
 
             if (e.data.csvText) {
                 const translateJson = advPlayer.CSVToJSON(e.data.csvText);
-
-                await advPlayer.LoadFont(zhcnFont);
-                // advPlayer.isTranslate = true
-                // advPlayer._tm.setTranslateJson = translateJson;
-                advPlayer.loadTranslateScript(translateJson);
+                
+                if (translateJson) {
+                    await advPlayer.LoadFont(zhcnFont);
+                    advPlayer.loadTranslateScript(translateJson);
+                }
             }
 
             advPlayer.start();
@@ -90,6 +89,7 @@ class AdvPlayer {
     constructor() {
         this.createApp();
         this.createPlayer();
+        this._Hello();
     }
 
     set isTranslate(boolean) {
@@ -101,9 +101,11 @@ class AdvPlayer {
             document.getElementById("ShinyColors").remove();
         }
 
+        PIXI.utils.skipHello();
+
         this._app = new PIXI.Application({
             width: 1136,
-            height: 640
+            height: 640,
         });
 
         this._app.view.setAttribute("id", "ShinyColors");
@@ -161,7 +163,7 @@ class AdvPlayer {
                 .load((_, resources) => {
                     let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
                     if (translateJson) {
-                        this.isTranslate = true;
+                        this._isTranslate = true
                         this._tm.setTranslateJson = translateJson;
                     }
                     res(translateJson);
@@ -175,7 +177,7 @@ class AdvPlayer {
         }
 
         if (typeof Script === 'object') {
-            this.isTranslate = true;
+            this._isTranslate = true
             this._tm.setTranslateJson = Script;
         }
     }
@@ -208,6 +210,7 @@ class AdvPlayer {
     };
 
     CSVToJSON = (text) => {
+        if (text === "") { return; }
         const json = {
             translater: '',
             url: '',
@@ -371,4 +374,17 @@ class AdvPlayer {
 
         this._tm._renderTrack();
     };
+
+    _Hello() {
+        const log = [
+            `\n\n %c  %c   ShinyColors Event Viewer   %c  %c  https://github.com/ShinyColorsDB/ShinyColorsDB-EventViewer  %c \n\n`,
+            'background: #28de10; padding:5px 0;',
+            'color: #28de10; background: #030307; padding:5px 0;',
+            'background: #28de10; padding:5px 0;',
+            'background: #5eff84; padding:5px 0;',
+            'background: #28de10; padding:5px 0;',
+        ];
+    
+        console.log(...log);
+    }
 }
