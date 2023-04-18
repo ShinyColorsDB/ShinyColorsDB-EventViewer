@@ -181,7 +181,7 @@ class TrackManager {
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime, this._fastForwardMode);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime, this._fastForwardMode);
-        this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
+        this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this), this._fastForwardMode);
         this._textManager.processTextFrameByInput(textFrame, speaker, text, translated_text, this._fastForwardMode);
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text);
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl, this._fastForwardMode);
@@ -206,7 +206,6 @@ class TrackManager {
         }
         else if (text && this.autoplay && !waitType) {
             this._textTypingEffect = this._textManager.typingEffect;
-            // this._loader.resources['managerSound'].sound.stop()
             if (voice) { // here to add autoplay for both text and voice condition
                 const voiceTimeout = this._soundManager.voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
@@ -228,19 +227,33 @@ class TrackManager {
             return;
         }
         else if (movie) {
-            return;
+            if (this._fastForwardMode) {
+                this._renderTrack();
+                return;
+            }
+            else { return; }
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
-            this._timeoutToClear = setTimeout(() => {
+            if (this._fastForwardMode) {
                 this._renderTrack();
-                this._timeoutToClear = null;
-            }, waitTime);
+            }
+            else {
+                this._timeoutToClear = setTimeout(() => {
+                    this._renderTrack();
+                    this._timeoutToClear = null;
+                }, waitTime);
+            }
         }
         else if (waitType == "effect") {
-            this._timeoutToClear = setTimeout(() => {
+            if (this._fastForwardMode) {
                 this._renderTrack();
-                this._timeoutToClear = null;
-            }, effectValue.time);
+            }
+            else {
+                this._timeoutToClear = setTimeout(() => {
+                    this._renderTrack();
+                    this._timeoutToClear = null;
+                }, effectValue.time);
+            }
         }
         else {
             this._renderTrack();

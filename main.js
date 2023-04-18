@@ -163,7 +163,7 @@ class AdvPlayer {
                 .load((_, resources) => {
                     let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
                     if (translateJson) {
-                        this._isTranslate = true
+                        this._isTranslate = true;
 
                         this._tm.setTranslateJson = translateJson;
                     }
@@ -178,7 +178,7 @@ class AdvPlayer {
         }
 
         if (typeof Script === 'object') {
-            this._isTranslate = true
+            this._isTranslate = true;
             this._tm.setTranslateJson = Script;
         }
     }
