@@ -14,7 +14,7 @@ class StillManager {
         this._stMap.clear();
     }
 
-    processStillByInput(still, stillType, stillId, stillCtrl) {
+    processStillByInput(still, stillType, stillId, stillCtrl, isFastForward) {
         if (stillType && stillId) {
             this._changeStillByType(stillType, stillId);
         }

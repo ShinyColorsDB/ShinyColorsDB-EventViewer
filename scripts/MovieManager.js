@@ -12,8 +12,8 @@ class MovieManager {
         this._container.removeChildren(0, this._container.children.length);
     }
 
-    processMovieByInput(movie, onMovieEnded) {
-        if (!movie) { return; }
+    processMovieByInput(movie, onMovieEnded, isFastForwardMode) {
+        if (!movie || isFastForwardMode) { return; }
 
         this._onMovieEnded = onMovieEnded;
         this._playMovie(movie);

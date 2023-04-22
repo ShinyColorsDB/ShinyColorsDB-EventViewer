@@ -14,7 +14,7 @@ class EffectManager {
         this._effectMap.clear();
     }
 
-    processEffectByInput(effectLabel, effectTarget, effectValue) {
+    processEffectByInput(effectLabel, effectTarget, effectValue, isFastForward) {
         if (!effectLabel) { return; }
         if (!this._effectMap.has(effectLabel)) {
             let thisEffect = null;

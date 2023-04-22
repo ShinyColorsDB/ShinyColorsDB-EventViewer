@@ -22,7 +22,6 @@ async function init() {
 
             if (e.data.csvText) {
                 const translateJson = advPlayer.CSVToJSON(e.data.csvText);
-                
                 if (translateJson) {
                     await advPlayer.LoadFont(zhcnFont);
                     advPlayer.loadTranslateScript(translateJson);
@@ -57,7 +56,6 @@ async function init() {
 
         advPlayer.start();
     }
-
 }
 
 function getQueryVariable(name, defRet = null) {
@@ -85,6 +83,8 @@ class AdvPlayer {
     };
     _switchLangBtn_texture = [];
     _isTranslate = false;
+    _tm = undefined;
+    _app = undefined;
 
     constructor() {
         this.createApp();
@@ -163,7 +163,8 @@ class AdvPlayer {
                 .load((_, resources) => {
                     let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
                     if (translateJson) {
-                        this._isTranslate = true
+                        this._isTranslate = true;
+
                         this._tm.setTranslateJson = translateJson;
                     }
                     res(translateJson);
@@ -177,7 +178,7 @@ class AdvPlayer {
         }
 
         if (typeof Script === 'object') {
-            this._isTranslate = true
+            this._isTranslate = true;
             this._tm.setTranslateJson = Script;
         }
     }
@@ -384,7 +385,7 @@ class AdvPlayer {
             'background: #5eff84; padding:5px 0;',
             'background: #28de10; padding:5px 0;',
         ];
-    
+
         console.log(...log);
     }
 }

@@ -29,7 +29,8 @@ class SoundManager {
         }
     }
 
-    processSoundByInput(bgm, se, voice, charLabel, onVoiceEnd) {
+    processSoundByInput(bgm, se, voice, charLabel, onVoiceEnd, isFastForward) {
+        if (isFastForward) { return; }
         if (bgm) {
             this._playBgm(bgm);
         }

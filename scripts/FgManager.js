@@ -15,7 +15,7 @@ class FgManager {
         this._fgMap.clear();
     }
 
-    processFgByInput(fg, fgEffect, fgEffectTime) {
+    processFgByInput(fg, fgEffect, fgEffectTime, isFastForward) {
         if (fg == "off") {
             if (this._container.children.length) {
                 this._container.removeChildren(0, this._container.children.length);
@@ -25,7 +25,12 @@ class FgManager {
             this._fadeOutFg();
         }
         else if (fg && fgEffect) {
-            this._changeFgByEffect(fg, fgEffect, fgEffectTime);
+            if (isFastForward) {
+                this._changeFg(fg, 0, 1);
+            }
+            else {
+                this._changeFgByEffect(fg, fgEffect, fgEffectTime);
+            }
         }
         else if (fg && !fgEffect) {
             this._changeFg(fg, 0, 1);

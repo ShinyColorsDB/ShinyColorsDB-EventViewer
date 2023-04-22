@@ -32,7 +32,7 @@ class TextManager {
         this._endNotification();
     }
 
-    processTextFrameByInput(textFrame, speaker, text, translated_text) {
+    processTextFrameByInput(textFrame, speaker, text, translated_text, isFastForward) {
         this._thisWaitTime = 0;
         // let managerSound = this._loader.resources['managerSound'].sound;
 
@@ -43,7 +43,7 @@ class TextManager {
             if (textFrame == "off") { return; }
         }
 
-        this._thisWaitTime = text.length * 300 + 500;
+        this._thisWaitTime = isFastForward ? 50 : text.length * 300 + 500;
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[`textFrame${textFrame}`].texture));
@@ -89,20 +89,25 @@ class TextManager {
         if (this._typingEffect != null) {
             clearInterval(this._typingEffect);
         }
-        this._typingEffect = setInterval(() => {
-            if (word_index === text.length) {
-                clearInterval(this._typingEffect);
-                // managerSound.stop()
-                this._typingEffect = null;
-            }
 
-            // if(!noSpeaker && speaker == 'プロデューサー'){
-            //     managerSound.play()
-            // }
-            this.textObj.text += text.charAt(word_index);
-            word_index += 1;
-        }, 65);
+        if (isFastForward) {
+            this.textObj.text = text;
+        }
+        else {
+            this._typingEffect = setInterval(() => {
+                if (word_index === text.length) {
+                    clearInterval(this._typingEffect);
+                    // managerSound.stop()
+                    this._typingEffect = null;
+                }
 
+                // if(!noSpeaker && speaker == 'プロデューサー'){
+                //     managerSound.play()
+                // }
+                this.textObj.text += text.charAt(word_index);
+                word_index += 1;
+            }, 65);
+        }
     }
 
     toggleLanguage(type) {

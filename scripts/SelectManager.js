@@ -120,7 +120,6 @@ class SelectManager {
         });
     }
 
-
     _fadeOutOption() {
         this._stMap.forEach(st => {
             TweenMax.to(st, 1, { alpha: 0, ease: Power3.easeOut });
