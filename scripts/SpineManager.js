@@ -22,6 +22,7 @@ class SpineManager {
             stand_costume: 'stand_costume',
 
             stand_jersey: 'stand_jersey',
+            stand_silhouette: 'stand_silhouette',
         };
 
         this._currSpine = {};
