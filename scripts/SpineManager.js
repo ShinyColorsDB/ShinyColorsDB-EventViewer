@@ -19,7 +19,10 @@ class SpineManager {
             stand_costume_flex: 'stand_costume',
 
             stand: 'stand',
-            stand_costume: 'stand_costume'
+            stand_costume: 'stand_costume',
+
+            stand_jersey: 'stand_jersey',
+            stand_silhouette: 'stand_silhouette',
         };
 
         this._currSpine = {};

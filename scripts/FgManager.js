@@ -28,7 +28,12 @@ class FgManager {
             this._fadeOutFg();
         }
         else if (fg && fgEffect) {
-            this._changeFgByEffect(fg, fgEffect, fgEffectTime);
+            if (isFastForward) {
+                this._changeFg(fg, 0, 1);
+            }
+            else {
+                this._changeFgByEffect(fg, fgEffect, fgEffectTime);
+            }
         }
         else if (fg && !fgEffect) {
             this._changeFg(fg, 0, 1);

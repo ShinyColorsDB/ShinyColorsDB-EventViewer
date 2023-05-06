@@ -56,11 +56,12 @@ class TrackManager {
         this._nextLabel = v;
     }
 
-    frameJumpListener() {
-        window.addEventListener('message', (e) => {
-            if (!e.origin) { return; }
+    set fastForward(f) {
+        this._fastForwardMode = f;
+    }
 
-        });
+    set stopTrack(s) {
+        this._stopTrackIndex = s;
     }
 
     destroy() {
@@ -181,7 +182,7 @@ class TrackManager {
 
         this._bgManager.processBgByInput(bg, bgEffect, bgEffectTime, this._fastForwardMode);
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime, this._fastForwardMode);
-        this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this));
+        this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this), this._fastForwardMode);
         this._textManager.processTextFrameByInput(textFrame, speaker, text, translated_text, this._fastForwardMode);
         this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text);
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl, this._fastForwardMode);
@@ -196,7 +197,10 @@ class TrackManager {
 
         this.forward();
 
-        if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
+        if (this._current - 1 == this._stopTrackIndex) { // do nothing and wait
+            return;
+        }
+        else if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
             this._app.stage.interactive = false;
             this._renderTrack();
         }
@@ -228,19 +232,33 @@ class TrackManager {
             return;
         }
         else if (movie) {
-            return;
+            if (this._fastForwardMode) {
+                this._renderTrack();
+                return;
+            }
+            else { return; }
         }
         else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
-            this._timeoutToClear = setTimeout(() => {
+            if (this._fastForwardMode) {
                 this._renderTrack();
-                this._timeoutToClear = null;
-            }, waitTime);
+            }
+            else {
+                this._timeoutToClear = setTimeout(() => {
+                    this._renderTrack();
+                    this._timeoutToClear = null;
+                }, waitTime);
+            }
         }
         else if (waitType == "effect") {
-            this._timeoutToClear = setTimeout(() => {
+            if (this._fastForwardMode) {
                 this._renderTrack();
-                this._timeoutToClear = null;
-            }, effectValue.time);
+            }
+            else {
+                this._timeoutToClear = setTimeout(() => {
+                    this._renderTrack();
+                    this._timeoutToClear = null;
+                }, effectValue.time);
+            }
         }
         else {
             this._renderTrack();
