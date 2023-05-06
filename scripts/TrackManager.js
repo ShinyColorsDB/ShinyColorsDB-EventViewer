@@ -56,11 +56,12 @@ class TrackManager {
         this._nextLabel = v;
     }
 
-    frameJumpListener() {
-        window.addEventListener('message', (e) => {
-            if (!e.origin) { return; }
+    set fastForward(f) {
+        this._fastForwardMode = f;
+    }
 
-        });
+    set stopTrack(s) {
+        this._stopTrackIndex = s;
     }
 
     destroy() {
@@ -196,7 +197,10 @@ class TrackManager {
 
         this.forward();
 
-        if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
+        if (this._current - 1 == this._stopTrackIndex) { // do nothing and wait
+            return;
+        }
+        else if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
             this._app.stage.interactive = false;
             this._renderTrack();
         }

@@ -30,6 +30,12 @@ async function init() {
 
             advPlayer.start();
         };
+        const fastForward = function (e) {
+            if (!e.origin || !e.data?.fastForward) {
+                return;
+            }
+            advPlayer.fastForward(e.data.fastForward);
+        }
         window.addEventListener('message', receiveJson, false);
         window.parent.postMessage({
             eventViewerIframeLoaded: true
@@ -123,6 +129,16 @@ class AdvPlayer {
         }
         this._tm = new TrackManager(this._app);
         this._tm.addToStage();
+    }
+
+    fastForward(forwardJson) {
+        this._tm.fastForward = forwardJson.forward;
+        if (forwardJson.forward) {
+            this._tm.stopTrack = forwardJson.forwardTarget;
+        }
+        else {
+            this._tm.stopTrack = -1;
+        }
     }
 
     async loadTrackScript(Track) {
