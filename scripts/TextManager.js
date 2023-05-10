@@ -43,7 +43,7 @@ class TextManager {
             if (textFrame == "off") { return; }
         }
 
-        this._thisWaitTime = isFastForward ? 50 : text.length * 300 + 500;
+        this._thisWaitTime = isFastForward ? 50 : (text?.length || 1) * 300 + 500;
 
         if (!this._txtFrameMap.has(textFrame)) {
             this._txtFrameMap.set(textFrame, new PIXI.Sprite(this._loader.resources[`textFrame${textFrame}`].texture));
