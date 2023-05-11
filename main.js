@@ -35,7 +35,8 @@ async function init() {
                 return;
             }
             advPlayer.fastForward(e.data.fastForward);
-        }
+        };
+
         window.addEventListener('message', receiveJson, false);
         window.parent.postMessage({
             eventViewerIframeLoaded: true

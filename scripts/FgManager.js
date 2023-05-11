@@ -21,6 +21,9 @@ class FgManager {
                 this._container.removeChildren(0, this._container.children.length);
             }
         }
+        else if (isFastForward) {
+            this._changeFg(fg, 0, 1);
+        }
         else if (fg == "fade_out") {
             this._fadeOutFg();
         }

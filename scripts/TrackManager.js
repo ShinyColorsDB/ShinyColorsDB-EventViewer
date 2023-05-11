@@ -210,6 +210,7 @@ class TrackManager {
         }
         else if (text && this.autoplay && !waitType) {
             this._textTypingEffect = this._textManager.typingEffect;
+            // this._loader.resources['managerSound'].sound.stop()
             if (voice) { // here to add autoplay for both text and voice condition
                 const voiceTimeout = this._soundManager.voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
