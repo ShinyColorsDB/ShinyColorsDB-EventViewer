@@ -116,7 +116,7 @@ class SpineManager {
                         trackEntry.time = 0;
                         trackEntry.timeScale = 0;
                     }
-                    if (this._replacingLipTrack && this._replacingLipTrack.trackIndex === TRACK_INDEXES.LIP_ANIM) {
+                    if (this._replacingLipTrack && this._replacingLipTrack.trackIndex === 5) { //TRACK_INDEXES.LIP_ANIM
                         this._replacingLipTrack.time = 0;
                         this._replacingLipTrack.timeScale = 0;
                     }
