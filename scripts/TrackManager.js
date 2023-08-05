@@ -215,16 +215,18 @@ class TrackManager {
                 const voiceTimeout = this._soundManager.voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this.autoplay) { return; }
-                    this._renderTrack();
+                    clearTimeout(this._timeoutToClear);
                     this._timeoutToClear = null;
+                    this._renderTrack();
                 }, voiceTimeout);
             }
             else { // here to add autoplay for only text condition
                 const textTimeout = this._textManager.textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this.autoplay) { return; }
-                    this._renderTrack();
+                    clearTimeout(this._timeoutToClear);
                     this._timeoutToClear = null;
+                    this._renderTrack();
                 }, textTimeout);
             }
         }
@@ -244,8 +246,9 @@ class TrackManager {
             }
             else {
                 this._timeoutToClear = setTimeout(() => {
-                    this._renderTrack();
+                    clearTimeout(this._timeoutToClear);
                     this._timeoutToClear = null;
+                    this._renderTrack();
                 }, waitTime);
             }
         }
@@ -255,8 +258,9 @@ class TrackManager {
             }
             else {
                 this._timeoutToClear = setTimeout(() => {
-                    this._renderTrack();
+                    clearTimeout(this._timeoutToClear);
                     this._timeoutToClear = null;
+                    this._renderTrack();
                 }, effectValue.time);
             }
         }
