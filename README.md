@@ -30,7 +30,7 @@ for iframe embed
 ```json
 {
     "messageType": "iframeJson",
-    "ifarameJson": [...]
+    "iframeJson": [...]
 }
 ```
 - Jump to specific frame
