@@ -6,11 +6,11 @@ class Utilities {
     static fadingEffect(pixiObj, effectValue, isFastForward) {
 
         const thisEffect = this._getFromTo(effectValue.type);
-        delete effectValue.type;
+        //delete effectValue.type;
 
         if (effectValue?.time) {
             effectValue.duration = effectValue.time / 1000;
-            delete effectValue.time;
+            //delete effectValue.time;
         }
         if (isFastForward) {
             effectValue.duration = 50 / 1000;

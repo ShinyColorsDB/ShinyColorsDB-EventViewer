@@ -9,9 +9,11 @@ class EffectManager {
         return this._container;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._effectMap.clear();
+        if (clear) {
+            this._effectMap.clear();
+        }
     }
 
     processEffectByInput(effectLabel, effectTarget, effectValue, isFastForward) {

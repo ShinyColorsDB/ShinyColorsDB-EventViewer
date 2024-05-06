@@ -9,9 +9,11 @@ class StillManager {
         return this._container;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._stMap.clear();
+        if (clear) {
+            this._stMap.clear();
+        }
     }
 
     processStillByInput(still, stillType, stillId, stillCtrl, isFastForward) {

@@ -9,9 +9,11 @@ class BgManager {
         return this._container;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._bgMap.clear();
+        if (clear) {
+            this._bgMap.clear();
+        }
     }
 
     processBgByInput(bg, bgEffect, bgEffectTime, isFastForward) {

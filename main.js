@@ -12,32 +12,36 @@ async function init() {
     const advPlayer = new AdvPlayer();
     await advPlayer.LoadFont(usedFont); //load Font
 
-    if (isIframeMode) {
-        const receiveJson = async function (e) {
-            if (!e.origin || !e.data?.iframeJson) {
-                return;
-            }
+    async function eventHandler(e) {
+        if (!e.data.messageType || !e.origin) {
+            console.log("Invalid message");
+            return;
+        }
+        switch (e.data.messageType) {
+            case "iframeJson":
+                console.log("Received iframeJson");
+                advPlayer.loadTrackScript(e.data.iframeJson);
 
-            advPlayer.loadTrackScript(e.data.iframeJson);
-
-            if (e.data.csvText) {
-                const translateJson = advPlayer.CSVToJSON(e.data.csvText);
-                if (translateJson) {
-                    await advPlayer.LoadFont(zhcnFont);
-                    advPlayer.loadTranslateScript(translateJson);
+                if (e.data.csvText) {
+                    const translateJson = advPlayer.CSVToJSON(e.data.csvText);
+                    if (translateJson) {
+                        await advPlayer.LoadFont(zhcnFont);
+                        advPlayer.loadTranslateScript(translateJson);
+                    }
                 }
-            }
+                advPlayer.start();
+                break;
+            case "fastForward":
+                console.log("Received fastForward");
+                advPlayer.reset();
+                advPlayer.fastForward(e.data.fastForward);
+                break;
 
-            advPlayer.start();
-        };
-        const fastForward = function (e) {
-            if (!e.origin || !e.data?.fastForward) {
-                return;
-            }
-            advPlayer.fastForward(e.data.fastForward);
-        };
+        }
+    }
 
-        window.addEventListener('message', receiveJson, false);
+    if (isIframeMode) {
+        window.addEventListener('message', eventHandler, false);
         window.parent.postMessage({
             eventViewerIframeLoaded: true
         }, "*");
@@ -103,6 +107,10 @@ class AdvPlayer {
         this._isTranslate = boolean;
     }
 
+    reset() {
+        this._tm.endOfEvent(false);
+    }
+
     createApp() {
         if (document.getElementById("ShinyColors")) {
             document.getElementById("ShinyColors").remove();
@@ -135,11 +143,13 @@ class AdvPlayer {
     fastForward(forwardJson) {
         this._tm.fastForward = forwardJson.forward;
         if (forwardJson.forward) {
-            this._tm.stopTrack = forwardJson.forwardTarget;
+            this._tm.stopTrack = forwardJson.target;
         }
         else {
             this._tm.stopTrack = -1;
         }
+        this._removeTouchToStart();
+        this._tm.loadAssetsByTrack();
     }
 
     async loadTrackScript(Track) {
@@ -305,11 +315,23 @@ class AdvPlayer {
         });
     };
 
-    _afterTouch = async () => {
-        let { touchToStart, autoBtn, switchLangBtn } = this._Menu;
-
+    _removeTouchToStart() {
         this._app.stage.interactive = false;
-        this._app.stage.removeChild(touchToStart);
+        this._app.stage.removeChild(this._Menu.touchToStart);
+        this._interestedEvents.forEach(e => {
+            this._app.view.removeEventListener(e, this._afterTouch);
+        });
+        this._interestedEvents.forEach(e => {
+            this._app.stage.on(e, this._nextTrack);
+        });
+    }
+
+    _afterTouch = async () => {
+        let { autoBtn, switchLangBtn } = this._Menu;
+
+        this._removeTouchToStart();
+
+        //this._app.stage.removeChild(touchToStart);
 
         this._tm.loadAssetsByTrack();
 
@@ -341,14 +363,6 @@ class AdvPlayer {
                 });
             });
         }
-
-        this._interestedEvents.forEach(e => {
-            this._app.view.removeEventListener(e, this._afterTouch);
-        });
-
-        this._interestedEvents.forEach(e => {
-            this._app.stage.on(e, this._nextTrack);
-        });
     };
 
     _toggleAutoplay() {

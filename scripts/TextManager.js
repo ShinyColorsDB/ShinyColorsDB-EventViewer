@@ -26,10 +26,12 @@ class TextManager {
         return this._typingEffect;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._txtFrameMap.clear();
-        this._endNotification();
+        if (clear) {
+            this._txtFrameMap.clear();
+            this._endNotification();
+        }
     }
 
     processTextFrameByInput(textFrame, speaker, text, translated_text, isFastForward) {
@@ -66,7 +68,7 @@ class TextManager {
                 padding: 3
             });
             this._container.addChildAt(speakerObj, 1);
-            speakerObj.position.set(260, 468);
+            speakerObj.position.set(260, 462);
         }
 
         if (translated_text) {

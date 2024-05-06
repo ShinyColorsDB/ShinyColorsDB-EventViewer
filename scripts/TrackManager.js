@@ -184,7 +184,7 @@ class TrackManager {
         this._fgManager.processFgByInput(fg, fgEffect, fgEffectTime, this._fastForwardMode);
         this._movieManager.processMovieByInput(movie, this._renderTrack.bind(this), this._fastForwardMode);
         this._textManager.processTextFrameByInput(textFrame, speaker, text, translated_text, this._fastForwardMode);
-        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text);
+        this._selectManager.processSelectByInput(select, nextLabel, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text, this._fastForwardMode);
         this._stillManager.processStillByInput(still, stillType, stillId, stillCtrl, this._fastForwardMode);
         this._soundManager.processSoundByInput(bgm, se, voice, charLabel, this._spineManager.stopLipAnimation.bind(this._spineManager), this._fastForwardMode);
         this._spineManager.processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
@@ -269,17 +269,22 @@ class TrackManager {
         }
     }
 
-    endOfEvent() {
-        this._bgManager.reset();
-        this._fgManager.reset();
-        this._spineManager.reset();
-        this._textManager.reset();
-        this._selectManager.reset();
+    endOfEvent(clear = true) {
+        this._bgManager.reset(clear);
+        this._fgManager.reset(clear);
+        this._spineManager.reset(clear);
+        this._textManager.reset(clear);
+        this._selectManager.reset(clear);
         this._soundManager.reset();
-        this._effectManager.reset();
+        this._effectManager.reset(clear);
         this._movieManager.reset();
-        this._stillManager.reset();
-        this._stopped = true;
+        this._stillManager.reset(clear);
+        this._stopped = clear;
+        this._current = 0;
+        this._nextLabel = null;
+        this._app.stage.interactive = true;
+        this._selecting = false;
+        this.resetStopTrack();
     }
 
     toggleAutoplay() {

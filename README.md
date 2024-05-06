@@ -24,3 +24,32 @@ for other events, specify query variable eventType `eventId={number}&eventType={
     special_communications
 
 ![](./assets/demo.png)
+
+for iframe embed
+- Read custom event json
+```json
+{
+    "messageType": "iframeJson",
+    "ifarameJson": [...]
+}
+```
+- Jump to specific frame
+```json
+{
+    "messageType": "fastForward",
+    "fastForward": {
+        "forward": true,
+        "target": 2
+    }
+}
+```
+
+- Clear fast forward and back to first frame
+```json
+{
+    "messageType": "fastForward",
+    "fastForward": {
+        "forward": false
+    }
+}
+```

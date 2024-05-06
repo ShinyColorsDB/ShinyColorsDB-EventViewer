@@ -10,13 +10,18 @@ class FgManager {
         return this._container;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._fgMap.clear();
+        if (clear) {
+            this._fgMap.clear();
+        }
     }
 
     processFgByInput(fg, fgEffect, fgEffectTime, isFastForward) {
-        if (fg == "off") {
+        if (!fg) {
+            return;
+        }
+        else if (fg == "off") {
             if (this._container.children.length) {
                 this._container.removeChildren(0, this._container.children.length);
             }

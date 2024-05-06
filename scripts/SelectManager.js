@@ -16,12 +16,15 @@ class SelectManager {
         return this._neededFrame;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._stMap.clear();
+        this._neededFrame = 1;
+        if (clear) {
+            this._stMap.clear();
+        }
     }
 
-    processSelectByInput(selectDesc, nextLabel, onClick, afterSelection, translated_text) {
+    processSelectByInput(selectDesc, nextLabel, onClick, afterSelection, translated_text, isFastForward) {
         if (!selectDesc) { return; }
 
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {

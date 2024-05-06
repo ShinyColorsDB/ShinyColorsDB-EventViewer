@@ -32,10 +32,12 @@ class SpineManager {
         return this._container;
     }
 
-    reset() {
+    reset(clear = true) {
         this._container.removeChildren(0, this._container.children.length);
-        this._spineMap.clear();
         this._currSpine = {};
+        if (clear) {
+            this._spineMap.clear();
+        }
     }
 
     processSpineByInput(charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
@@ -52,8 +54,9 @@ class SpineManager {
         if (!this._spineMap.has(char_uid)) {
             this._spineMap.set(char_uid, new PIXI.spine.Spine(this._loader.resources[char_uid].spineData));
             this._spineMap.get(char_uid).alpha = 1;
-            this._container.addChild(this._spineMap.get(char_uid));
         }
+
+        this._container.addChild(this._spineMap.get(char_uid));
 
         charAnim1Loop = charAnim1Loop === undefined ? true : charAnim1Loop;
         charAnim2Loop = charAnim2Loop === undefined ? true : charAnim2Loop;
@@ -85,7 +88,7 @@ class SpineManager {
             if (charEffect?.x) { charEffect.x += thisSpine.x; }
             if (charEffect?.y) { charEffect.y += thisSpine.y; }
             if (isFastForward) { charEffect.time = 50; }
-            Utilities.fadingEffect(thisSpine, charEffect);
+            Utilities.fadingEffect(thisSpine, charEffect, isFastForward);
         }
 
         if (charAnim1) {
