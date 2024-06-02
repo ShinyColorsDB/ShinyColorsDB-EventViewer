@@ -1,73 +1,5 @@
+
 'use strict';
-
-async function init() {
-
-    let eventId = getQueryVariable("eventId");
-    let eventType = getQueryVariable("eventType", "produce_events");
-    let isIframeMode = getQueryVariable("iframeMode", null) === "1";
-    let isTranslate = getQueryVariable("isTranslate", null) === '1';
-
-    let jsonPath;
-
-    const advPlayer = new AdvPlayer();
-    await advPlayer.LoadFont(usedFont); //load Font
-
-    async function eventHandler(e) {
-        if (!e.data.messageType || !e.origin) {
-            console.log("Invalid message");
-            return;
-        }
-        switch (e.data.messageType) {
-            case "iframeJson":
-                console.log("Received iframeJson");
-                advPlayer.loadTrackScript(e.data.iframeJson);
-
-                if (e.data.csvText) {
-                    const translateJson = advPlayer.CSVToJSON(e.data.csvText);
-                    if (translateJson) {
-                        await advPlayer.LoadFont(zhcnFont);
-                        advPlayer.loadTranslateScript(translateJson);
-                    }
-                }
-                advPlayer.start();
-                break;
-            case "fastForward":
-                console.log("Received fastForward");
-                advPlayer.reset();
-                advPlayer.fastForward(e.data.fastForward);
-                break;
-
-        }
-    }
-
-    if (isIframeMode) {
-        window.addEventListener('message', eventHandler, false);
-        window.parent.postMessage({
-            eventViewerIframeLoaded: true
-        }, "*");
-    }
-    else {
-        if (eventId) {
-            jsonPath = `${eventType}/${eventId}.json`;
-        }
-        else {
-            jsonPath = prompt("input json path: ", "produce_events/202100711.json");
-            eventId = jsonPath.split("/")[1].split(".")[0];
-            eventType = jsonPath.split("/")[0];
-            window.location.search = `eventType=${eventType}&eventId=${eventId}`;
-        }
-
-        await advPlayer.loadTrackScript(jsonPath);
-
-        if (isTranslate) {
-            // advPlayer.isTranslate = true
-            await advPlayer.LoadFont(zhcnFont); //load Font
-            await advPlayer.getAndLoadTranslateScript(jsonPath);
-        }
-
-        advPlayer.start();
-    }
-}
 
 function getQueryVariable(name, defRet = null) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -79,9 +11,97 @@ function getQueryVariable(name, defRet = null) {
     }
 }
 
+const EventHelper = {
+    createApp : function(){
+        if (document.getElementById("ShinyColors")) {
+            document.getElementById("ShinyColors").remove();
+        }
 
-class AdvPlayer {
+        PIXI.utils.skipHello();
 
+        const app = new PIXI.Application({
+            width: 1136,
+            height: 640,
+        });
+        app.view.setAttribute("id", "ShinyColors");
+        document.body.appendChild(app.view);
+
+        let resize = () => {
+            let height = document.documentElement.clientHeight;
+            let width = document.documentElement.clientWidth;
+
+            let ratio = Math.min(width / 1136, height / 640);
+
+            let resizedX = 1136 * ratio;
+            let resizedY = 640 * ratio;
+
+            app.view.style.width = resizedX + 'px';
+            app.view.style.height = resizedY + 'px';
+        }
+        window.onresize = () => resize();
+
+        return app;
+    },
+    getTrack : async function(source){
+        return await fetch(`${assetUrl}/json/${source}`)
+            .then(res => res.json())
+            .catch(e => console.error(e));
+    },
+    getTranslateByLabel : async function(label){
+        label = label.includes('.json') ? label : `${label}.json`;
+        let masterlist = await fetch(translate_master_list)
+            .then(res => res.json())
+            .catch(e => console.error(e));
+        let result = masterlist.find(([key, _]) => key === label);
+        if (!result) {
+            return void 0;
+        }
+
+        let url = translate_CSV_url.replace('{uid}', result[1]);
+
+        return this.getTranslateByUrl(url);
+    },
+    getTranslateByUrl : async function(url){
+        let csvtext = await fetch(url)
+            .then(res => res.text())
+            .catch(e => console.error(e));
+        if(csvtext === ''){
+            return void 0;
+        }
+
+        return this.getTranslateByCSVText(csvtext);
+    },
+    getTranslateByCSVText : async function(text){
+        const dataJSON = {
+            translator: '',
+            info : '',
+            table: [],
+        };
+        const table = text.split(/\r\n/).slice(1);
+        table.forEach(row => {
+            let columns = row.split(',');
+            if (columns[0] === 'info') {
+                dataJSON['info'] = columns[1];
+            }
+            else if (columns[0] === '译者') {
+                dataJSON['translator'] = columns[1];
+            }
+            else if (columns[0] != '') {
+                dataJSON['table'].push({
+                    id: columns[0],
+                    name: columns[1],
+                    text: columns[2].replace('\\n', '\r\n'),
+                    trans: columns[3].replace('\\n', '\r\n'),
+                });
+            }
+        });
+
+        return dataJSON;
+    }
+}
+
+class EventPlayer {
+    
     _interestedEvents = ["click", "touchstart"];
     _Menu = {
         touchToStart: null,
@@ -94,13 +114,14 @@ class AdvPlayer {
     };
     _switchLangBtn_texture = [];
     _isTranslate = false;
-    _tm = undefined;
-    _app = undefined;
+    _tm = void 0;
+    _app = void 0;
 
-    constructor() {
-        this.createApp();
-        this.createPlayer();
-        this._Hello();
+    constructor(pixiapp){
+        this._app = pixiapp;
+        this._tm = new TrackManager(this._app);
+        this._tm.addToStage();
+        this.helloBanner();
     }
 
     set isTranslate(boolean) {
@@ -111,113 +132,19 @@ class AdvPlayer {
         this._tm.endOfEvent(false);
     }
 
-    createApp() {
-        if (document.getElementById("ShinyColors")) {
-            document.getElementById("ShinyColors").remove();
-        }
-
-        PIXI.utils.skipHello();
-
-        this._app = new PIXI.Application({
-            width: 1136,
-            height: 640,
-        });
-
-        this._app.view.setAttribute("id", "ShinyColors");
-
-        document.body.appendChild(this._app.view);
-
-        this._resize();
-        window.onresize = () => this._resize();
-    }
-
-    createPlayer() {
-        if (!this._app) {
-            console.error('PIXI app has not been initialized');
-            return;
-        }
-        this._tm = new TrackManager(this._app);
-        this._tm.addToStage();
-    }
-
-    fastForward(forwardJson) {
-        this._tm.fastForward = forwardJson.forward;
-        if (forwardJson.forward) {
-            this._tm.stopTrack = forwardJson.target;
-        }
-        else {
-            this._tm.stopTrack = -1;
-        }
-        this._removeTouchToStart();
-        this._tm.loadAssetsByTrack();
-    }
-
-    async loadTrackScript(Track) {
-
-        if (!this._app || !this._tm) {
-            return Promise.reject();
-        }
-
-        if (typeof Track === 'string') {
-            return new Promise((res, rej) => {
-                this._app.loader.add("eventJson", `${assetUrl}/json/${Track}`)
-                    .load((_, resources) => {
-                        if (resources.eventJson.error) { alert("No such event."); return; }
-                        this._tm.setTrack = resources.eventJson.data;
-                        res(Track);
-                    });
-            });
-        }
-        else if (typeof Track === 'object') {
-            this._tm.setTrack = Track;
-            return Promise.resolve(Track);
-        }
-    }
-
-    async getAndLoadTranslateScript(jsonPath) {
-        if (!this._app || !this._tm) {
-            return Promise.reject();
-        }
-
-        let TranslateUrl = await this._searchFromMasterList(jsonPath);
-
-        if (!TranslateUrl) {
-            return Promise.reject();
-        }
-
-        return new Promise((res, rej) => {
-            this._app.loader.add("TranslateUrl", TranslateUrl)
-                .load((_, resources) => {
-                    let translateJson = this.CSVToJSON(resources.TranslateUrl.data);
-                    if (translateJson) {
-                        this._isTranslate = true;
-
-                        this._tm.setTranslateJson = translateJson;
-                    }
-                    res(translateJson);
-                });
-        });
-    }
-
-    loadTranslateScript(Script) {
+    loadTrackScript(Track){
         if (!this._app || !this._tm) {
             return;
         }
-
-        if (typeof Script === 'object') {
-            this._isTranslate = true;
-            this._tm.setTranslateJson = Script;
-        }
+        this._tm.setTrack = Track;
     }
 
-    _searchFromMasterList(jsonPath) {
-        return new Promise((res, rej) => {
-            this._app.loader.add("TranslateMasterList", translate_master_list)
-                .load((_, resources) => {
-                    let translateUrl = this._getCSVUrl(resources.TranslateMasterList.data, jsonPath);
-                    res(translateUrl);
-                });
-        });
+    loadranslateScript(translateJson){
+        if (!this._app || !this._tm) {
+            return;
+        }
+        this._isTranslate = true;
+        this._tm.setTranslateJson = translateJson;
     }
 
     async LoadFont(FontName) {
@@ -225,60 +152,7 @@ class AdvPlayer {
         return await font.load(null, fontTimeout);
     }
 
-    _getCSVUrl = (masterlist, jsonPath) => {
-        let translateUrl;
-        masterlist.forEach(([key, hash]) => {
-            if (key === jsonPath) {
-                translateUrl = translate_CSV_url.replace('{uid}', hash);
-                return translateUrl;
-            }
-        });
-
-        return translateUrl;
-    };
-
-    CSVToJSON = (text) => {
-        if (text === "") { return; }
-        const json = {
-            translater: '',
-            url: '',
-            table: []
-        };
-        const table = text.split(/\r\n/).slice(1);
-        table.forEach(row => {
-            const columns = row.split(',');
-            if (columns[0] === 'info') {
-                json['url'] = columns[1];
-            }
-            else if (columns[0] === '译者') {
-                json['translater'] = columns[1];
-            }
-            else if (columns[0] != '') {
-                json['table'].push({
-                    id: columns[0],
-                    name: columns[1],
-                    text: columns[2].replace('\\n', '\r\n'),
-                    trans: columns[3].replace('\\n', '\r\n'),
-                });
-            }
-        });
-        return json;
-    };
-
-    _resize() {
-        let height = document.documentElement.clientHeight;
-        let width = document.documentElement.clientWidth;
-
-        let ratio = Math.min(width / 1136, height / 640);
-
-        let resizedX = 1136 * ratio;
-        let resizedY = 640 * ratio;
-
-        this._app.view.style.width = resizedX + 'px';
-        this._app.view.style.height = resizedY + 'px';
-    }
-
-    start() {
+    async start() {
         this._app.loader
             .add("touchToStart", "./assets/touchToStart.png")
             .add("autoOn", "./assets/autoOn.png")
@@ -315,6 +189,18 @@ class AdvPlayer {
         });
     };
 
+    fastForward(forwardJson) {
+        this._tm.fastForward = forwardJson.forward;
+        if (forwardJson.forward) {
+            this._tm.stopTrack = forwardJson.target;
+        }
+        else {
+            this._tm.stopTrack = -1;
+        }
+        this._removeTouchToStart();
+        this._tm.loadAssetsByTrack();
+    }
+
     _removeTouchToStart() {
         this._app.stage.interactive = false;
         this._app.stage.removeChild(this._Menu.touchToStart);
@@ -330,10 +216,21 @@ class AdvPlayer {
         let { autoBtn, switchLangBtn } = this._Menu;
 
         this._removeTouchToStart();
-
-        //this._app.stage.removeChild(touchToStart);
-
-        this._tm.loadAssetsByTrack();
+        
+        const progressText = new PIXI.Text('0 %', {
+            fill: "#FFF",
+            fontSize : 50,
+        });
+        progressText.anchor.set(1);
+        progressText.position.set(1136-30, 640-30);
+        this._app.stage.addChild(progressText);
+        let loadProgressHandler = (loader, resource) => {
+            progressText.text = `${Math.floor(loader.progress)} %`;
+            if(loader.progress === 100){
+                this._app.stage.removeChild(progressText);
+            }
+        }
+        this._tm.loadAssetsByTrack(loadProgressHandler);
 
         //auto Btn
         autoBtn.anchor.set(0.5);
@@ -350,7 +247,6 @@ class AdvPlayer {
 
         //Trans
         if (this._isTranslate) {
-
             switchLangBtn.anchor.set(0.5);
             switchLangBtn.position.set(1075, 130);
             switchLangBtn.interactive = true;
@@ -370,18 +266,17 @@ class AdvPlayer {
         let { autoOn, autoOff } = this._autoBtn_texture;
 
         if (this._tm.autoplay) { // toggle on
-            if (!this._tm._timeoutToClear) {
-                this._tm._renderTrack();
-            }
+            // console.log(this._tm._trackPromise)
+            this._tm._trackPromise?.then((bool) => {
+                if (bool) {
+                    this._tm._renderTrack();
+                }
+            })
 
             autoBtn.texture = autoOn;
             this._app.stage.interactive = false;
         }
         else { // toggle off
-            if (this._tm._timeoutToClear) {
-                clearTimeout(this._tm._timeoutToClear);
-                this._tm._timeoutToClear = null;
-            }
 
             autoBtn.texture = autoOff;
             this._app.stage.interactive = true;
@@ -397,9 +292,7 @@ class AdvPlayer {
     _nextTrack = (ev) => {
         if (ev.target !== this._app.stage) { return; }
         if (this._tm.autoplay) { return; }
-        if (this._tm._timeoutToClear) {
-            clearTimeout(this._tm._timeoutToClear);
-        }
+        // if (this._tm._animationPromise) { return; } //正在動畫中
         if (this._tm._textTypingEffect) {
             clearInterval(this._tm._textTypingEffect);
         }
@@ -407,7 +300,7 @@ class AdvPlayer {
         this._tm._renderTrack();
     };
 
-    _Hello() {
+    helloBanner() {
         const log = [
             `\n\n %c  %c   ShinyColors Event Viewer   %c  %c  https://github.com/ShinyColorsDB/ShinyColorsDB-EventViewer  %c \n\n`,
             'background: #28de10; padding:5px 0;',
@@ -419,4 +312,82 @@ class AdvPlayer {
 
         console.log(...log);
     }
+}
+
+//------------Main-----------------
+
+async function init(){
+    // get props from url
+    let eventId = getQueryVariable("eventId");
+    let eventType = getQueryVariable("eventType", "produce_events");
+    let isIframeMode = getQueryVariable("iframeMode", null) === "1";
+    let isTranslate = getQueryVariable("isTranslate", null) === '1';
+    
+    //
+    let jsonPath;
+
+    //create PIXI app and event player
+    const app = EventHelper.createApp();
+    const advPlayer = new EventPlayer(app);
+    await advPlayer.LoadFont(usedFont); //load JP Font
+    await advPlayer.LoadFont(zhcnFont); //load ZH_cn Font (for Translate)
+        
+    // Iframe Handler
+    async function eventHandler(e) {
+        if (!e.data.messageType || !e.origin) {
+            console.log("Invalid message");
+            return;
+        }
+        switch (e.data.messageType) {
+            case "iframeJson":
+                console.log("Received iframeJson");
+                advPlayer.loadTrackScript(e.data.iframeJson);
+
+                if (e.data.csvText) {
+                    const translateJson = EventHelper.getTranslateByCSVText(e.data.csvText);
+                    if (translateJson) {
+                        advPlayer.loadranslateScript(translateJson);
+                    }
+                }
+                
+                advPlayer.start();
+                break;
+            case "fastForward":
+                console.log("Received fastForward");
+                advPlayer.reset();
+                advPlayer.fastForward(e.data.fastForward);
+                break;
+        }
+    }
+
+    // Iframe Mode
+    if (isIframeMode) {
+        window.addEventListener('message', eventHandler, false);
+        window.parent.postMessage({
+            eventViewerIframeLoaded: true
+        }, "*");
+    }
+    else {
+        //load Event Track Script and [Optional]Translate Script
+        if (eventId) {
+            jsonPath = `${eventType}/${eventId}.json`;
+        }
+        else {
+            jsonPath = prompt("input json path: ", "produce_events/202100711.json");
+            eventId = jsonPath.split("/")[1].split(".")[0];
+            eventType = jsonPath.split("/")[0];
+            window.location.search = `eventType=${eventType}&eventId=${eventId}`;
+        }
+    
+        const trackScript = await EventHelper.getTrack(jsonPath);
+        advPlayer.loadTrackScript(trackScript);
+    
+        if (isTranslate) {
+            const translateJson = await EventHelper.getTranslateByLabel(jsonPath);
+            advPlayer.loadranslateScript(translateJson);
+        }
+    
+        advPlayer.start();
+    }
+
 }

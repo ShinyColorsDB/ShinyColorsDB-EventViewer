@@ -15,16 +15,17 @@ class TrackManager {
         this._effectManager = new EffectManager();
         this._movieManager = new MovieManager();
         this._stillManager = new StillManager();
+        //about track rendering
+        this._trackPromise = void 0;
         this._timeoutToClear = null;
         this._textTypingEffect = null;
         this._autoPlayEnabled = true;
         this._stopped = false;
+        this._fastForwardMode = false;
+        this._selecting = false;
         //translate
         this._translateJson = null;
         this._translateLang = 0; // 0:jp 1:zh 2:jp+zh
-        this._selecting = false;
-
-        this._fastForwardMode = false;
     }
 
     set setTrack(tracks) {
@@ -102,14 +103,17 @@ class TrackManager {
         );
     }
 
-    loadAssetsByTrack() {
+    loadAssetsByTrack(loadProgressHandler = (loader, resource) => void 0) {
         if (this.currentTrack?.label == "end") {
             this._current = 0;
             this._selectManager.frameReset();
             // this._loader.add("managerSound", './assets/002.m4a')
-            this._loader.load(() => {
+            this._loader.onProgress.add(loadProgressHandler)
+            this._loader
+            .load(() => {
                 this._renderTrack();
             });
+
             return;
         }
         const { speaker, text, select, nextLabel, textFrame, bg, fg, se, voice, bgm, movie,
@@ -162,12 +166,16 @@ class TrackManager {
         }
 
         this.forward();
-        this.loadAssetsByTrack();
+        this.loadAssetsByTrack(loadProgressHandler);
     }
 
-    _renderTrack() {
+    async _renderTrack() {
+        //
+        this._trackPromise = void 0;
+
+        let index = this._current;
         if (this._stopped || this._selecting) { return; }
-        console.log(`${this._current}/${this._tracks.length - 1}`, this.currentTrack);
+        console.log(`${index}/${this._tracks.length - 1}`, this.currentTrack);
 
         if (this.currentTrack.label == "end") {
             this.endOfEvent();
@@ -208,30 +216,33 @@ class TrackManager {
             this._app.stage.interactive = false;
             this._selecting = true;
         }
-        else if (text && this.autoplay && !waitType) {
-            this._textTypingEffect = this._textManager.typingEffect;
-            // this._loader.resources['managerSound'].sound.stop()
-            if (voice) { // here to add autoplay for both text and voice condition
-                const voiceTimeout = this._soundManager.voiceDuration;
-                this._timeoutToClear = setTimeout(() => {
-                    if (!this.autoplay) { return; }
-                    clearTimeout(this._timeoutToClear);
-                    this._timeoutToClear = null;
-                    this._renderTrack();
-                }, voiceTimeout);
+        // else if (text && this.autoplay && !waitType) {
+        else if (text && !waitType) {
+
+            let duration = voice ? this._soundManager.voiceDuration : this._textManager.textWaitTime;
+
+            if(this.autoplay){
+                return this._trackPromise = new Promise((res, _) => {
+                    let timeout = setTimeout(() => {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        if(this.autoplay && index + 1 === this._current){
+                            this._trackPromise = void 0;
+                            this._renderTrack();
+                            res(false);
+                        }
+                        res(true);
+                    }, duration);
+                })
             }
-            else { // here to add autoplay for only text condition
-                const textTimeout = this._textManager.textWaitTime;
-                this._timeoutToClear = setTimeout(() => {
-                    if (!this.autoplay) { return; }
-                    clearTimeout(this._timeoutToClear);
-                    this._timeoutToClear = null;
-                    this._renderTrack();
-                }, textTimeout);
-            }
-        }
-        else if (text && !this.autoplay && !waitType) {
-            return;
+
+            return this._trackPromise = new Promise((res, _) => {
+                let timeout = setTimeout(()=>{
+                    clearTimeout(timeout);
+                    timeout = null;
+                    res(true);
+                }, duration)
+            })
         }
         else if (movie) {
             if (this._fastForwardMode) {
@@ -240,28 +251,38 @@ class TrackManager {
             }
             else { return; }
         }
-        else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
+        else if (waitType === "time") { // should be modified, add touch event to progress, not always timeout
             if (this._fastForwardMode) {
                 this._renderTrack();
+                return;
             }
             else {
-                this._timeoutToClear = setTimeout(() => {
-                    clearTimeout(this._timeoutToClear);
-                    this._timeoutToClear = null;
-                    this._renderTrack();
-                }, waitTime);
+                await new Promise(() => {
+                    let timeout = setTimeout(() => {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        if (index + 1 === this._current){
+                            this._renderTrack();
+                        }
+                    }, waitTime);
+                });
             }
         }
         else if (waitType == "effect") {
             if (this._fastForwardMode) {
                 this._renderTrack();
+                return;
             }
             else {
-                this._timeoutToClear = setTimeout(() => {
-                    clearTimeout(this._timeoutToClear);
-                    this._timeoutToClear = null;
-                    this._renderTrack();
-                }, effectValue.time);
+                await new Promise(() => {
+                    let timeout = setTimeout(() => {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        if (index + 1 === this._current){
+                            this._renderTrack();
+                        }
+                    }, effectValue.time);
+                });
             }
         }
         else {
