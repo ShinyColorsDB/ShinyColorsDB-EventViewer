@@ -170,7 +170,9 @@ class TrackManager {
     }
 
     async _renderTrack() {
+        //
         this._trackPromise = void 0;
+
         let index = this._current;
         if (this._stopped || this._selecting) { return; }
         console.log(`${index}/${this._tracks.length - 1}`, this.currentTrack);
@@ -259,7 +261,9 @@ class TrackManager {
                     let timeout = setTimeout(() => {
                         clearTimeout(timeout);
                         timeout = null;
-                        this._renderTrack();
+                        if (index + 1 === this._current){
+                            this._renderTrack();
+                        }
                     }, waitTime);
                 });
             }
@@ -274,7 +278,9 @@ class TrackManager {
                     let timeout = setTimeout(() => {
                         clearTimeout(timeout);
                         timeout = null;
-                        this._renderTrack();
+                        if (index + 1 === this._current){
+                            this._renderTrack();
+                        }
                     }, effectValue.time);
                 });
             }

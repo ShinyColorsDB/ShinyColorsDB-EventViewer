@@ -292,9 +292,7 @@ class EventPlayer {
     _nextTrack = (ev) => {
         if (ev.target !== this._app.stage) { return; }
         if (this._tm.autoplay) { return; }
-        if (this._tm._timeoutToClear) {
-            clearTimeout(this._tm._timeoutToClear);
-        }
+        // if (this._tm._animationPromise) { return; } //正在動畫中
         if (this._tm._textTypingEffect) {
             clearInterval(this._tm._textTypingEffect);
         }
